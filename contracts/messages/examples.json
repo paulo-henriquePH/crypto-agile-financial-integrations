@@ -1,0 +1,2864 @@
+{
+  "referenceNow": "2026-11-19T12:00:30Z",
+  "notice": "All signature bytes decode to NOT_A_SIGNATURE. These are structural examples only.",
+  "cases": [
+    {
+      "name": "create_operation",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ]
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "GESTORA-ALFA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "CREATE_OPERATION"
+        ],
+        "trustedKeys": {
+          "GESTORA-ALFA-0": {
+            "senderId": "GESTORA-ALFA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "create_operation_result",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000102",
+          "messageType": "CREATE_OPERATION_RESULT",
+          "senderId": "PLATFORM",
+          "recipientId": "GESTORA-ALFA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000101"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "VALIDATED",
+          "sequence": 2
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "GESTORA-ALFA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "CREATE_OPERATION_RESULT"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ]
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "query_operation",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000103",
+          "messageType": "QUERY_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {},
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "GESTORA-ALFA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "QUERY_OPERATION"
+        ],
+        "trustedKeys": {
+          "GESTORA-ALFA-0": {
+            "senderId": "GESTORA-ALFA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "query_operation_result",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000104",
+          "messageType": "QUERY_OPERATION_RESULT",
+          "senderId": "PLATFORM",
+          "recipientId": "GESTORA-ALFA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000103"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLED",
+          "sequence": 7,
+          "events": [
+            {
+              "eventId": "00000000-0000-4000-8000-000000000001",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 1,
+              "origin": "PLATFORM",
+              "state": "REGISTERED",
+              "occurredAt": "2026-11-19T12:00:01Z"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000002",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 2,
+              "origin": "PLATFORM",
+              "state": "VALIDATED",
+              "occurredAt": "2026-11-19T12:00:02Z",
+              "previousState": "REGISTERED"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000003",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 3,
+              "origin": "PLATFORM",
+              "state": "SENT",
+              "occurredAt": "2026-11-19T12:00:03Z",
+              "previousState": "VALIDATED"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000004",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 4,
+              "origin": "CUSTODIAN",
+              "state": "RECEIVED",
+              "occurredAt": "2026-11-19T12:00:04Z",
+              "previousState": "SENT"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000005",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 5,
+              "origin": "CUSTODIAN",
+              "state": "ACCEPTED",
+              "occurredAt": "2026-11-19T12:00:05Z",
+              "previousState": "RECEIVED"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000006",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 6,
+              "origin": "CUSTODIAN",
+              "state": "PENDING_SETTLEMENT",
+              "occurredAt": "2026-11-19T12:00:06Z",
+              "previousState": "ACCEPTED"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000007",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 7,
+              "origin": "CUSTODIAN",
+              "state": "SETTLED",
+              "occurredAt": "2026-11-19T12:00:07Z",
+              "previousState": "PENDING_SETTLEMENT"
+            }
+          ],
+          "deliveryStatus": "CONFIRMED",
+          "reconciliationStatus": "MATCHED"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "GESTORA-ALFA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "QUERY_OPERATION_RESULT"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000103",
+          "messageType": "QUERY_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {},
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "submit_instruction",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000105",
+          "messageType": "SUBMIT_INSTRUCTION",
+          "senderId": "PLATFORM",
+          "recipientId": "CUSTODIANTE-GAMA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          }
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "CUSTODIANTE-GAMA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "SUBMIT_INSTRUCTION"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "submit_instruction_result",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000106",
+          "messageType": "SUBMIT_INSTRUCTION_RESULT",
+          "senderId": "CUSTODIANTE-GAMA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "CUSTODIANTE-GAMA-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000105"
+        },
+        "payload": {
+          "state": "RECEIVED",
+          "sequence": 1
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "CUSTODIANTE-GAMA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "CUSTODIANTE-GAMA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "SUBMIT_INSTRUCTION_RESULT"
+        ],
+        "trustedKeys": {
+          "CUSTODIANTE-GAMA-0": {
+            "senderId": "CUSTODIANTE-GAMA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000105",
+          "messageType": "SUBMIT_INSTRUCTION",
+          "senderId": "PLATFORM",
+          "recipientId": "CUSTODIANTE-GAMA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          }
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "query_instruction",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000107",
+          "messageType": "QUERY_INSTRUCTION",
+          "senderId": "PLATFORM",
+          "recipientId": "CUSTODIANTE-GAMA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {},
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "CUSTODIANTE-GAMA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "QUERY_INSTRUCTION"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "query_instruction_result",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000108",
+          "messageType": "QUERY_INSTRUCTION_RESULT",
+          "senderId": "CUSTODIANTE-GAMA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "CUSTODIANTE-GAMA-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000107"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLED",
+          "sequence": 7,
+          "events": [
+            {
+              "eventId": "00000000-0000-4000-8000-000000000001",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 1,
+              "origin": "PLATFORM",
+              "state": "REGISTERED",
+              "occurredAt": "2026-11-19T12:00:01Z"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000002",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 2,
+              "origin": "PLATFORM",
+              "state": "VALIDATED",
+              "occurredAt": "2026-11-19T12:00:02Z",
+              "previousState": "REGISTERED"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000003",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 3,
+              "origin": "PLATFORM",
+              "state": "SENT",
+              "occurredAt": "2026-11-19T12:00:03Z",
+              "previousState": "VALIDATED"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000004",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 4,
+              "origin": "CUSTODIAN",
+              "state": "RECEIVED",
+              "occurredAt": "2026-11-19T12:00:04Z",
+              "previousState": "SENT"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000005",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 5,
+              "origin": "CUSTODIAN",
+              "state": "ACCEPTED",
+              "occurredAt": "2026-11-19T12:00:05Z",
+              "previousState": "RECEIVED"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000006",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 6,
+              "origin": "CUSTODIAN",
+              "state": "PENDING_SETTLEMENT",
+              "occurredAt": "2026-11-19T12:00:06Z",
+              "previousState": "ACCEPTED"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000007",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 7,
+              "origin": "CUSTODIAN",
+              "state": "SETTLED",
+              "occurredAt": "2026-11-19T12:00:07Z",
+              "previousState": "PENDING_SETTLEMENT"
+            }
+          ]
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "CUSTODIANTE-GAMA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "CUSTODIANTE-GAMA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "QUERY_INSTRUCTION_RESULT"
+        ],
+        "trustedKeys": {
+          "CUSTODIANTE-GAMA-0": {
+            "senderId": "CUSTODIANTE-GAMA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000107",
+          "messageType": "QUERY_INSTRUCTION",
+          "senderId": "PLATFORM",
+          "recipientId": "CUSTODIANTE-GAMA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {},
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "register_operation",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000109",
+          "messageType": "REGISTER_OPERATION",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "DUAL",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            },
+            {
+              "algorithm": "ML-DSA-65",
+              "keyId": "PLATFORM-1"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLED",
+          "sequence": 7
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          },
+          {
+            "algorithm": "ML-DSA-65",
+            "keyId": "PLATFORM-1",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "ADMINISTRADOR-DELTA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "DUAL",
+        "allowedMessageTypes": [
+          "REGISTER_OPERATION"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          },
+          "PLATFORM-1": {
+            "senderId": "PLATFORM",
+            "algorithm": "ML-DSA-65",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "register_operation_result",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000110",
+          "messageType": "REGISTER_OPERATION_RESULT",
+          "senderId": "ADMINISTRADOR-DELTA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "ADMINISTRADOR-DELTA-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000109"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLED",
+          "sequence": 7
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "ADMINISTRADOR-DELTA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "ADMINISTRADOR-DELTA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "REGISTER_OPERATION_RESULT"
+        ],
+        "trustedKeys": {
+          "ADMINISTRADOR-DELTA-0": {
+            "senderId": "ADMINISTRADOR-DELTA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000109",
+          "messageType": "REGISTER_OPERATION",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "DUAL",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            },
+            {
+              "algorithm": "ML-DSA-65",
+              "keyId": "PLATFORM-1"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLED",
+          "sequence": 7
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          },
+          {
+            "algorithm": "ML-DSA-65",
+            "keyId": "PLATFORM-1",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "query_admin_record",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000111",
+          "messageType": "QUERY_ADMIN_RECORD",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {},
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "ADMINISTRADOR-DELTA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "QUERY_ADMIN_RECORD"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "query_admin_record_result",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000112",
+          "messageType": "QUERY_ADMIN_RECORD_RESULT",
+          "senderId": "ADMINISTRADOR-DELTA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ML_DSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ML-DSA-65",
+              "keyId": "ADMINISTRADOR-DELTA-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLED",
+          "sequence": 7
+        },
+        "signatures": [
+          {
+            "algorithm": "ML-DSA-65",
+            "keyId": "ADMINISTRADOR-DELTA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "ADMINISTRADOR-DELTA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ML_DSA",
+        "allowedMessageTypes": [
+          "QUERY_ADMIN_RECORD_RESULT"
+        ],
+        "trustedKeys": {
+          "ADMINISTRADOR-DELTA-0": {
+            "senderId": "ADMINISTRADOR-DELTA",
+            "algorithm": "ML-DSA-65",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000111",
+          "messageType": "QUERY_ADMIN_RECORD",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {},
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "error",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000113",
+          "messageType": "ERROR",
+          "senderId": "PLATFORM",
+          "recipientId": "GESTORA-ALFA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "requestMessageId": "00000000-0000-4000-8000-000000000101"
+        },
+        "payload": {
+          "code": "INVALID_SCHEMA",
+          "message": "Invalid input",
+          "correlationId": "00000000-0000-4000-8000-000000000101",
+          "retryable": false,
+          "details": [
+            {
+              "field": "quantity",
+              "issue": "Expected positive integer string"
+            }
+          ]
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "GESTORA-ALFA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "ERROR"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ]
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "missing_context",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ]
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "GESTORA-ALFA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "CREATE_OPERATION"
+        ],
+        "trustedKeys": {
+          "GESTORA-ALFA-0": {
+            "senderId": "GESTORA-ALFA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "unsupported_version",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "2.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ]
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "GESTORA-ALFA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "CREATE_OPERATION"
+        ],
+        "trustedKeys": {
+          "GESTORA-ALFA-0": {
+            "senderId": "GESTORA-ALFA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "signer_mismatch",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ]
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "OUTRO",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "GESTORA-ALFA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "CREATE_OPERATION"
+        ],
+        "trustedKeys": {
+          "GESTORA-ALFA-0": {
+            "senderId": "GESTORA-ALFA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "creation_premature_uuid",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "GESTORA-ALFA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "CREATE_OPERATION"
+        ],
+        "trustedKeys": {
+          "GESTORA-ALFA-0": {
+            "senderId": "GESTORA-ALFA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "expired",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T11:00:00Z",
+          "expiresAt": "2026-11-19T11:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ]
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "GESTORA-ALFA",
+        "recipientId": "PLATFORM",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "CREATE_OPERATION"
+        ],
+        "trustedKeys": {
+          "GESTORA-ALFA-0": {
+            "senderId": "GESTORA-ALFA",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "dual_signature_removed",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000109",
+          "messageType": "REGISTER_OPERATION",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "DUAL",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            },
+            {
+              "algorithm": "ML-DSA-65",
+              "keyId": "PLATFORM-1"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLED",
+          "sequence": 7
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "ADMINISTRADOR-DELTA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "DUAL",
+        "allowedMessageTypes": [
+          "REGISTER_OPERATION"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          },
+          "PLATFORM-1": {
+            "senderId": "PLATFORM",
+            "algorithm": "ML-DSA-65",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "register_rejected",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000109",
+          "messageType": "REGISTER_OPERATION",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "DUAL",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            },
+            {
+              "algorithm": "ML-DSA-65",
+              "keyId": "PLATFORM-1"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "REJECTED",
+          "sequence": 7,
+          "reason": "OPERATIONAL_RULE",
+          "rejectionOrigin": "CUSTODIAN"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          },
+          {
+            "algorithm": "ML-DSA-65",
+            "keyId": "PLATFORM-1",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "ADMINISTRADOR-DELTA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "DUAL",
+        "allowedMessageTypes": [
+          "REGISTER_OPERATION"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          },
+          "PLATFORM-1": {
+            "senderId": "PLATFORM",
+            "algorithm": "ML-DSA-65",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "register_rejected_missing_reason",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000109",
+          "messageType": "REGISTER_OPERATION",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "DUAL",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            },
+            {
+              "algorithm": "ML-DSA-65",
+              "keyId": "PLATFORM-1"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "REJECTED",
+          "sequence": 7,
+          "rejectionOrigin": "CUSTODIAN"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          },
+          {
+            "algorithm": "ML-DSA-65",
+            "keyId": "PLATFORM-1",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "ADMINISTRADOR-DELTA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "DUAL",
+        "allowedMessageTypes": [
+          "REGISTER_OPERATION"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          },
+          "PLATFORM-1": {
+            "senderId": "PLATFORM",
+            "algorithm": "ML-DSA-65",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "register_settlement_failed",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000109",
+          "messageType": "REGISTER_OPERATION",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "DUAL",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            },
+            {
+              "algorithm": "ML-DSA-65",
+              "keyId": "PLATFORM-1"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLEMENT_FAILED",
+          "sequence": 7,
+          "reason": "INSUFFICIENT_BALANCE"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          },
+          {
+            "algorithm": "ML-DSA-65",
+            "keyId": "PLATFORM-1",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "ADMINISTRADOR-DELTA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "DUAL",
+        "allowedMessageTypes": [
+          "REGISTER_OPERATION"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          },
+          "PLATFORM-1": {
+            "senderId": "PLATFORM",
+            "algorithm": "ML-DSA-65",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "register_settlement_failed_missing_reason",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000109",
+          "messageType": "REGISTER_OPERATION",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "DUAL",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            },
+            {
+              "algorithm": "ML-DSA-65",
+              "keyId": "PLATFORM-1"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLEMENT_FAILED",
+          "sequence": 7
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          },
+          {
+            "algorithm": "ML-DSA-65",
+            "keyId": "PLATFORM-1",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "ADMINISTRADOR-DELTA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "DUAL",
+        "allowedMessageTypes": [
+          "REGISTER_OPERATION"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          },
+          "PLATFORM-1": {
+            "senderId": "PLATFORM",
+            "algorithm": "ML-DSA-65",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "register_settled_unexpected_reason",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000109",
+          "messageType": "REGISTER_OPERATION",
+          "senderId": "PLATFORM",
+          "recipientId": "ADMINISTRADOR-DELTA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "DUAL",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            },
+            {
+              "algorithm": "ML-DSA-65",
+              "keyId": "PLATFORM-1"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.00",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "SETTLED",
+          "sequence": 7,
+          "reason": "UNEXPECTED"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          },
+          {
+            "algorithm": "ML-DSA-65",
+            "keyId": "PLATFORM-1",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "ADMINISTRADOR-DELTA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "DUAL",
+        "allowedMessageTypes": [
+          "REGISTER_OPERATION"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          },
+          "PLATFORM-1": {
+            "senderId": "PLATFORM",
+            "algorithm": "ML-DSA-65",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "create_operation_result_local_invalid_amount",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000102",
+          "messageType": "CREATE_OPERATION_RESULT",
+          "senderId": "PLATFORM",
+          "recipientId": "GESTORA-ALFA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000101"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.01",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "REJECTED",
+          "sequence": 2,
+          "reason": "GROSS_AMOUNT_MISMATCH",
+          "rejectionOrigin": "LOCAL"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "GESTORA-ALFA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "CREATE_OPERATION_RESULT"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ]
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "create_operation_result_local_invalid_amount_missing_origin",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000102",
+          "messageType": "CREATE_OPERATION_RESULT",
+          "senderId": "PLATFORM",
+          "recipientId": "GESTORA-ALFA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000101"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.01",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "REJECTED",
+          "sequence": 2,
+          "reason": "GROSS_AMOUNT_MISMATCH"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "GESTORA-ALFA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "CREATE_OPERATION_RESULT"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000101",
+          "messageType": "CREATE_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ]
+        },
+        "payload": {
+          "clientOrderId": "OP-000001",
+          "portfolioId": "FUNDO-ALFA",
+          "operationType": "BUY",
+          "assetType": "DEBENTURE",
+          "assetId": "DEB-FICTICIA-01",
+          "issuerId": "EMISSOR-01",
+          "counterpartyId": "INSTITUICAO-BETA",
+          "tradeDate": "2026-11-19",
+          "settlementDate": "2026-11-20",
+          "indexer": "IPCA",
+          "issueRate": "6.000000",
+          "negotiatedRate": "6.500000",
+          "quantity": "100",
+          "unitPrice": "980.500000",
+          "grossAmount": "98050.00",
+          "currency": "BRL",
+          "custodianId": "CUSTODIANTE-GAMA",
+          "administratorId": "ADMINISTRADOR-DELTA"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "query_operation_result_local_invalid_amount",
+      "valid": true,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000104",
+          "messageType": "QUERY_OPERATION_RESULT",
+          "senderId": "PLATFORM",
+          "recipientId": "GESTORA-ALFA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000103"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.01",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "REJECTED",
+          "sequence": 2,
+          "events": [
+            {
+              "eventId": "00000000-0000-4000-8000-000000000001",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 1,
+              "origin": "PLATFORM",
+              "state": "REGISTERED",
+              "occurredAt": "2026-11-19T12:00:01Z"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000002",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 2,
+              "origin": "PLATFORM",
+              "state": "REJECTED",
+              "occurredAt": "2026-11-19T12:00:02Z",
+              "previousState": "REGISTERED",
+              "reason": "INVALID_DOMAIN",
+              "rejectionOrigin": "LOCAL"
+            }
+          ],
+          "deliveryStatus": "PENDING",
+          "reconciliationStatus": "NOT_READY",
+          "reason": "GROSS_AMOUNT_MISMATCH",
+          "rejectionOrigin": "LOCAL"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "GESTORA-ALFA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "QUERY_OPERATION_RESULT"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000103",
+          "messageType": "QUERY_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {},
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    },
+    {
+      "name": "query_operation_result_local_invalid_amount_missing_origin",
+      "valid": false,
+      "signatureNotice": "ILLUSTRATIVE_NON_CRYPTOGRAPHIC",
+      "message": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000104",
+          "messageType": "QUERY_OPERATION_RESULT",
+          "senderId": "PLATFORM",
+          "recipientId": "GESTORA-ALFA",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "PLATFORM-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111",
+          "requestMessageId": "00000000-0000-4000-8000-000000000103"
+        },
+        "payload": {
+          "managerId": "GESTORA-ALFA",
+          "boleta": {
+            "clientOrderId": "OP-000001",
+            "portfolioId": "FUNDO-ALFA",
+            "operationType": "BUY",
+            "assetType": "DEBENTURE",
+            "assetId": "DEB-FICTICIA-01",
+            "issuerId": "EMISSOR-01",
+            "counterpartyId": "INSTITUICAO-BETA",
+            "tradeDate": "2026-11-19",
+            "settlementDate": "2026-11-20",
+            "indexer": "IPCA",
+            "issueRate": "6.000000",
+            "negotiatedRate": "6.500000",
+            "quantity": "100",
+            "unitPrice": "980.500000",
+            "grossAmount": "98050.01",
+            "currency": "BRL",
+            "custodianId": "CUSTODIANTE-GAMA",
+            "administratorId": "ADMINISTRADOR-DELTA"
+          },
+          "state": "REJECTED",
+          "sequence": 2,
+          "events": [
+            {
+              "eventId": "00000000-0000-4000-8000-000000000001",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 1,
+              "origin": "PLATFORM",
+              "state": "REGISTERED",
+              "occurredAt": "2026-11-19T12:00:01Z"
+            },
+            {
+              "eventId": "00000000-0000-4000-8000-000000000002",
+              "operationId": "11111111-1111-4111-8111-111111111111",
+              "instructionVersion": 1,
+              "sequence": 2,
+              "origin": "PLATFORM",
+              "state": "REJECTED",
+              "occurredAt": "2026-11-19T12:00:02Z",
+              "previousState": "REGISTERED",
+              "reason": "INVALID_DOMAIN",
+              "rejectionOrigin": "LOCAL"
+            }
+          ],
+          "deliveryStatus": "PENDING",
+          "reconciliationStatus": "NOT_READY",
+          "reason": "GROSS_AMOUNT_MISMATCH"
+        },
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "PLATFORM-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      },
+      "policy": {
+        "senderId": "PLATFORM",
+        "recipientId": "GESTORA-ALFA",
+        "environment": "LAB",
+        "policyVersion": 1,
+        "signatureProfile": "ECDSA",
+        "allowedMessageTypes": [
+          "QUERY_OPERATION_RESULT"
+        ],
+        "trustedKeys": {
+          "PLATFORM-0": {
+            "senderId": "PLATFORM",
+            "algorithm": "ECDSA-P256-SHA256",
+            "state": "ACTIVE",
+            "notBefore": "2026-01-01T00:00:00Z",
+            "notAfter": "2027-01-01T00:00:00Z"
+          }
+        }
+      },
+      "request": {
+        "protected": {
+          "schemaVersion": "1.0",
+          "messageId": "00000000-0000-4000-8000-000000000103",
+          "messageType": "QUERY_OPERATION",
+          "senderId": "GESTORA-ALFA",
+          "recipientId": "PLATFORM",
+          "environment": "LAB",
+          "instructionVersion": 1,
+          "issuedAt": "2026-11-19T12:00:00Z",
+          "expiresAt": "2026-11-19T12:02:00Z",
+          "policyVersion": 1,
+          "signatureProfile": "ECDSA",
+          "canonicalization": "JCS",
+          "signers": [
+            {
+              "algorithm": "ECDSA-P256-SHA256",
+              "keyId": "GESTORA-ALFA-0"
+            }
+          ],
+          "operationId": "11111111-1111-4111-8111-111111111111"
+        },
+        "payload": {},
+        "signatures": [
+          {
+            "algorithm": "ECDSA-P256-SHA256",
+            "keyId": "GESTORA-ALFA-0",
+            "value": "Tk9UX0FfU0lHTkFUVVJF"
+          }
+        ]
+      }
+    }
+  ]
+}
