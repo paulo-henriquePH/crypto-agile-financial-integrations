@@ -1,0 +1,20 @@
+{
+  "clientOrderId": "OP-000001",
+  "portfolioId": "FUNDO-ALFA",
+  "operationType": "BUY",
+  "assetType": "DEBENTURE",
+  "assetId": "DEB-FICTICIA-01",
+  "issuerId": "EMISSOR-01",
+  "counterpartyId": "INSTITUICAO-BETA",
+  "tradeDate": "2026-11-19",
+  "settlementDate": "2026-11-20",
+  "indexer": "IPCA",
+  "issueRate": "6.000000",
+  "negotiatedRate": "6.500000",
+  "quantity": "100",
+  "unitPrice": "980.500000",
+  "grossAmount": "98050.00",
+  "currency": "BRL",
+  "custodianId": "CUSTODIANTE-GAMA",
+  "administratorId": "ADMINISTRADOR-DELTA"
+}

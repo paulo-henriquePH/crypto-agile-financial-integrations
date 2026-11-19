@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cafi:boleta:v1",
+  "title": "Boleta de criação da operação",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clientOrderId", "portfolioId", "operationType", "assetType", "assetId", "issuerId", "counterpartyId", "tradeDate", "settlementDate", "indexer", "issueRate", "negotiatedRate", "quantity", "unitPrice", "grossAmount", "currency", "custodianId", "administratorId"],
+  "properties": {
+    "clientOrderId": {"$ref": "#/$defs/id"},
+    "portfolioId": {"$ref": "#/$defs/id"},
+    "operationType": {"const": "BUY"},
+    "assetType": {"const": "DEBENTURE"},
+    "assetId": {"$ref": "#/$defs/id"},
+    "issuerId": {"$ref": "#/$defs/id"},
+    "counterpartyId": {"$ref": "#/$defs/id"},
+    "tradeDate": {"type": "string", "format": "date"},
+    "settlementDate": {"type": "string", "format": "date"},
+    "indexer": {"const": "IPCA"},
+    "issueRate": {"$ref": "#/$defs/rate"},
+    "negotiatedRate": {"$ref": "#/$defs/rate"},
+    "quantity": {"type": "string", "pattern": "^[1-9][0-9]{0,8}(?![\\s\\S])"},
+    "unitPrice": {"type": "string", "pattern": "^(?:0|[1-9][0-9]{0,13})\\.[0-9]{6}(?![\\s\\S])"},
+    "grossAmount": {"type": "string", "pattern": "^(?:0|[1-9][0-9]{0,17})\\.[0-9]{2}(?![\\s\\S])"},
+    "currency": {"const": "BRL"},
+    "custodianId": {"$ref": "#/$defs/id"},
+    "administratorId": {"$ref": "#/$defs/id"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,64}(?![\\s\\S])"},
+    "rate": {"type": "string", "pattern": "^(?:100\\.000000|(?:0|[1-9][0-9]?)\\.[0-9]{6})(?![\\s\\S])"}
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "managers": {"GESTORA-ALFA": {"portfolios": ["FUNDO-ALFA"]}},
+  "portfolios": {"FUNDO-ALFA": {"custodianId": "CUSTODIANTE-GAMA", "administratorId": "ADMINISTRADOR-DELTA"}},
+  "assets": {"DEB-FICTICIA-01": {"issuerId": "EMISSOR-01", "assetType": "DEBENTURE"}},
+  "counterparties": ["INSTITUICAO-BETA"]
+}
