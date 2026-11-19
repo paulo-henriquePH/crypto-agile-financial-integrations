@@ -1,0 +1,2 @@
+# Canonical bytes are hashed; never translate line endings.
+*.canonical -text

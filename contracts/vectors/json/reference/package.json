@@ -1,0 +1,6 @@
+{
+  "name": "cafi-jcs-independent-check",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {"canonicalize": "5.1.0"}
+}

@@ -1,0 +1,12 @@
+.git
+.secrets
+secrets
+.spikes
+.venv
+**/__pycache__
+**/*.key
+**/*-private.pem
+**/*.p12
+**/*.pfx
+.env*
+

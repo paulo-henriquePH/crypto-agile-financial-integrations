@@ -1,0 +1,27 @@
+{
+  "task": "S1-03",
+  "status": "BLOCKED_NOT_ACCEPTED",
+  "date": "2026-11-19",
+  "baseRevision": "0261e81d9b5cb05a8a8fbb986776391c3f245520",
+  "command": "docker build --platform linux/amd64 --no-cache -f deploy/spikes/Dockerfile -t cafi-spikes:s1 .",
+  "observed": {
+    "dockerServer": "27.5.1",
+    "baseImagePulled": "python:3.13.11-bookworm@sha256:b3ad23176613a34fcd715a28da314a0cbbd230dcc68798efb80ec30292b2a683",
+    "opensslSourceChecksum": "verified successfully during build",
+    "buildPhase": "linking OpenSSL test executables after compilation",
+    "elapsedBuildSecondsAtError": 415.5,
+    "error": "/usr/bin/ld: failed to set dynamic section sizes: Input/output error",
+    "makeResult": "make: *** [Makefile:3896: build_sw] Error 2",
+    "hostCFreeBytes": 129249280,
+    "hostCSizeBytes": 254771048448,
+    "hostDiskObservationCommand": "Get-CimInstance Win32_LogicalDisk -Filter DeviceID='C:'",
+    "wslDfHostC": "237.3G total, 237.2G used, 123.0M available, 100%",
+    "dockerCacheInspection": "docker buildx du --verbose did not respond; no cache entry could be safely identified for deletion"
+  },
+  "interpretation": "Host storage exhaustion coincides with linker I/O failure; virtual disk apparent free space is not physical host capacity.",
+  "runtimeInventory": null,
+  "proofsExecuted": [],
+  "changesPreserved": true,
+  "unrelatedDataDeleted": false,
+  "requiredNextStep": "Free physical space on C: (5 GiB is a suggested retry margin, not a measured minimum), restore Docker responsiveness, then repeat clean build and run environment.py. S1-03 cannot be committed as completed until that succeeds."
+}

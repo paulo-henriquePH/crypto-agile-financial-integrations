@@ -1,0 +1,99 @@
+{
+  "format": "UTF-8 without BOM or trailing newline; SHA-256 over exact canonical bytes",
+  "cases": [
+    {
+      "name": "creation",
+      "mode": "envelope",
+      "input": "creation.input.json",
+      "valid": true,
+      "expectationSource": "independent canonicalize 5.1.0",
+      "expected": "creation.canonical",
+      "sha256": "0828e291462c6baaaddc16c9c77044fd2de933014b0aa268fb91ed0d6777808e"
+    },
+    {
+      "name": "creation_reordered",
+      "mode": "envelope",
+      "input": "creation_reordered.input.json",
+      "valid": true,
+      "expectationSource": "independent canonicalize 5.1.0",
+      "expected": "creation_reordered.canonical",
+      "sha256": "0828e291462c6baaaddc16c9c77044fd2de933014b0aa268fb91ed0d6777808e"
+    },
+    {
+      "name": "rfc_primitives",
+      "mode": "document",
+      "input": "rfc_primitives.input.json",
+      "valid": true,
+      "expectationSource": "RFC 8785 sections 3.2.2 and 3.2.3; independently checked with canonicalize 5.1.0",
+      "expected": "rfc_primitives.canonical",
+      "sha256": "2d5e01a318d0f0879ab568c4be289c8b1f64ef8921a53c6277d5e069978baacb"
+    },
+    {
+      "name": "rfc_property_sort",
+      "mode": "document",
+      "input": "rfc_property_sort.input.json",
+      "valid": true,
+      "expectationSource": "RFC 8785 section 3.2.3; independently checked with canonicalize 5.1.0",
+      "expected": "rfc_property_sort.canonical",
+      "sha256": "5e321556d22018a9656991a9e94f77ec175fa193e52a2429d312f8419ec8b08c"
+    },
+    {
+      "name": "unicode_no_normalization",
+      "mode": "document",
+      "input": "unicode_no_normalization.input.json",
+      "valid": true,
+      "expectationSource": "independent canonicalize 5.1.0",
+      "expected": "unicode_no_normalization.canonical",
+      "sha256": "871a2bb4a3433627441370f487f8e72cd2bda90c99d831acefa835943f3678a3"
+    },
+    {
+      "name": "duplicate_root",
+      "mode": "document",
+      "input": "duplicate_root.input.json",
+      "valid": false,
+      "expectationSource": "strict duplicate parser"
+    },
+    {
+      "name": "duplicate_nested",
+      "mode": "document",
+      "input": "duplicate_nested.input.json",
+      "valid": false,
+      "expectationSource": "strict duplicate parser"
+    },
+    {
+      "name": "lone_surrogate",
+      "mode": "document",
+      "input": "lone_surrogate.input.json",
+      "valid": false,
+      "expectationSource": "RFC 8785 section 3.2.2.2"
+    },
+    {
+      "name": "nan",
+      "mode": "document",
+      "input": "nan.input.json",
+      "valid": false,
+      "expectationSource": "RFC 8785 section 3.2.2.3"
+    },
+    {
+      "name": "infinity",
+      "mode": "document",
+      "input": "infinity.input.json",
+      "valid": false,
+      "expectationSource": "RFC 8785 section 3.2.2.3"
+    },
+    {
+      "name": "numeric_financial",
+      "mode": "envelope",
+      "input": "numeric_financial.input.json",
+      "valid": false,
+      "expectationSource": "financial decimal string rule"
+    },
+    {
+      "name": "payload_array",
+      "mode": "envelope",
+      "input": "payload_array.input.json",
+      "valid": false,
+      "expectationSource": "envelope object rule"
+    }
+  ]
+}

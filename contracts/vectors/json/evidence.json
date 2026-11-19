@@ -1,0 +1,26 @@
+{
+  "task": "S1-12",
+  "date": "2026-11-19",
+  "baseRevision": "66df67940441a08e84ab23c4af91762847ca6a06",
+  "platform": "Windows",
+  "python": "3.12.0",
+  "libraryUnderTest": "rfc8785 0.1.4",
+  "independentLibrary": "canonicalize 5.1.0",
+  "node": "22.14.0",
+  "pythonCommand": "python -m unittest discover -s tests/contracts -p test_canonical_json.py -v",
+  "pythonResult": {
+    "methods": 5,
+    "passed": 5,
+    "vectorCases": 12,
+    "positive": 5,
+    "negative": 7
+  },
+  "independentCommand": "node contracts/vectors/json/reference/check.mjs <canonicalize-5.1.0-module-path>",
+  "independentResult": {
+    "positiveComparisons": 5,
+    "passed": 5
+  },
+  "expectedBytesOrigin": "Generated using independent canonicalize 5.1.0, then frozen. Python tests only read static bytes and manifest digests.",
+  "cryptographicSignaturesVerified": false,
+  "linuxEnvironmentApproved": false
+}

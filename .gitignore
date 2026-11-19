@@ -1,0 +1,18 @@
+# Segredos e resultados locais; somente evidências sanitizadas são versionadas.
+.secrets/
+secrets/
+*.key
+*.p12
+*.pfx
+*-private.pem
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.spikes/
+*.log
+*.tmp
+
