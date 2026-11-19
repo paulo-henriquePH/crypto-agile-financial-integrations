@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cafi:v1:event",
+  "title": "Financial operation event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "operationId", "instructionVersion", "sequence", "origin", "state", "occurredAt"],
+  "properties": {
+    "eventId": {"type": "string", "format": "uuid"},
+    "operationId": {"type": "string", "format": "uuid"},
+    "instructionVersion": {"type": "integer", "const": 1},
+    "sequence": {"type": "integer", "minimum": 1},
+    "origin": {"enum": ["PLATFORM", "CUSTODIAN"]},
+    "previousState": {"$ref": "#/$defs/state"},
+    "state": {"$ref": "#/$defs/state"},
+    "occurredAt": {"type": "string", "format": "date-time", "pattern": "Z(?![\\s\\S])"},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 256},
+    "rejectionOrigin": {"enum": ["LOCAL", "CUSTODIAN"]}
+  },
+  "$defs": {"state": {"enum": ["REGISTERED", "VALIDATED", "SENT", "RECEIVED", "ACCEPTED", "REJECTED", "PENDING_SETTLEMENT", "SETTLED", "SETTLEMENT_FAILED"]}},
+  "allOf": [
+    {"if": {"properties": {"state": {"const": "REGISTERED"}}},
+     "then": {"properties": {"sequence": {"const": 1}, "origin": {"const": "PLATFORM"}}, "not": {"required": ["previousState"]}},
+     "else": {"required": ["previousState"]}},
+    {"if": {"properties": {"state": {"enum": ["REJECTED", "SETTLEMENT_FAILED"]}}}, "then": {"required": ["reason"]}, "else": {"not": {"required": ["reason"]}}},
+    {"if": {"properties": {"state": {"const": "REJECTED"}}}, "then": {"required": ["rejectionOrigin"]}, "else": {"not": {"required": ["rejectionOrigin"]}}}
+  ]
+}

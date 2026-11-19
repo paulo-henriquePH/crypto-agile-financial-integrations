@@ -1,0 +1,15 @@
+{
+  "initialState": "REGISTERED",
+  "terminalStates": ["REJECTED", "SETTLED", "SETTLEMENT_FAILED"],
+  "transitions": {
+    "REGISTERED": ["VALIDATED", "REJECTED"],
+    "VALIDATED": ["SENT"],
+    "SENT": ["RECEIVED"],
+    "RECEIVED": ["ACCEPTED", "REJECTED"],
+    "ACCEPTED": ["PENDING_SETTLEMENT"],
+    "PENDING_SETTLEMENT": ["SETTLED", "SETTLEMENT_FAILED"],
+    "REJECTED": [], "SETTLED": [], "SETTLEMENT_FAILED": []
+  },
+  "deliveryStatuses": ["PENDING", "UNKNOWN", "CONFIRMED", "BLOCKED"],
+  "reconciliationStatuses": ["NOT_READY", "MATCHED", "DIVERGENT"]
+}
