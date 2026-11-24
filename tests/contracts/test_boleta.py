@@ -1,6 +1,9 @@
 import copy
 import re
 import unittest
+from decimal import Inexact, Rounded, localcontext
+
+from jsonschema import Draft202012Validator, FormatChecker
 
 from validate_boleta import ROOT, parse_json, validate
 
@@ -59,6 +62,29 @@ class BoletaTests(unittest.TestCase):
     def test_unauthorized_manager(self):
         with self.assertRaises(ValueError):
             validate(self.valid, "OUTRA-GESTORA")
+
+    def test_decimal_context_independent(self):
+        self.valid.update(quantity="1", unitPrice="0.005000", grossAmount="0.01")
+        with localcontext() as context:
+            context.prec = 4
+            context.Emin = -2
+            context.Emax = 2
+            context.traps[Inexact] = True
+            context.traps[Rounded] = True
+            validate(self.valid, "GESTORA-ALFA")
+
+    def test_json_schema_independent(self):
+        from validate_boleta import SCHEMA
+        Draft202012Validator.check_schema(SCHEMA)
+        validator = Draft202012Validator(SCHEMA, format_checker=FormatChecker())
+        validator.validate(self.valid)
+        for field, value in (("quantity", 100), ("unitPrice", "1.00000"),
+                             ("tradeDate", "2026-02-30"), ("operationId", "premature"),
+                             ("clientOrderId", "A\n"), ("currency", "USD")):
+            with self.subTest(field=field):
+                invalid = copy.deepcopy(self.valid)
+                invalid[field] = value
+                self.assertFalse(validator.is_valid(invalid))
 
 
 if __name__ == "__main__":

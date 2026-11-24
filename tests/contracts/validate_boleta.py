@@ -4,7 +4,7 @@ import argparse
 import datetime as dt
 import json
 import re
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from decimal import Context, Decimal, DivisionByZero, InvalidOperation, Overflow, ROUND_HALF_UP, localcontext
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -76,7 +76,11 @@ def validate(boleta: dict, manager_id: str, references: dict = REFERENCES) -> No
         quantity = int(boleta["quantity"])
         price = Decimal(boleta["unitPrice"])
         amount = Decimal(boleta["grossAmount"])
-        calculated = (quantity * price).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        arithmetic = Context(prec=40, rounding=ROUND_HALF_UP, Emin=-100, Emax=100,
+                             capitals=1, clamp=0, flags=[],
+                             traps=[InvalidOperation, DivisionByZero, Overflow])
+        with localcontext(arithmetic):
+            calculated = (quantity * price).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     except (InvalidOperation, OverflowError) as exc:
         raise ValueError("financeiro inválido") from exc
     if price <= 0 or amount <= 0 or calculated != amount or calculated >= Decimal("1e18"):

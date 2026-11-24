@@ -99,6 +99,10 @@ As tasks seguem estritamente a ordem S1-01 → S1-19. Cada uma depende do commit
 - **Aceite:** campos, enums, escalas, limites, cadastros de referência e imutabilidade definidos; verificar quantidade × PU, arredondamento, overflow e datas. Diferenciar `clientOrderId` de `operationId` e a criação da instrução já identificada.
 - **Verificação:** fixture válida e casos negativos de precisão, financeiro, data, campo desconhecido e cadastro incompatível. Regras sem expressão no schema recebem validação semântica explícita.
 
+#### Task corretiva S1-09-C1 — revalidação da boleta
+
+Após o commit preexistente `462454e`, corrigir a dependência do contexto decimal global e verificar o schema e a fixture com motor JSON Schema fixado no runtime aprovado. Reexecutar os testes de boleta e registrar evidência; revisão independente antecede o commit atômico `fix(contracts): revalida boleta no ambiente aprovado`. Não altera os contratos posteriores.
+
 ### S1-10 Especificar transições e eventos
 
 - **Entrada:** boleta e estados da SPEC.
