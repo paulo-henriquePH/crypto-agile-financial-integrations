@@ -1,0 +1,78 @@
+{
+  "task": "S1-03",
+  "kind": "capability_inventory_not_algorithm_proof",
+  "recordedAt": "2026-11-24T13:44:20.211088+00:00",
+  "baseRevision": "73e3197c0dd1f3763367233663d9a3856dc13fa0",
+  "inputsSHA256": {
+    "deploy/spikes/Dockerfile": "f48b8dc49a0cd3d2afb09edb6b936a4d6faffe950d593a8bfadda77f5f254cad",
+    "deploy/spikes/versions.json": "db573dd550435855aab4817803599017337cab6d7d2f7cbcb28f3d1341ac5b27",
+    "spikes/environment.py": "ddb6bd8f297e5f2dee85a75d6da194a8afe304c98d2e861bcae62c453eb80318"
+  },
+  "host": {
+    "os": "Windows with Docker Desktop and WSL2",
+    "dockerDesktop": "4.100.1",
+    "dockerEngine": "29.9.3",
+    "builder": "desktop-linux",
+    "platform": "linux/amd64",
+    "freeBytesBeforeBuild": 178074075136,
+    "note": "Host and Docker versions and free space reported by coordinator."
+  },
+  "commands": [
+    {
+      "command": "docker build --platform linux/amd64 --no-cache -f deploy/spikes/Dockerfile -t cafi-spikes:s1 .",
+      "exitCode": 1,
+      "result": "Docker credential helper not found in inherited PATH; no build performed."
+    },
+    {
+      "command": "docker build --platform linux/amd64 --no-cache -f deploy/spikes/Dockerfile -t cafi-spikes:s1 .",
+      "exitCode": 0,
+      "result": "Built and exported image; Docker Desktop resources/bin added to process PATH only.",
+      "imageManifestList": "sha256:564513b961987470c56c2886303d7127e4d66d1de8a925e880c4008373ec17c3",
+      "imageConfig": "sha256:a9b7ea477c6f670a8e99b8eed05ca8112f7e0d802120bfa44f69490b2658fa7a"
+    },
+    {
+      "command": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges -e CAFI_CODE_REVISION=73e3197c0dd1f3763367233663d9a3856dc13fa0 cafi-spikes:s1",
+      "exitCode": 0
+    }
+  ],
+  "officialSourcesCheckedOn": "2026-11-24",
+  "officialSources": {
+    "python": "https://www.python.org/downloads/release/python-31311/",
+    "image": "https://hub.docker.com/_/python",
+    "ctypes": "https://docs.python.org/3.13/library/ctypes.html",
+    "opensslChecksum": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz.sha256",
+    "mlDsaAPI": "https://docs.openssl.org/3.5/man7/EVP_SIGNATURE-ML-DSA/",
+    "tlsGroupsAPI": "https://docs.openssl.org/3.5/man3/SSL_CTX_set1_curves/"
+  },
+  "officialChecksumObserved": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+  "sourceNote": "Python 3.13.11 is superseded; pinned for laboratory reproduction, not a production security recommendation. OpenSSL documentation describes APIs, not proof of their execution.",
+  "inventory": {
+    "codeRevision": "73e3197c0dd1f3763367233663d9a3856dc13fa0",
+    "python": "3.13.11",
+    "binding": "CPython stdlib ctypes",
+    "opensslLoaded": "OpenSSL 3.5.9 29 Sep 2026",
+    "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.36",
+    "machine": "x86_64",
+    "compiler": "gcc (Debian 12.2.0-14+deb12u1) 12.2.0",
+    "libraries": {
+      "/opt/cafi-openssl/lib/libcrypto.so.3": "733934473cd39e10fc799784b2798bcfb752bf3e384f40e7c362c6c29963dbf9",
+      "/opt/cafi-openssl/lib/libssl.so.3": "83a963dfc76672d91efad7ddbd151b8d9dfea69c1080b4980520d56566b35696"
+    },
+    "signatureImplementationsFetched": {"ECDSA": true, "ML-DSA-65": true},
+    "symbolsAvailable": {
+      "libcrypto": ["EVP_DigestSignInit_ex", "EVP_DigestSign", "EVP_DigestVerifyInit_ex", "EVP_DigestVerify", "EVP_PKEY_CTX_new_from_name", "EVP_PKEY_generate", "EVP_PKEY_sign_message_init", "EVP_PKEY_sign", "EVP_PKEY_verify_message_init", "EVP_PKEY_verify"],
+      "libssl": ["TLS_method", "SSL_CTX_new", "SSL_CTX_ctrl", "SSL_ctrl", "SSL_get0_group_name", "SSL_connect", "SSL_accept"]
+    },
+    "environment": {
+      "OPENSSL_CONF": "/opt/cafi-openssl/ssl/openssl.cnf",
+      "OPENSSL_MODULES": "/opt/cafi-openssl/lib/ossl-modules",
+      "LD_LIBRARY_PATH": "/opt/cafi-openssl/lib"
+    }
+  },
+  "proofsExecuted": [],
+  "limitations": [
+    "No signature, verification, key generation or TLS handshake executed.",
+    "ctypes is a low-level candidate binding, not a production adapter.",
+    "TLS negotiated-group observation remains a gate for S1-06/07."
+  ]
+}

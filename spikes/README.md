@@ -1,12 +1,14 @@
 # Ambiente das provas isoladas
 
-**Estado da primeira tentativa:** preparação ainda não aprovada. O build falhou no linker com erro de I/O quando o disco físico C: tinha aproximadamente 123 MiB livres. O [diagnóstico sanitizado](../deploy/spikes/diagnostic-blocked.json) registra a falha; não existe ainda manifesto de runtime carregado. Liberar espaço físico (5 GiB como margem sugerida, não mínimo medido), restaurar a resposta do Docker e repetir build/diagnóstico são necessários para concluir S1-03. Não foi usado prune global nem removido dado alheio ao trabalho.
+**Execução atual:** o build sem cache e o diagnóstico isolado terminaram com sucesso; versões carregadas, comandos e limites constam da [evidência sanitizada](../deploy/spikes/diagnostic-2026-11-24.json), sujeita a revisão independente. A [primeira tentativa histórica](../deploy/spikes/diagnostic-blocked.json) falhou no linker quando o disco físico C: tinha aproximadamente 123 MiB livres; esse registro permanece preservado. Não foi usado prune global nem removido dado alheio ao trabalho.
 
 S1-03 prepara um candidato: CPython 3.13.11 com `ctypes` da biblioteca padrão chamando diretamente as bibliotecas compartilhadas OpenSSL 3.5.9. Não há subprocesso por assinatura nem implementação própria de primitivas. A stack só será decidida em S1-08, após as provas S1-04–07. O binding é de baixo nível e requer declarações corretas de tipos e gestão de recursos; não é um adapter de produção.
 
 ## Reprodução
 
 Requer Docker Engine em modo Linux, acesso à imagem oficial e ao release OpenSSL no GitHub. No Windows, Docker Desktop com WSL2 foi usado. Execute na raiz do repositório, em PowerShell ou shell Linux:
+
+No Windows, caso o helper `docker-credential-desktop` não seja encontrado, acrescente `C:\Users\Inteli\AppData\Local\Programs\DockerDesktop\resources\bin` ao `PATH` apenas do processo, ajustando o caminho à instalação local.
 
 ```text
 docker build --platform linux/amd64 --no-cache -f deploy/spikes/Dockerfile -t cafi-spikes:s1 .
@@ -30,7 +32,7 @@ Em Linux use `-e CAFI_CODE_REVISION="$(git rev-parse HEAD)"`. Ao testar alteraç
 
 As APIs EVP de mensagem completa são candidatas para ML-DSA puro com contexto vazio. `SSL_ctrl` e as APIs públicas de grupos são candidatas para controle/observação de TLS; macros de headers precisam ser vinculadas corretamente nas provas. A presença de símbolos não demonstra semântica, grupo negociado ou interoperabilidade. ECDSA/ML-DSA e cada handshake têm gates próprios nas próximas tasks; ausência de observação do grupo bloqueia aprovação.
 
-O [manifesto fixado](../deploy/spikes/versions.json) registra versões, hashes e fontes oficiais consultadas em 2026-11-19: [release Python](https://www.python.org/downloads/release/python-31311/), [imagem oficial](https://hub.docker.com/_/python), [ctypes](https://docs.python.org/3.13/library/ctypes.html), [OpenSSL](https://openssl-library.org/source/), [ML-DSA](https://docs.openssl.org/3.5/man7/EVP_SIGNATURE-ML-DSA/) e [grupos TLS](https://docs.openssl.org/3.5/man3/SSL_CTX_set1_curves/). Python 3.13.11 não é a versão mais recente: foi fixada como candidato de laboratório disponível por digest, sem declaração de adequação de segurança para produção. A seleção será revista na ADR conforme as provas.
+O [manifesto fixado](../deploy/spikes/versions.json) registra versões, hashes e fontes oficiais; a conferência de 2026-11-24 está na evidência atual, incluindo o checksum oficial do release. Fontes: [release Python](https://www.python.org/downloads/release/python-31311/), [imagem oficial](https://hub.docker.com/_/python), [ctypes](https://docs.python.org/3.13/library/ctypes.html), [OpenSSL](https://openssl-library.org/source/), [ML-DSA](https://docs.openssl.org/3.5/man7/EVP_SIGNATURE-ML-DSA/) e [grupos TLS](https://docs.openssl.org/3.5/man3/SSL_CTX_set1_curves/). Python 3.13.11 não é a versão mais recente: foi fixada como candidato de laboratório disponível por digest, sem declaração de adequação de segurança para produção. A seleção será revista na ADR conforme as provas.
 
 ## Arquivos locais e segredos
 
