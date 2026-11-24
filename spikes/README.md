@@ -26,6 +26,18 @@ docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-
 
 Em Linux use `-e CAFI_CODE_REVISION="$(git rev-parse HEAD)"`. Ao testar alterações ainda não commitadas, registre separadamente a task e os hashes dos arquivos em execução; `HEAD` sozinho é apenas a base. Saída não zero indica falha e nunca deve ser convertida em sucesso ou skip.
 
+## Prova ECDSA S1-04
+
+Com a imagem acima construída, execute na raiz do repositório em PowerShell:
+
+```powershell
+docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount "type=bind,source=$((Get-Location).Path)\spikes\signatures\ecdsa,target=/proof,readonly" cafi-spikes:s1 python /proof/proof.py
+```
+
+Em shell Linux, substitua o argumento de montagem por `--mount "type=bind,source=$(pwd)/spikes/signatures/ecdsa,target=/proof,readonly"`. A opção `--corrupt-original` após o nome do script perturba o caso positivo e deve produzir saída não zero; não a use na execução normal. O comando monta apenas a prova, não altera a imagem nem seu diagnóstico padrão. A [evidência](../docs/sprint-1/evidence/ecdsa.json) identifica a revisão-base, o hash da prova e a biblioteca efetivamente carregada.
+
+O processo gera duas chaves temporárias em memória usando EVP, assina bytes sintéticos fixos e verifica o original e três alterações. O formato da assinatura EVP ECDSA é ASN.1 DER, não `r || s`. Não há subprocesso por operação nem persistência das chaves. Isto não testa contratos, autorização de chaves, proteção contra host comprometido ou interoperabilidade; `ctypes` continua binding experimental de baixo nível e a stack não está aprovada.
+
 ## O que o diagnóstico comprova
 
 `spikes/environment.py` carrega `libcrypto.so.3` e `libssl.so.3` por caminho absoluto, confere Python/OpenSSL carregados, consulta implementações ECDSA/ML-DSA-65 por `EVP_SIGNATURE_fetch` e resolve símbolos públicos necessários. Registra versão, hashes de bibliotecas, compilador, plataforma, configuração e revisão informada. Não gera chave, não assina, não verifica assinatura e não estabelece TLS. `proofsExecuted` permanece vazio.

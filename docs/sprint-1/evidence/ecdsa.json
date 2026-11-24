@@ -1,0 +1,39 @@
+{
+  "task": "S1-04",
+  "recordedOn": "2026-11-24",
+  "baseRevision": "799aa87bb182057cd0e359f61e464e3fa471a269",
+  "inputsSHA256": {
+    "spikes/signatures/ecdsa/proof.py": "5eaf624b24f60524c932ac59aea686d2fe5393cc0622e11a90472fd9f9d095ab",
+    "deploy/spikes/Dockerfile": "f48b8dc49a0cd3d2afb09edb6b936a4d6faffe950d593a8bfadda77f5f254cad",
+    "deploy/spikes/versions.json": "db573dd550435855aab4817803599017337cab6d7d2f7cbcb28f3d1341ac5b27"
+  },
+  "image": "cafi-spikes:s1",
+  "imageId": "sha256:564513b961987470c56c2886303d7127e4d66d1de8a925e880c4008373ec17c3",
+  "platform": "linux/amd64 on Docker Desktop",
+  "commandPowerShell": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount \"type=bind,source=$((Get-Location).Path)\\spikes\\signatures\\ecdsa,target=/proof,readonly\" cafi-spikes:s1 python /proof/proof.py",
+  "exitCode": 0,
+  "runtime": "CPython 3.13.11",
+  "binding": "ctypes, direct EVP calls, no subprocess per operation",
+  "opensslLoaded": "OpenSSL 3.5.9 29 Sep 2026",
+  "libcryptoPath": "/opt/cafi-openssl/lib/libcrypto.so.3",
+  "libcryptoSHA256": "733934473cd39e10fc799784b2798bcfb752bf3e384f40e7c362c6c29963dbf9",
+  "algorithm": "ECDSA P-256 with SHA-256",
+  "signatureEncoding": "ASN.1 DER",
+  "cases": {
+    "original": "accepted",
+    "altered_payload": "rejected",
+    "altered_signature": "rejected",
+    "different_key": "rejected"
+  },
+  "failurePropagation": {
+    "command": "Same command with --corrupt-original appended",
+    "perturbation": "Verify the positive case with altered payload while still expecting acceptance.",
+    "observed": "OpenSSL rejected the altered payload; the entrypoint raised RuntimeError.",
+    "exitCode": 1
+  },
+  "limitations": [
+    "Keys generated locally in memory by OpenSSL and never exported; no private material or signature included in evidence.",
+    "Fixed synthetic payload is independent of final contracts; no authorization, canonicalization or operational service is tested.",
+    "Candidate low-level binding and local evidence do not approve a production stack or establish host integrity."
+  ]
+}
