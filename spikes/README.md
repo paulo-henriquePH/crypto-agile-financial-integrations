@@ -52,6 +52,20 @@ O binding `ctypes` usa `EVP_PKEY_sign_message_init` e `EVP_PKEY_verify_message_i
 
 A assinatura tem 3309 bytes brutos ou 4412 caracteres Base64 padrão sem quebras. A pública tem 1952 bytes brutos, 1974 bytes em SPKI DER ou 2726 bytes em SPKI PEM emitido pelo OpenSSL. A [evidência sanitizada](../docs/sprint-1/evidence/ml-dsa.json) registra medições, referências, hashes, versões e códigos de saída. Esta prova não valida TLS, contratos ou a stack de produção.
 
+## Prova TLS 1.3 mTLS com X25519 S1-06
+
+Reutilize a imagem `cafi-spikes:s1`. Na raiz do repositório, em PowerShell:
+
+```powershell
+docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 65534:65534 --tmpfs /tmp:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=65534,gid=65534 --mount "type=bind,source=$((Get-Location).Path)\spikes\tls,target=/proof,readonly" cafi-spikes:s1 python /proof/proof.py
+```
+
+Em shell Linux, use `--mount "type=bind,source=$(pwd)/spikes/tls,target=/proof,readonly"`. Para verificar que uma falha do caso positivo resulta em saída não zero, acrescente `--wrong-positive-name` após o script. Dependência ausente ou grupo não observável também resulta em falha.
+
+O contêiner roda sem root, sem rede externa e sem portas publicadas. O listener abre apenas `127.0.0.1` em porta efêmera; cada caso usa sockets e objetos `SSL` novos. O tmpfs de 1 MiB, com acesso exclusivo ao UID do processo, guarda apenas a PKI efêmera: diretório `0700`, privadas `0600`, remoção automática e nenhuma escrita no repositório. As chaves de TLS são independentes das chaves de assinatura de mensagens. A CLI OpenSSL apenas emite certificados; cliente e servidor executam `SSL_connect` e `SSL_accept` em CPython via `ctypes`, com prazo de I/O de cinco segundos por conexão.
+
+Ambos limitam versão, grupo, suíte e assinatura de autenticação a TLS 1.3, X25519, `TLS_AES_256_GCM_SHA384` e `ecdsa_secp256r1_sha256`. A prova exige cadeia até a CA de laboratório e SAN DNS exato de ambos os pares, sem CN ou wildcard. O teste repete a conexão com os mesmos contextos TLS e verifica ausência de cache, tickets, retomada e 0-RTT. O servidor só envia a confirmação cifrada após verificar o cliente. `SSL_get0_group_name` lê o grupo efetivo em ambas as pontas; a [evidência sanitizada](../docs/sprint-1/evidence/tls-x25519.json) conserva a grafia `x25519` devolvida pela biblioteca e os retornos dos casos negativos. Esta é uma prova local; não testa grupo híbrido, autorização de aplicação nem interoperabilidade com outra implementação.
+
 ## O que o diagnóstico comprova
 
 `spikes/environment.py` carrega `libcrypto.so.3` e `libssl.so.3` por caminho absoluto, confere Python/OpenSSL carregados, consulta implementações ECDSA/ML-DSA-65 por `EVP_SIGNATURE_fetch` e resolve símbolos públicos necessários. Registra versão, hashes de bibliotecas, compilador, plataforma, configuração e revisão informada. Não gera chave, não assina, não verifica assinatura e não estabelece TLS. `proofsExecuted` permanece vazio.

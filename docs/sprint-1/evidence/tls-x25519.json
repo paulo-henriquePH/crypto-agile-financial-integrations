@@ -1,0 +1,249 @@
+{
+  "task": "S1-06",
+  "recordedOn": "2026-11-24",
+  "baseRevision": "0999a7d4ed781f5a9c2604fa39f0b7c2da0b5ab1",
+  "baseBranch": "sprint-1-completion",
+  "inputsSHA256": {
+    "spikes/tls/proof.py": "e0139ccae67eb17ae38cec5705f75eb42db85fa0fb44b67f045b38bcb6803e6e",
+    "spikes/tls/certificates.py": "2cc44287a3c6a907de00f83f4ded6fb39bf29f22d81a32ede42f3492b166bda5",
+    "deploy/spikes/Dockerfile": "f48b8dc49a0cd3d2afb09edb6b936a4d6faffe950d593a8bfadda77f5f254cad",
+    "deploy/spikes/versions.json": "db573dd550435855aab4817803599017337cab6d7d2f7cbcb28f3d1341ac5b27",
+    "spikes/environment.py": "ddb6bd8f297e5f2dee85a75d6da194a8afe304c98d2e861bcae62c453eb80318"
+  },
+  "image": "cafi-spikes:s1",
+  "imageId": "sha256:564513b961987470c56c2886303d7127e4d66d1de8a925e880c4008373ec17c3",
+  "platform": "linux/amd64 on Docker Desktop",
+  "commandPowerShell": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 65534:65534 --tmpfs /tmp:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=65534,gid=65534 --mount \"type=bind,source=$((Get-Location).Path)\\spikes\\tls,target=/proof,readonly\" cafi-spikes:s1 python /proof/proof.py",
+  "exitCode": 0,
+  "runtime": "CPython 3.13.11",
+  "binding": "CPython stdlib ctypes, direct SSL_connect and SSL_accept on TCP sockets",
+  "opensslLoaded": "OpenSSL 3.5.9 29 Sep 2026",
+  "librariesSHA256": {
+    "/opt/cafi-openssl/lib/libcrypto.so.3": "733934473cd39e10fc799784b2798bcfb752bf3e384f40e7c362c6c29963dbf9",
+    "/opt/cafi-openssl/lib/libssl.so.3": "83a963dfc76672d91efad7ddbd151b8d9dfea69c1080b4980520d56566b35696"
+  },
+  "transport": "Fresh TCP sockets on 127.0.0.1 with an ephemeral listening port for each case; each positive case requires a one-byte acknowledgment over TLS after both peers are authenticated.",
+  "certificateFixtures": "Two independent local CAs and role-specific P-256/SHA-256 server/client leaves. Both trust only lab-ca. The untrusted leaves keep the expected SAN but chain to the other CA. Wrong server name matches the legitimate leaf's CN, not its SAN. Wrong client identity has a valid lab-ca chain and expected CN but a different SAN.",
+  "policy": {
+    "group": "X25519",
+    "protocol": "TLSv1.3",
+    "ciphersuite": "TLS_AES_256_GCM_SHA384",
+    "signatureAlgorithm": "ecdsa_secp256r1_sha256",
+    "clientContext": {
+      "cacheMode": 0,
+      "noTicketOption": true,
+      "numTickets": 0,
+      "maxEarlyData": 0,
+      "recvMaxEarlyData": 0
+    },
+    "serverContext": {
+      "cacheMode": 0,
+      "noTicketOption": true,
+      "numTickets": 0,
+      "maxEarlyData": 0,
+      "recvMaxEarlyData": 0
+    }
+  },
+  "observation": {
+    "protocol": "SSL_get_version",
+    "group": "SSL_get0_group_name on each successfully handshaken SSL object; NULL fails. Literal result is x25519, compared case-insensitively to the pinned X25519.",
+    "ciphersuite": "SSL_get_current_cipher and SSL_CIPHER_get_name",
+    "peerValidation": "SSL_VERIFY_PEER on both roles, SSL_VERIFY_FAIL_IF_NO_PEER_CERT on the server, SSL_set1_host with no wildcards or subject fallback. SSL_get0_peername, SSL_get_verify_result, SSL_get0_peer_certificate and SSL_get0_verified_chain on each peer.",
+    "certificateAlgorithm": "X509_get0_pubkey, EVP_PKEY_get0_type_name, EVP_PKEY_get_group_name and X509_get_signature_nid / OBJ_nid2sn. prime256v1 denotes P-256.",
+    "session": "SSL_session_reused, SSL_SESSION_has_ticket, SSL_SESSION_is_resumable and SSL_get_early_data_status, checked before and after acknowledgment; second connection reuses both SSL_CTX objects, not sockets or SSL objects.",
+    "rejection": "SSL_get_error, OpenSSL error queue, and SSL_get_verify_result. A local SSL_connect return of 1 in a client-certificate rejection is not acceptance: the server failed SSL_accept and the client received a fatal TLS alert on read."
+  },
+  "cases": {
+    "trusted_peers": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {"return": 1},
+      "accepted": true,
+      "acknowledged": true,
+      "client": {
+        "protocol": "TLSv1.3",
+        "group": "x25519",
+        "ciphersuite": "TLS_AES_256_GCM_SHA384",
+        "peerDnsSan": "server.cafi.test",
+        "verifyCode": 0,
+        "verifiedChainLength": 2,
+        "peerKeyType": "EC",
+        "peerKeyCurve": "prime256v1",
+        "peerCertificateSignature": "ecdsa-with-SHA256",
+        "sessionReused": false,
+        "sessionHasTicket": false,
+        "sessionResumable": false,
+        "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+      },
+      "server": {
+        "protocol": "TLSv1.3",
+        "group": "x25519",
+        "ciphersuite": "TLS_AES_256_GCM_SHA384",
+        "peerDnsSan": "client.cafi.test",
+        "verifyCode": 0,
+        "verifiedChainLength": 2,
+        "peerKeyType": "EC",
+        "peerKeyCurve": "prime256v1",
+        "peerCertificateSignature": "ecdsa-with-SHA256",
+        "sessionReused": false,
+        "sessionHasTicket": false,
+        "sessionResumable": false,
+        "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+      }
+    },
+    "trusted_peers_second_connection": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {"return": 1},
+      "accepted": true,
+      "acknowledged": true,
+      "client": {
+        "protocol": "TLSv1.3",
+        "group": "x25519",
+        "ciphersuite": "TLS_AES_256_GCM_SHA384",
+        "peerDnsSan": "server.cafi.test",
+        "verifyCode": 0,
+        "verifiedChainLength": 2,
+        "peerKeyType": "EC",
+        "peerKeyCurve": "prime256v1",
+        "peerCertificateSignature": "ecdsa-with-SHA256",
+        "sessionReused": false,
+        "sessionHasTicket": false,
+        "sessionResumable": false,
+        "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+      },
+      "server": {
+        "protocol": "TLSv1.3",
+        "group": "x25519",
+        "ciphersuite": "TLS_AES_256_GCM_SHA384",
+        "peerDnsSan": "client.cafi.test",
+        "verifyCode": 0,
+        "verifiedChainLength": 2,
+        "peerKeyType": "EC",
+        "peerKeyCurve": "prime256v1",
+        "peerCertificateSignature": "ecdsa-with-SHA256",
+        "sessionReused": false,
+        "sessionHasTicket": false,
+        "sessionResumable": false,
+        "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+      }
+    },
+    "wrong_server_name": {
+      "clientHandshake": {
+        "return": -1,
+        "sslError": 1,
+        "reason": "certificate verify failed",
+        "verifyCode": 62,
+        "verifyReason": "hostname mismatch"
+      },
+      "serverHandshake": {
+        "return": -1,
+        "sslError": 1,
+        "reason": "ssl/tls alert bad certificate",
+        "verifyCode": 0,
+        "verifyReason": "ok"
+      },
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "client"
+    },
+    "untrusted_server": {
+      "clientHandshake": {
+        "return": -1,
+        "sslError": 1,
+        "reason": "certificate verify failed",
+        "verifyCode": 20,
+        "verifyReason": "unable to get local issuer certificate"
+      },
+      "serverHandshake": {
+        "return": -1,
+        "sslError": 1,
+        "reason": "tlsv1 alert unknown ca",
+        "verifyCode": 0,
+        "verifyReason": "ok"
+      },
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "client"
+    },
+    "untrusted_client": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {
+        "return": -1,
+        "sslError": 1,
+        "reason": "certificate verify failed",
+        "verifyCode": 20,
+        "verifyReason": "unable to get local issuer certificate"
+      },
+      "clientReadAfterConnect": {
+        "return": 0,
+        "sslError": 1,
+        "reason": "tlsv1 alert unknown ca",
+        "verifyCode": 0,
+        "verifyReason": "ok"
+      },
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "server"
+    },
+    "missing_client_certificate": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {
+        "return": -1,
+        "sslError": 1,
+        "reason": "peer did not return a certificate",
+        "verifyCode": 0,
+        "verifyReason": "ok"
+      },
+      "clientReadAfterConnect": {
+        "return": 0,
+        "sslError": 1,
+        "reason": "tlsv13 alert certificate required",
+        "verifyCode": 0,
+        "verifyReason": "ok"
+      },
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "server"
+    },
+    "wrong_client_name": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {
+        "return": -1,
+        "sslError": 1,
+        "reason": "certificate verify failed",
+        "verifyCode": 62,
+        "verifyReason": "hostname mismatch"
+      },
+      "clientReadAfterConnect": {
+        "return": 0,
+        "sslError": 1,
+        "reason": "ssl/tls alert bad certificate",
+        "verifyCode": 0,
+        "verifyReason": "ok"
+      },
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "server"
+    }
+  },
+  "failurePropagation": {
+    "command": "Same command with --wrong-positive-name appended",
+    "observed": "The designated positive TLS handshake was rejected (hostname mismatch, X.509 code 62); the proof raised RuntimeError without printing success JSON.",
+    "exitCode": 1
+  },
+  "missingDependency": {
+    "command": "Same Docker options and image; replace the entrypoint arguments after the image with: python -c \"import sys; sys.path.insert(0, '/proof'); import proof; proof.LIBSSL = proof.LIBSSL.with_name('missing-libssl.so.3'); proof.run()\"",
+    "observed": "ctypes.CDLL raised OSError for the nonexistent libssl; no fallback or success JSON.",
+    "exitCode": 1
+  },
+  "references": {
+    "groups": "https://docs.openssl.org/3.5/man3/SSL_CTX_set1_curves/",
+    "peerIdentity": "https://docs.openssl.org/3.5/man3/SSL_set1_host/",
+    "tickets": "https://docs.openssl.org/3.5/man3/SSL_CTX_set_num_tickets/",
+    "earlyData": "https://docs.openssl.org/3.5/man3/SSL_read_early_data/"
+  },
+  "limitations": [
+    "OpenSSL CLI used only to issue certificates in the restricted tmpfs; no keys, certificates, payload bytes, or TLS secrets are retained in evidence. No connection uses message-signing keys.",
+    "Isolated same-process, same-implementation proof. No active PSK/0-RTT injection, external interoperability, revocation, application authorization, financial connectors, or production stack approval.",
+    "No hybrid handshake or hybrid incompatibility case was run in S1-06."
+  ]
+}
