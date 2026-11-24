@@ -1,4 +1,5 @@
-FROM cafi-spikes:s1 AS jcs
+ARG SPIKES_IMAGE=cafi-spikes:s1
+FROM ${SPIKES_IMAGE} AS jcs
 COPY deploy/contracts/requirements-boleta.txt /tmp/requirements-boleta.txt
 RUN python -m pip install --no-cache-dir --require-hashes --only-binary=:all: -r /tmp/requirements-boleta.txt
 COPY contracts/vectors/json/requirements.txt /tmp/requirements-jcs.txt
