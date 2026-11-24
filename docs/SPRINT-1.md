@@ -110,6 +110,10 @@ Após o commit preexistente `462454e`, corrigir a dependência do contexto decim
 - **Aceite:** definir estado inicial, terminais, origem da rejeição, sequência e eventos intermediários. Estado financeiro, entrega e conciliação permanecem independentes; timeout não gera rejeição financeira.
 - **Verificação:** cobrir transição proibida, regressão, evento repetido e lacuna. Descrever a recuperação por consulta; não implementar worker ou histórico persistido nesta task.
 
+#### Task corretiva S1-10-C1 — revalidação de eventos
+
+Após o commit preexistente `b46a2b8`, revalidar tabela, sequências e schema com o runtime aprovado e o motor JSON Schema fixado; registrar evidência e submeter a revisão independente antes do commit atômico. Não altera mensagens nem implementa serviços.
+
 ### S1-11 Especificar envelope e conteúdo assinado
 
 - **Entrada:** S1-02, schemas de boleta e eventos.

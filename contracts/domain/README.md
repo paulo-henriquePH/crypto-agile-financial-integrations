@@ -14,7 +14,7 @@ A [tabela executável](transitions.json) traduz a SPEC §3. O estado inicial é 
 
 `REJECTED`, `SETTLED` e `SETTLEMENT_FAILED` são terminais. Rejeição e falha de liquidação exigem motivo não vazio. Outros eventos não carregam motivo nem `rejectionOrigin`. `origin` identifica quem produz o fato financeiro, não o processo que armazena a projeção. Administrador não produz mudança no estado financeiro.
 
-O [schema](../schemas/event.schema.json) define UUIDs de evento/operação, versão 1, sequência positiva, estado anterior/novo, origem e horário UTC. O verificador aplica também transições, origem compatível, datas reais, unicidade, continuidade e identidade constante. Ele usa somente a biblioteca padrão; validação do schema com ferramenta JSON Schema fixada continua pendente da aprovação do ambiente, assim como em S1-09. Não se declara conformidade geral a JSON Schema.
+O [schema](../schemas/event.schema.json) define UUIDs de evento/operação, versão 1, sequência positiva, estado anterior/novo, origem e horário UTC. O replay usa biblioteca padrão e aplica também transições, origem compatível, datas reais, unicidade, continuidade e identidade constante. A verificação independente usa `jsonschema` 4.23.0 e `rfc3339-validator` 0.1.4 fixados: exige o formato `date-time` e rejeita data impossível. JSON Schema isolado não substitui as regras semânticas nem o parser contra chaves duplicadas.
 
 ## Sequência e recuperação
 
@@ -34,6 +34,22 @@ py -3 tests/contracts/validate_events.py fixtures/events/settled.json
 ```
 
 Em Linux substitua `py -3` por `python3`. O corpus inclui sucesso, rejeições local/remota, falha de liquidação, timeout e conciliação independente, repetição ignorada, conflito, regressão, transição proibida, terminal e lacuna. Entradas inválidas no CLI geram saída não zero. Não há worker, banco ou histórico persistido.
+
+Reprodução no ambiente aprovado, em PowerShell na raiz (imagem base `cafi-spikes:s1`; Docker no PATH):
+
+```powershell
+docker build --platform linux/amd64 -f deploy/contracts/Dockerfile -t cafi-events:s1 .
+$opts = @('run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--mount',"type=bind,source=$((Get-Location).Path),target=/work,readonly",'-w','/work','-e','PYTHONDONTWRITEBYTECODE=1','cafi-events:s1')
+docker @opts python -m unittest discover -s tests/contracts -p test_events.py -v
+docker @opts python -m unittest discover -s tests/contracts -p test_boleta.py -v
+docker @opts python tests/contracts/check_boleta_schema.py
+docker @opts python tests/contracts/check_events_schema.py
+docker @opts python tests/contracts/check_events_schema.py --invalid
+docker @opts python tests/contracts/validate_events.py fixtures/events/settled.json
+docker @opts python tests/contracts/validate_events.py fixtures/events/gap.json
+```
+
+As duas últimas verificações negativas (`--invalid` e `gap.json`) devem sair com código 1. A suíte valida as sequências inválidas semanticamente; nem toda sequência inválida contém evento inválido segundo o schema.
 
 S1-10 foi executada sobre a base `462454e`, por autorização do usuário para prosseguir com trabalho independente do build. S1-03–08 permanecem pendentes; este artefato não aprova stack, criptografia ou TLS.
 
