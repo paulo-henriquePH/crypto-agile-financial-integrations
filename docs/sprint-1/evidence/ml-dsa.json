@@ -1,0 +1,86 @@
+{
+  "task": "S1-05",
+  "recordedOn": "2026-11-24",
+  "baseRevision": "000b959f0320a3b4841862fe7c80ac50969e4514",
+  "inputsSHA256": {
+    "spikes/signatures/ml-dsa/proof.py": "3c122118ce7cb586d6093ffcc18326a2bb623834af9a7a6c69cc2358118020b3",
+    "deploy/spikes/Dockerfile": "f48b8dc49a0cd3d2afb09edb6b936a4d6faffe950d593a8bfadda77f5f254cad",
+    "deploy/spikes/versions.json": "db573dd550435855aab4817803599017337cab6d7d2f7cbcb28f3d1341ac5b27",
+    "spikes/environment.py": "ddb6bd8f297e5f2dee85a75d6da194a8afe304c98d2e861bcae62c453eb80318"
+  },
+  "image": "cafi-spikes:s1",
+  "imageId": "sha256:564513b961987470c56c2886303d7127e4d66d1de8a925e880c4008373ec17c3",
+  "platform": "linux/amd64 on Docker Desktop",
+  "commandPowerShell": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount \"type=bind,source=$((Get-Location).Path)\\spikes\\signatures\\ml-dsa,target=/proof,readonly\" cafi-spikes:s1 python /proof/proof.py",
+  "exitCode": 0,
+  "runtime": "CPython 3.13.11",
+  "binding": "stdlib ctypes, direct OpenSSL EVP calls, no subprocess per operation",
+  "opensslLoaded": "OpenSSL 3.5.9 29 Sep 2026",
+  "libcryptoPath": "/opt/cafi-openssl/lib/libcrypto.so.3",
+  "libcryptoSHA256": "733934473cd39e10fc799784b2798bcfb752bf3e384f40e7c362c6c29963dbf9",
+  "provider": "default",
+  "algorithm": "ML-DSA-65",
+  "parameters": {
+    "mode": "pure",
+    "securityCategory": 3,
+    "keyGeneration": "EVP_PKEY_keygen_init and EVP_PKEY_generate; two independent keypairs, no supplied seed",
+    "signatureGeneration": "EVP_PKEY_sign_message_init and EVP_PKEY_sign",
+    "signatureVerification": "EVP_PKEY_verify_message_init and EVP_PKEY_verify; separate public-only keys from in-memory SPKI DER",
+    "contextBytes": 0,
+    "messageEncoding": 1,
+    "mu": 0,
+    "payloadBytes": 47,
+    "payloadDescription": "Fixed synthetic bytes with an embedded NUL; complete buffer and explicit length passed to EVP without a caller-side digest or message framing."
+  },
+  "cases": {
+    "original": true,
+    "altered_payload": false,
+    "altered_signature": false,
+    "different_key": false,
+    "different_context": false
+  },
+  "negativeCases": {
+    "altered_payload": "Flip one bit in the last byte after the embedded NUL; length unchanged.",
+    "altered_signature": "Flip one bit in the first challenge byte; signature length unchanged.",
+    "different_key": "Use the independently generated public key, whose raw bytes were confirmed to differ.",
+    "different_context": "Supply a non-empty verification context with the same message, signature and public key."
+  },
+  "sizes": {
+    "signatureRawBytes": 3309,
+    "signatureBase64Chars": 4412,
+    "publicKeyRawBytes": 1952,
+    "publicKeySpkiDerBytes": 1974,
+    "publicKeySpkiPemBytes": 2726
+  },
+  "sizeComparison": {
+    "signatureRawBytes": "3309 per FIPS 204 Table 2; no ASN.1 wrapper.",
+    "signatureBase64Chars": "4412 = 4 * ceil(3309/3), RFC 4648 standard Base64 (no line breaks; no '=' needed for 3309 bytes).",
+    "publicKeyRawBytes": "1952 per FIPS 204 Table 2 and OpenSSL EVP_PKEY-ML-DSA 'pub' parameter.",
+    "publicKeySpkiDerBytes": "1974 = 1952 + 22: per RFC 9881 sections 2/4, DER SEQUENCE header (4), AlgorithmIdentifier with OID 2.16.840.1.101.3.4.3.18 and absent parameters (13), and BIT STRING header and unused-bit count (5).",
+    "publicKeySpkiPemBytes": "2726 = 2632 Base64 characters for the SPKI DER + 42 body LF bytes + 52 bytes of BEGIN/END PUBLIC KEY lines including LF (OpenSSL memory BIO, RFC 7468)."
+  },
+  "failurePropagation": {
+    "command": "Same command with --corrupt-original appended",
+    "perturbation": "Verify the designated positive case with the one-bit-modified payload while still expecting acceptance.",
+    "observed": "EVP rejected the altered input (original: false); the script raised RuntimeError.",
+    "exitCode": 1
+  },
+  "missingDependency": {
+    "command": "Same Docker options and image, replace the entrypoint arguments after the image with: python -c \"import sys; sys.path.insert(0, '/proof'); import proof; proof.LIBRARY = proof.LIBRARY.with_name('missing-libcrypto.so.3'); proof.run()\"",
+    "observed": "ctypes.CDLL raised OSError (cannot open shared object file: No such file or directory); no success JSON.",
+    "exitCode": 1
+  },
+  "references": {
+    "fips204": "https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.pdf (Table 2 and section 5, Algorithms 1–3)",
+    "opensslSignature": "https://docs.openssl.org/3.5/man7/EVP_SIGNATURE-ML-DSA/",
+    "opensslKey": "https://docs.openssl.org/3.5/man7/EVP_PKEY-ML-DSA/",
+    "opensslPinnedProvider": "https://github.com/openssl/openssl/blob/openssl-3.5.9/providers/implementations/signature/ml_dsa_sig.c (message init and context parameter handling)",
+    "rfc4648": "https://www.rfc-editor.org/rfc/rfc4648#section-4",
+    "rfc9881": "https://www.rfc-editor.org/rfc/rfc9881#section-4",
+    "rfc7468": "https://www.rfc-editor.org/rfc/rfc7468#section-13"
+  },
+  "limitations": [
+    "Private keys and seeds are never extracted, measured or serialized. Public encodings exist only in memory. Evidence contains no keys, signatures or payload bytes.",
+    "The proof checks binding behavior and sizes against FIPS 204, not certification of the OpenSSL default provider, interoperability with another implementation, production suitability, TLS or contracts."
+  ]
+}

@@ -38,6 +38,20 @@ Em shell Linux, substitua o argumento de montagem por `--mount "type=bind,source
 
 O processo gera duas chaves temporárias em memória usando EVP, assina bytes sintéticos fixos e verifica o original e três alterações. O formato da assinatura EVP ECDSA é ASN.1 DER, não `r || s`. Não há subprocesso por operação nem persistência das chaves. Isto não testa contratos, autorização de chaves, proteção contra host comprometido ou interoperabilidade; `ctypes` continua binding experimental de baixo nível e a stack não está aprovada.
 
+## Prova ML-DSA-65 S1-05
+
+Reutilize a imagem `cafi-spikes:s1` e execute na raiz do repositório em PowerShell:
+
+```powershell
+docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount "type=bind,source=$((Get-Location).Path)\spikes\signatures\ml-dsa,target=/proof,readonly" cafi-spikes:s1 python /proof/proof.py
+```
+
+Em shell Linux, use `--mount "type=bind,source=$(pwd)/spikes/signatures/ml-dsa,target=/proof,readonly"`. Acrescente `--corrupt-original` após o script para forçar a rejeição do caso que deveria passar: a saída deve ser não zero. Dependência indisponível também é falha.
+
+O binding `ctypes` usa `EVP_PKEY_sign_message_init` e `EVP_PKEY_verify_message_init` com contexto vazio explícito, `message-encoding=1` e `mu=0`. OpenSSL recebe a mensagem sintética inteira e aplica o modo puro, sem pré-hash no script. O original é aceito; alterações no payload e na assinatura, outra chave pública e contexto não vazio são rejeitados. As duas chaves são geradas em memória pelo OpenSSL; só os componentes públicos são codificados, sem criar arquivos.
+
+A assinatura tem 3309 bytes brutos ou 4412 caracteres Base64 padrão sem quebras. A pública tem 1952 bytes brutos, 1974 bytes em SPKI DER ou 2726 bytes em SPKI PEM emitido pelo OpenSSL. A [evidência sanitizada](../docs/sprint-1/evidence/ml-dsa.json) registra medições, referências, hashes, versões e códigos de saída. Esta prova não valida TLS, contratos ou a stack de produção.
+
 ## O que o diagnóstico comprova
 
 `spikes/environment.py` carrega `libcrypto.so.3` e `libssl.so.3` por caminho absoluto, confere Python/OpenSSL carregados, consulta implementações ECDSA/ML-DSA-65 por `EVP_SIGNATURE_fetch` e resolve símbolos públicos necessários. Registra versão, hashes de bibliotecas, compilador, plataforma, configuração e revisão informada. Não gera chave, não assina, não verifica assinatura e não estabelece TLS. `proofsExecuted` permanece vazio.
