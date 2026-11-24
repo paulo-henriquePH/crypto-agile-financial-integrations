@@ -1,4 +1,5 @@
 """Isolated TLS 1.3 mTLS over loopback via CPython ctypes and OpenSSL."""
+from argparse import ArgumentParser
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack, contextmanager
 import ctypes as c
@@ -9,14 +10,13 @@ from pathlib import Path
 import platform
 from select import select
 import socket
-import sys
 from time import monotonic
 
 from certificates import CLIENT_NAME, PREFIX, SERVER_CN, SERVER_NAME, lab_certificates
 
 LIBCRYPTO = PREFIX / 'lib/libcrypto.so.3'
 LIBSSL = PREFIX / 'lib/libssl.so.3'
-GROUP = b'X25519'
+X25519, HYBRID = b'X25519', b'X25519MLKEM768'
 CIPHER = b'TLS_AES_256_GCM_SHA384'
 SIGALG = b'ecdsa_secp256r1_sha256'
 TIMEOUT = 5
@@ -217,7 +217,7 @@ class OpenSSL:
         cipher = self.SSL_get_current_cipher(ssl)
         require(cipher, 'Missing negotiated cipher')
         suite = text(self.SSL_CIPHER_get_name(cipher), 'negotiated ciphersuite')
-        # OpenSSL reports the canonical spelling "x25519"; retain it in evidence.
+        # Compare case-insensitively but retain the spelling reported by OpenSSL.
         require((protocol, group.casefold(), suite)
                 == ('TLSv1.3', expected_group.decode().casefold(), CIPHER.decode()),
                 f'Unexpected negotiated protocol/group/suite: {protocol}/{group}/{suite}')
@@ -285,12 +285,14 @@ def exchange(api, client_ctx, server_ctx, *, client_group, server_group, server_
         return {**result, 'accepted': False, 'acknowledged': False}
 
 
-def run(wrong_positive_name=False):
+def run(wrong_positive_name=False, *, hybrid=False):
     api = OpenSSL()
+    group = HYBRID if hybrid else X25519
     cases = {}
 
-    def connect(client, server, name=SERVER_NAME):
-        return exchange(api, client, server, client_group=GROUP, server_group=GROUP, server_name=name)
+    def connect(client, server, name=SERVER_NAME, *, client_group=group):
+        return exchange(api, client, server, client_group=client_group,
+                        server_group=group, server_name=name)
 
     def reject(case, result, side, reason, verify_code):
         failure = result[f'{side}Handshake']
@@ -300,15 +302,15 @@ def run(wrong_positive_name=False):
         cases[case] = {**result, 'rejectedBy': side}
 
     with lab_certificates() as pki:
-        with api.context(pki, 'client', server=False, group=GROUP) as (client, client_controls), \
-                api.context(pki, 'server', server=True, group=GROUP) as (server, server_controls):
+        with api.context(pki, 'client', server=False, group=group) as (client, client_controls), \
+                api.context(pki, 'server', server=True, group=group) as (server, server_controls):
             for case in ('trusted_peers', 'trusted_peers_second_connection'):
                 result = connect(client, server, SERVER_CN if wrong_positive_name else SERVER_NAME)
                 require(result['accepted'], f'{case} did not pass: {result}')
                 cases[case] = result
             reject('wrong_server_name', connect(client, server, SERVER_CN), 'client',
                    'certificate verify failed', X509_V_ERR_HOSTNAME_MISMATCH)
-            with api.context(pki, 'untrusted-server', server=True, group=GROUP) as (bad_server, _):
+            with api.context(pki, 'untrusted-server', server=True, group=group) as (bad_server, _):
                 reject('untrusted_server', connect(client, bad_server), 'client',
                        'certificate verify failed', X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY)
             for case, certificate, reason, verify_code in (
@@ -318,15 +320,26 @@ def run(wrong_positive_name=False):
                 ('wrong_client_name', 'other-client', 'certificate verify failed',
                  X509_V_ERR_HOSTNAME_MISMATCH),
             ):
-                with api.context(pki, certificate, server=False, group=GROUP) as (bad_client, _):
+                with api.context(pki, certificate, server=False, group=group) as (bad_client, _):
                     reject(case, connect(bad_client, server), 'server', reason, verify_code)
+
+            if hybrid:
+                # Same trusted identities and hybrid server; change only the client's group.
+                with api.context(pki, 'client', server=False, group=X25519) as (classic_client, _):
+                    result = connect(classic_client, server, client_group=X25519)
+                case = 'x25519_client_to_hybrid_only_server'
+                reject(case, result, 'server', 'no suitable key share', X509_V_OK)
+                failure = result['clientHandshake']
+                require(failure['return'] < 0 and failure['sslError'] == SSL_ERROR_SSL,
+                        f'Expected fatal TLS handshake failure at client: {result}')
+                cases[case].update(clientGroup=X25519.decode(), serverGroup=group.decode())
 
     files = (LIBCRYPTO, LIBSSL, Path(__file__), Path(__file__).with_name('certificates.py'))
     return {
         'runtime': api.runtime, 'binding': 'CPython stdlib ctypes', 'opensslLoaded': api.version,
         'machine': platform.machine(),
         'sha256': {str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in files},
-        'policy': {'group': GROUP.decode(), 'protocol': 'TLSv1.3', 'ciphersuite': CIPHER.decode(),
+        'policy': {'group': group.decode(), 'protocol': 'TLSv1.3', 'ciphersuite': CIPHER.decode(),
                    'signatureAlgorithm': SIGALG.decode(), 'clientContext': client_controls,
                    'serverContext': server_controls},
         'cases': cases,
@@ -334,6 +347,7 @@ def run(wrong_positive_name=False):
 
 
 if __name__ == '__main__':
-    if sys.argv[1:] not in ([], ['--wrong-positive-name']):
-        raise SystemExit('usage: proof.py [--wrong-positive-name]')
-    print(json.dumps(run(wrong_positive_name=bool(sys.argv[1:])), indent=2))
+    parser = ArgumentParser(allow_abbrev=False)
+    parser.add_argument('--hybrid', action='store_true', help='require X25519MLKEM768 instead of X25519')
+    parser.add_argument('--wrong-positive-name', action='store_true', help='force the positive case to fail')
+    print(json.dumps(run(**vars(parser.parse_args())), indent=2))

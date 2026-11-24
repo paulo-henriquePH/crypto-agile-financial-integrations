@@ -66,6 +66,18 @@ O contêiner roda sem root, sem rede externa e sem portas publicadas. O listener
 
 Ambos limitam versão, grupo, suíte e assinatura de autenticação a TLS 1.3, X25519, `TLS_AES_256_GCM_SHA384` e `ecdsa_secp256r1_sha256`. A prova exige cadeia até a CA de laboratório e SAN DNS exato de ambos os pares, sem CN ou wildcard. O teste repete a conexão com os mesmos contextos TLS e verifica ausência de cache, tickets, retomada e 0-RTT. O servidor só envia a confirmação cifrada após verificar o cliente. `SSL_get0_group_name` lê o grupo efetivo em ambas as pontas; a [evidência sanitizada](../docs/sprint-1/evidence/tls-x25519.json) conserva a grafia `x25519` devolvida pela biblioteca e os retornos dos casos negativos. Esta é uma prova local; não testa grupo híbrido, autorização de aplicação nem interoperabilidade com outra implementação.
 
+## Prova TLS 1.3 mTLS com X25519MLKEM768 S1-07
+
+Use a mesma imagem e as mesmas restrições de S1-06. Execute o comando duas vezes, em invocações separadas, para recriar o processo, a PKI, os contextos e as conexões:
+
+```powershell
+docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 65534:65534 --tmpfs /tmp:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=65534,gid=65534 --mount "type=bind,source=$((Get-Location).Path)\spikes\tls,target=/proof,readonly" cafi-spikes:s1 python /proof/proof.py --hybrid
+```
+
+O modo `--hybrid` preserva a suíte, a autenticação ECDSA tradicional, os cinco negativos de mTLS/SAN e os controles contra retomada e 0-RTT. Em cada processo, as duas conexões positivas exigem que `SSL_get0_group_name` retorne `X25519MLKEM768` nos dois lados. Com as mesmas identidades válidas, o cliente limitado a X25519 recebe um alerta fatal na negociação com o servidor limitado ao grupo híbrido (`no suitable key share` no servidor), sem fallback nem ACK.
+
+Sem `--hybrid`, o cenário padrão continua restrito a X25519. Acrescente `--wrong-positive-name` ao comando híbrido para perturbar o primeiro caso positivo: a prova deve terminar com código não zero. A [evidência S1-07](../docs/sprint-1/evidence/tls-hybrid.json) registra as duas execuções híbridas e a regressão X25519 com os hashes do harness atualizado, sem substituir a evidência histórica S1-06.
+
 ## O que o diagnóstico comprova
 
 `spikes/environment.py` carrega `libcrypto.so.3` e `libssl.so.3` por caminho absoluto, confere Python/OpenSSL carregados, consulta implementações ECDSA/ML-DSA-65 por `EVP_SIGNATURE_fetch` e resolve símbolos públicos necessários. Registra versão, hashes de bibliotecas, compilador, plataforma, configuração e revisão informada. Não gera chave, não assina, não verifica assinatura e não estabelece TLS. `proofsExecuted` permanece vazio.

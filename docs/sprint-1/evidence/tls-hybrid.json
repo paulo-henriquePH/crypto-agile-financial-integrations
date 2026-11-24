@@ -1,0 +1,220 @@
+{
+  "task": "S1-07",
+  "recordedOn": "2026-11-24",
+  "baseRevision": "e577027025747307d7e3b84e84aaab6d5b013e33",
+  "baseBranch": "sprint-1-completion",
+  "inputsSHA256": {
+    "spikes/tls/proof.py": "9545b32500b6dfdf4413e801f2446fed126454f06106ce3c748ae2bda852cdf7",
+    "spikes/tls/certificates.py": "2cc44287a3c6a907de00f83f4ded6fb39bf29f22d81a32ede42f3492b166bda5",
+    "deploy/spikes/Dockerfile": "f48b8dc49a0cd3d2afb09edb6b936a4d6faffe950d593a8bfadda77f5f254cad",
+    "deploy/spikes/versions.json": "db573dd550435855aab4817803599017337cab6d7d2f7cbcb28f3d1341ac5b27",
+    "spikes/environment.py": "ddb6bd8f297e5f2dee85a75d6da194a8afe304c98d2e861bcae62c453eb80318",
+    "docs/sprint-1/evidence/tls-x25519.json": "aef19a692e20fff0ffe88ed79b93e41a7ee3fcea5c566b4b5c38a3f86680466d"
+  },
+  "inputProvenance": "Clean base before S1-07. The harness was tested with the uncommitted S1-07 change. These are hashes of actual file bytes; /proof hashes reported in the regression and both hybrid invocations matched the host files. The S1-06 evidence and certificate helper were not changed.",
+  "image": "cafi-spikes:s1",
+  "imageId": "sha256:564513b961987470c56c2886303d7127e4d66d1de8a925e880c4008373ec17c3",
+  "platform": "linux/amd64 (x86_64) on Docker Desktop; existing image, no rebuild",
+  "runtime": "CPython 3.13.11",
+  "binding": "CPython stdlib ctypes",
+  "opensslLoaded": "OpenSSL 3.5.9 29 Sep 2026",
+  "librariesSHA256": {
+    "/opt/cafi-openssl/lib/libcrypto.so.3": "733934473cd39e10fc799784b2798bcfb752bf3e384f40e7c362c6c29963dbf9",
+    "/opt/cafi-openssl/lib/libssl.so.3": "83a963dfc76672d91efad7ddbd151b8d9dfea69c1080b4980520d56566b35696"
+  },
+  "commandPowerShell": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 65534:65534 --tmpfs /tmp:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=65534,gid=65534 --mount \"type=bind,source=$((Get-Location).Path)\\spikes\\tls,target=/proof,readonly\" cafi-spikes:s1 python /proof/proof.py",
+  "commandNotes": "Run from repository root with Docker Desktop's bin directory prepended to the process PATH. Append each run's arguments to the command. Each invocation creates a fresh container, Python process and ephemeral PKI. stdoutSHA256 below hashes captured UTF-8 stdout normalized to LF with a final LF.",
+  "runs": [
+    {
+      "id": "x25519-regression",
+      "arguments": [],
+      "startedUtc": "2026-11-24T14:13:25.939Z",
+      "endedUtc": "2026-11-24T14:13:26.910Z",
+      "exitCode": 0,
+      "stdoutSHA256": "1ba075c6c9d44095c2f8b1fbfaec78e25d7c18914ab167b39aa92f0771b8419d",
+      "result": "The updated harness returned the same policy and full seven case results as tls-x25519.json: two mTLS connections with ACK and x25519 observed at both ends, and five mTLS/SAN rejections without ACK."
+    },
+    {
+      "id": "hybrid-1",
+      "arguments": ["--hybrid"],
+      "startedUtc": "2026-11-24T14:13:27.179Z",
+      "endedUtc": "2026-11-24T14:13:27.982Z",
+      "exitCode": 0,
+      "stdoutSHA256": "e7fc40cd8a8aa4a2ca3c5e28b354fe421b894a1d106bead8397e1915a0c8c650",
+      "result": "Two mTLS connections with ACK and X25519MLKEM768 observed at both ends. Five mTLS/SAN rejections plus the group incompatibility rejection, all without ACK. See policy and cases below."
+    },
+    {
+      "id": "hybrid-2",
+      "arguments": ["--hybrid"],
+      "startedUtc": "2026-11-24T14:13:28.021Z",
+      "endedUtc": "2026-11-24T14:13:28.849Z",
+      "exitCode": 0,
+      "stdoutSHA256": "e7fc40cd8a8aa4a2ca3c5e28b354fe421b894a1d106bead8397e1915a0c8c650",
+      "result": "Independent repeat with fresh sockets and process. Both positive connections and all six rejections returned identical sanitized stdout to hybrid-1, including the policy and cases below."
+    },
+    {
+      "id": "hybrid-perturbation",
+      "arguments": ["--hybrid", "--wrong-positive-name"],
+      "startedUtc": "2026-11-24T14:13:28.857Z",
+      "endedUtc": "2026-11-24T14:13:29.661Z",
+      "exitCode": 1,
+      "result": "The designated positive connection used the server CN instead of the SAN. SSL_connect failed (SSL_ERROR_SSL, certificate verify failed, X.509 code 62), the server received a fatal bad certificate alert, and the harness raised RuntimeError without success JSON or ACK."
+    }
+  ],
+  "supportMatrix": [
+    {"component": "OpenSSL client via ctypes", "path": "SSL_connect", "x25519": "Real TLS 1.3 mTLS and ACK", "x25519mlkem768": "Real TLS 1.3 mTLS and ACK"},
+    {"component": "OpenSSL server via ctypes", "path": "SSL_accept", "x25519": "Real TLS 1.3 mTLS and ACK", "x25519mlkem768": "Real TLS 1.3 mTLS and ACK; rejects X25519-only client"},
+    {"component": "ctypes policy and negotiated group", "path": "SSL_CTX_ctrl (SSL_CTRL_SET_GROUPS_LIST) / SSL_get0_group_name", "x25519": "Single group configured; x25519 observed on client and server", "x25519mlkem768": "Single group configured; X25519MLKEM768 observed on client and server"},
+    {"component": "OpenSSL CLI", "path": "req / x509", "x25519": "Certificate issuance only, no CLI handshake", "x25519mlkem768": "Certificate issuance only, no CLI handshake"}
+  ],
+  "transport": "Fresh TCP connections on 127.0.0.1 with an ephemeral listening port and fresh SSL objects per case. The two positive connections in each process reuse the same pair of SSL_CTX objects to check that resumption is disabled. The server writes an encrypted ACK only after both handshakes and identity checks succeed.",
+  "certificateFixtures": "Two independent ephemeral laboratory CAs and role-specific P-256/SHA-256 leaves; both peers trust only lab-ca. Untrusted leaves keep the expected SAN. Wrong server identity tests CN instead of SAN; wrong client identity has a valid lab-ca chain and the expected CN but a different SAN. The group incompatibility case uses the same trusted client and the same hybrid server context as the positive cases.",
+  "observation": {
+    "group": "SSL_get0_group_name on both live, successfully handshaken SSL objects. The harness fails on a missing symbol, NULL, or an unexpected group; it does not substitute configured values.",
+    "protocolAndCipher": "SSL_get_version, SSL_get_current_cipher and SSL_CIPHER_get_name.",
+    "peerValidation": "SSL_VERIFY_PEER in both roles, SSL_VERIFY_FAIL_IF_NO_PEER_CERT on the server. SSL_set1_host without wildcard or CN fallback; SSL_get0_peername, SSL_get_verify_result, SSL_get0_peer_certificate and SSL_get0_verified_chain confirm identity and trust.",
+    "certificateAlgorithm": "X509_get0_pubkey, EVP_PKEY_get0_type_name, EVP_PKEY_get_group_name and X509_get_signature_nid / OBJ_nid2sn. prime256v1 denotes P-256; ecdsa_secp256r1_sha256 is the only allowed handshake signature algorithm.",
+    "session": "SSL_session_reused, SSL_SESSION_has_ticket, SSL_SESSION_is_resumable and SSL_get_early_data_status are checked on both ends before and after the ACK.",
+    "rejection": "SSL_get_error and the OpenSSL error queue are sampled on the calling thread; SSL_get_verify_result is recorded. Where the client finishes locally before a client-certificate rejection, a subsequent read must receive a fatal TLS alert, not application data.",
+    "incompatibility": "The single-group context setup succeeds on both sides before a TCP connection is opened. SSL_accept fails with no suitable key share and SSL_connect receives the fatal handshake_failure alert. Neither succeeds; no application ACK is sent. X.509 code 0 here is not proof of certificate verification: group negotiation failed before peer authentication."
+  },
+  "policy": {
+    "group": "X25519MLKEM768",
+    "protocol": "TLSv1.3",
+    "ciphersuite": "TLS_AES_256_GCM_SHA384",
+    "signatureAlgorithm": "ecdsa_secp256r1_sha256",
+    "clientContext": {"cacheMode": 0, "noTicketOption": true, "numTickets": 0, "maxEarlyData": 0, "recvMaxEarlyData": 0},
+    "serverContext": {"cacheMode": 0, "noTicketOption": true, "numTickets": 0, "maxEarlyData": 0, "recvMaxEarlyData": 0}
+  },
+  "cases": {
+    "trusted_peers": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {"return": 1},
+      "accepted": true,
+      "acknowledged": true,
+      "client": {
+        "protocol": "TLSv1.3",
+        "group": "X25519MLKEM768",
+        "ciphersuite": "TLS_AES_256_GCM_SHA384",
+        "peerDnsSan": "server.cafi.test",
+        "verifyCode": 0,
+        "verifiedChainLength": 2,
+        "peerKeyType": "EC",
+        "peerKeyCurve": "prime256v1",
+        "peerCertificateSignature": "ecdsa-with-SHA256",
+        "sessionReused": false,
+        "sessionHasTicket": false,
+        "sessionResumable": false,
+        "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+      },
+      "server": {
+        "protocol": "TLSv1.3",
+        "group": "X25519MLKEM768",
+        "ciphersuite": "TLS_AES_256_GCM_SHA384",
+        "peerDnsSan": "client.cafi.test",
+        "verifyCode": 0,
+        "verifiedChainLength": 2,
+        "peerKeyType": "EC",
+        "peerKeyCurve": "prime256v1",
+        "peerCertificateSignature": "ecdsa-with-SHA256",
+        "sessionReused": false,
+        "sessionHasTicket": false,
+        "sessionResumable": false,
+        "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+      }
+    },
+    "trusted_peers_second_connection": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {"return": 1},
+      "accepted": true,
+      "acknowledged": true,
+      "client": {
+        "protocol": "TLSv1.3",
+        "group": "X25519MLKEM768",
+        "ciphersuite": "TLS_AES_256_GCM_SHA384",
+        "peerDnsSan": "server.cafi.test",
+        "verifyCode": 0,
+        "verifiedChainLength": 2,
+        "peerKeyType": "EC",
+        "peerKeyCurve": "prime256v1",
+        "peerCertificateSignature": "ecdsa-with-SHA256",
+        "sessionReused": false,
+        "sessionHasTicket": false,
+        "sessionResumable": false,
+        "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+      },
+      "server": {
+        "protocol": "TLSv1.3",
+        "group": "X25519MLKEM768",
+        "ciphersuite": "TLS_AES_256_GCM_SHA384",
+        "peerDnsSan": "client.cafi.test",
+        "verifyCode": 0,
+        "verifiedChainLength": 2,
+        "peerKeyType": "EC",
+        "peerKeyCurve": "prime256v1",
+        "peerCertificateSignature": "ecdsa-with-SHA256",
+        "sessionReused": false,
+        "sessionHasTicket": false,
+        "sessionResumable": false,
+        "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+      }
+    },
+    "wrong_server_name": {
+      "clientHandshake": {"return": -1, "sslError": 1, "reason": "certificate verify failed", "verifyCode": 62, "verifyReason": "hostname mismatch"},
+      "serverHandshake": {"return": -1, "sslError": 1, "reason": "ssl/tls alert bad certificate", "verifyCode": 0, "verifyReason": "ok"},
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "client"
+    },
+    "untrusted_server": {
+      "clientHandshake": {"return": -1, "sslError": 1, "reason": "certificate verify failed", "verifyCode": 20, "verifyReason": "unable to get local issuer certificate"},
+      "serverHandshake": {"return": -1, "sslError": 1, "reason": "tlsv1 alert unknown ca", "verifyCode": 0, "verifyReason": "ok"},
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "client"
+    },
+    "untrusted_client": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {"return": -1, "sslError": 1, "reason": "certificate verify failed", "verifyCode": 20, "verifyReason": "unable to get local issuer certificate"},
+      "clientReadAfterConnect": {"return": 0, "sslError": 1, "reason": "tlsv1 alert unknown ca", "verifyCode": 0, "verifyReason": "ok"},
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "server"
+    },
+    "missing_client_certificate": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {"return": -1, "sslError": 1, "reason": "peer did not return a certificate", "verifyCode": 0, "verifyReason": "ok"},
+      "clientReadAfterConnect": {"return": 0, "sslError": 1, "reason": "tlsv13 alert certificate required", "verifyCode": 0, "verifyReason": "ok"},
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "server"
+    },
+    "wrong_client_name": {
+      "clientHandshake": {"return": 1},
+      "serverHandshake": {"return": -1, "sslError": 1, "reason": "certificate verify failed", "verifyCode": 62, "verifyReason": "hostname mismatch"},
+      "clientReadAfterConnect": {"return": 0, "sslError": 1, "reason": "ssl/tls alert bad certificate", "verifyCode": 0, "verifyReason": "ok"},
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "server"
+    },
+    "x25519_client_to_hybrid_only_server": {
+      "clientHandshake": {"return": -1, "sslError": 1, "reason": "ssl/tls alert handshake failure", "verifyCode": 0, "verifyReason": "ok"},
+      "serverHandshake": {"return": -1, "sslError": 1, "reason": "no suitable key share", "verifyCode": 0, "verifyReason": "ok"},
+      "accepted": false,
+      "acknowledged": false,
+      "rejectedBy": "server",
+      "clientGroup": "X25519",
+      "serverGroup": "X25519MLKEM768"
+    }
+  },
+  "references": {
+    "groups": "https://docs.openssl.org/3.5/man3/SSL_CTX_set1_curves/",
+    "historicalX25519Evidence": "./tls-x25519.json",
+    "pinnedEnvironment": "../../../deploy/spikes/versions.json"
+  },
+  "limitations": [
+    "Only key establishment is hybrid; neither TLS certificates nor TLS authentication are post-quantum. The CLI only issues throwaway certificates in the restricted tmpfs. No private keys, certificates, TLS secrets or raw application payload bytes are retained in evidence; no message-signing key is used.",
+    "Both roles use the same OpenSSL build within each process, over real loopback TCP. No cross-implementation interoperability, external terminator, or separate-process endpoints were tested.",
+    "No active PSK/0-RTT injection, on-path manipulation, revocation, application authorization or identity-to-senderId binding, financial integration, or production stack decision. This is only the isolated TLS part of SPEC T08."
+  ]
+}
