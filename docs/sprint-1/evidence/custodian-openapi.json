@@ -1,0 +1,39 @@
+{
+  "task": "S1-15",
+  "baseRevision": "f79cb43efeb84e038c17fdea8773fde445507f2e",
+  "status": "implementação submetida a revisão independente; hashes dos arquivos de trabalho",
+  "image": "cafi-openapi:s1",
+  "imageId": "sha256:81d36d03d2a49b60346a545dc803e4758d27d0567e32167ad428ccd7cc90001f",
+  "versions": {"python": "3.13.11", "openapi-spec-validator": "0.7.1", "jsonschema": "4.23.0", "referencing": "0.35.1", "PyYAML": "6.0.2", "rfc3339-validator": "0.1.4", "rfc8785": "0.1.4", "lxml": "6.1.3"},
+  "isolation": "--rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1",
+  "reproduction": "PowerShell na raiz: $env:PATH = 'C:\\Users\\Inteli\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;' + $env:PATH; $o = @('run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--mount',\"type=bind,source=$((Get-Location).Path),target=/work,readonly\",'-w','/work','-e','PYTHONDONTWRITEBYTECODE=1','cafi-openapi:s1','python'); docker @o tests/contracts/check_custodian_openapi.py",
+  "sha256": {
+    "contracts/openapi/custodian.yaml": "26699fbd63be57abb4b1b21f06a47c19f04cc105efe8b8101eacd895e9ecc731",
+    "contracts/openapi/custodian-examples.json": "93f233714710b27e35653767801a567072e50e0dd77d01bc8d7b0166469ec02e",
+    "contracts/messages/examples.json": "2522cd127777cfc6ce16444f66ce92168e1a76edd45cc0a0f0a1134d96833d8c",
+    "tests/contracts/check_custodian_openapi.py": "6e0ffac96ef33d2769d4085a19c6026b536922a98b88d4ab8035b12253e06f21",
+    "tests/contracts/test_custodian_openapi.py": "57d0cfa3f0908b9cf91f4e0dacd03e5855ebe42f5ce149baa9072a2d9a73c15d",
+    "contracts/openapi/README.md": "ee0e8978ded83c371f5ec90db4364fc0a53bbdde239790e361908ec41c49dd95",
+    "contracts/messages/README.md": "032f63a9904b6cc5adae37dd8187481cf2c0e6c62e10a86e0e2ba67d06d687f1",
+    "docs/SPRINT-1.md": "819aea5f1eac4daa8dae05cdb2e870f5ddf375b3b16f9fba8d91778d5a18c7f1",
+    "contracts/messages/envelope.schema.json": "6f4cf7d6c4d9fa67b8f89651b329dc4f63c885e4285974b24b89d2f5c8f91ef1",
+    "contracts/schemas/event.schema.json": "04b9968e3d5293083c9a6c4b8263968ee20b92d4b2c1749d75f0325d2775cd79",
+    "contracts/schemas/boleta.schema.json": "8af5084dd5bf9ab2d3b1e6554b28ffca0a04fe7a68883ec8ba5e3de616bf63fc",
+    "deploy/contracts/requirements-openapi.txt": "f6d888eb3c8fbc73bacff2418fd837a011f2be450219da5638e0128251bb7707"
+  },
+  "historicalEvidence": "S1-11-C1 registrou examples.json SHA-256 21d3b5a56b589bfde3910b64831e647e44a7774e45856dad30c9ad0ef9414666; evidência antiga preservada; o histórico remoto foi corrigido nesta task.",
+  "commands": [
+    {"command": "docker @o -m unittest discover -s tests/contracts -v", "exit": 0, "result": "46 testes, incluindo 39 preexistentes, sem skips"},
+    {"command": "docker @o tests/contracts/check_custodian_openapi.py", "exit": 0, "result": "OpenAPI, referências locais e 8 exemplos"},
+    {"command": "docker @o tests/contracts/check_custodian_openapi.py --invalid", "exit": 1, "result": "OpenAPIValidationError: info ausente"},
+    {"command": "docker @o tests/contracts/check_custodian_openapi.py --negative <caso>", "cases": {"schema": 1, "gap": 1, "state": 1, "start": 1, "path": 1, "correlation": 1, "timeout": 1, "future": 1, "response-before-request": 1}},
+    {"command": "docker @o tests/contracts/check_boleta_schema.py", "exit": 0},
+    {"command": "docker @o tests/contracts/check_events_schema.py", "exit": 0},
+    {"command": "docker @o tests/contracts/check_messages_schema.py", "exit": 0},
+    {"command": "docker @o tests/contracts/check_platform_openapi.py", "exit": 0},
+    {"command": "docker run [isolation] cafi-spikes:s1 python tests/contracts/check_custodian_openapi.py", "exit": 1, "result": "ModuleNotFoundError: yaml"},
+    {"command": "git diff --check", "exit": 0}
+  ],
+  "reviewCorrection": "Recibo emitido em 12:00:05 após RECEIVED 12:00:04; decisão emitida em 12:00:06 após ACCEPTED 12:00:05; snapshot terminal emitido em 12:00:08 após SETTLED 12:00:07. Cenário executável: timeout 12:00:03, nova consulta 12:00:05, nova resposta 12:00:08. Coerência temporal assume relógios comparáveis nos exemplos; sequência determina ordem entre processos. Replay de fixture preserva projeção financeira no timeout e converte posições remotas em locais após validação.",
+  "limitations": ["Assinaturas ilustrativas não verificam criptografia; S1-17.", "Sem serviço, transporte, persistência ou prova de recuperação operacional.", "Revisão independente pendente."]
+}

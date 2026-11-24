@@ -125,6 +125,8 @@ Após o commit preexistente `b46a2b8`, revalidar tabela, sequências e schema co
 
 Após o commit preexistente `66df679`, resolver referências dos schemas e revalidar todos os exemplos com JSON Schema fixado no runtime aprovado. Registrar evidência e submeter a revisão independente antes do commit atômico `fix(contracts): revalida envelope no ambiente aprovado`. O histórico remoto de `QUERY_INSTRUCTION_RESULT` requer correção semântica em S1-15, não nesta task.
 
+Registro posterior: S1-15 corrige o exemplo remoto preexistente, explicitamente no escopo autorizado, sem reescrever a evidência histórica de S1-11-C1.
+
 ### S1-12 Produzir vetores de canonicalização JSON
 
 - **Entrada:** envelope de S1-11.

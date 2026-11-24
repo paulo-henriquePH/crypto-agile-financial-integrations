@@ -1,4 +1,20 @@
-# Contrato REST da plataforma
+# Contratos REST
+
+`custodian.yaml` especifica o custodiante sem implementar serviço. A verificação
+offline e suas limitações estão em `docs/sprint-1/evidence/custodian-openapi.json`.
+Com a mesma opção de isolamento abaixo e imagem `cafi-openapi:s1`, executar
+`python tests/contracts/check_custodian_openapi.py` e
+`python -m unittest discover -s tests/contracts -v`. `--invalid` e `--negative`
+com `schema`, `gap`, `state`, `start`, `path`, `correlation` ou `timeout` devem
+retornar 1; falta de dependência também deve falhar, nunca pular validação.
+Também retornam 1 `future` (evento após emissão do snapshot) e
+`response-before-request`. No cenário de recuperação de `custodian-examples.json`,
+o envio expira por timeout sem alterar a projeção financeira; nova consulta é
+correlacionada à nova resposta e o replay aplica eventos remotos com posições
+locais próprias. Horários dos exemplos assumem relógios comparáveis; a sequência,
+não os timestamps, determina a ordem dos eventos entre processos.
+
+## Plataforma
 
 `platform.yaml` é uma especificação OpenAPI 3.1, **não um endpoint implementado**.
 Os únicos caminhos são `POST /v1/operations` e

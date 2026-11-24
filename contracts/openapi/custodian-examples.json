@@ -1,0 +1,97 @@
+{
+  "recovery": {
+    "description": "Timeout do envio; consulta antiga é distinta da nova; o recibo é perdido e não muda o estado local.",
+    "beforeTimeout": {"state": "SENT", "sequence": 3, "deliveryStatus": "PENDING"},
+    "timeoutAt": "2026-11-19T12:00:03Z",
+    "afterTimeout": {"state": "SENT", "sequence": 3, "deliveryStatus": "UNKNOWN"},
+    "newQuery": {"messageId": "00000000-0000-4000-8000-000000000155", "issuedAt": "2026-11-19T12:00:05Z"},
+    "newResponse": {"messageId": "00000000-0000-4000-8000-000000000156", "requestMessageId": "00000000-0000-4000-8000-000000000155", "issuedAt": "2026-11-19T12:00:08Z"},
+    "afterRecovery": {"state": "SETTLED", "sequence": 7, "deliveryStatus": "CONFIRMED"}
+  },
+  "conflictRequest": {
+    "protected": {
+      "schemaVersion": "1.0", "messageId": "00000000-0000-4000-8000-000000000197",
+      "messageType": "SUBMIT_INSTRUCTION", "senderId": "PLATFORM", "recipientId": "CUSTODIANTE-GAMA",
+      "environment": "LAB", "instructionVersion": 1, "issuedAt": "2026-11-19T12:00:00Z",
+      "expiresAt": "2026-11-19T12:02:00Z", "policyVersion": 1, "signatureProfile": "ECDSA",
+      "canonicalization": "JCS", "signers": [{"algorithm": "ECDSA-P256-SHA256", "keyId": "PLATFORM-0"}],
+      "operationId": "11111111-1111-4111-8111-111111111111"
+    },
+    "payload": {
+      "managerId": "GESTORA-ALFA",
+      "boleta": {
+        "clientOrderId": "OP-000001", "portfolioId": "FUNDO-ALFA", "operationType": "BUY",
+        "assetType": "DEBENTURE", "assetId": "DEB-FICTICIA-01", "issuerId": "EMISSOR-01",
+        "counterpartyId": "INSTITUICAO-BETA", "tradeDate": "2026-11-19", "settlementDate": "2026-11-20",
+        "indexer": "IPCA", "issueRate": "6.000000", "negotiatedRate": "6.500000", "quantity": "100",
+        "unitPrice": "981.500000", "grossAmount": "98150.00", "currency": "BRL",
+        "custodianId": "CUSTODIANTE-GAMA", "administratorId": "ADMINISTRADOR-DELTA"
+      }
+    },
+    "signatures": [{"algorithm": "ECDSA-P256-SHA256", "keyId": "PLATFORM-0", "value": "Tk9UX0FfU0lHTkFUVVJF"}]
+  },
+  "conflict": {
+    "protected": {
+      "schemaVersion": "1.0", "messageId": "00000000-0000-4000-8000-000000000196",
+      "messageType": "ERROR", "senderId": "CUSTODIANTE-GAMA", "recipientId": "PLATFORM",
+      "environment": "LAB", "instructionVersion": 1, "issuedAt": "2026-11-19T12:00:00Z",
+      "expiresAt": "2026-11-19T12:02:00Z", "policyVersion": 1, "signatureProfile": "ECDSA",
+      "canonicalization": "JCS", "signers": [{"algorithm": "ECDSA-P256-SHA256", "keyId": "CUSTODIANTE-GAMA-0"}],
+      "operationId": "11111111-1111-4111-8111-111111111111",
+      "requestMessageId": "00000000-0000-4000-8000-000000000197"
+    },
+    "payload": {"code": "IDEMPOTENCY_CONFLICT", "message": "Negócio conflitante", "correlationId": "00000000-0000-4000-8000-000000000197", "retryable": false, "details": []},
+    "signatures": [{"algorithm": "ECDSA-P256-SHA256", "keyId": "CUSTODIANTE-GAMA-0", "value": "Tk9UX0FfU0lHTkFUVVJF"}]
+  },
+  "decision": {
+    "protected": {
+      "schemaVersion": "1.0", "messageId": "00000000-0000-4000-8000-000000000198",
+      "messageType": "QUERY_INSTRUCTION_RESULT", "senderId": "CUSTODIANTE-GAMA",
+      "recipientId": "PLATFORM", "environment": "LAB", "instructionVersion": 1,
+      "issuedAt": "2026-11-19T12:00:06Z", "expiresAt": "2026-11-19T12:02:00Z",
+      "policyVersion": 1, "signatureProfile": "ECDSA", "canonicalization": "JCS",
+      "signers": [{"algorithm": "ECDSA-P256-SHA256", "keyId": "CUSTODIANTE-GAMA-0"}],
+      "operationId": "11111111-1111-4111-8111-111111111111",
+      "requestMessageId": "00000000-0000-4000-8000-000000000107"
+    },
+    "payload": {
+      "managerId": "GESTORA-ALFA",
+      "boleta": {
+        "clientOrderId": "OP-000001", "portfolioId": "FUNDO-ALFA",
+        "operationType": "BUY", "assetType": "DEBENTURE", "assetId": "DEB-FICTICIA-01",
+        "issuerId": "EMISSOR-01", "counterpartyId": "INSTITUICAO-BETA",
+        "tradeDate": "2026-11-19", "settlementDate": "2026-11-20", "indexer": "IPCA",
+        "issueRate": "6.000000", "negotiatedRate": "6.500000", "quantity": "100",
+        "unitPrice": "980.500000", "grossAmount": "98050.00", "currency": "BRL",
+        "custodianId": "CUSTODIANTE-GAMA", "administratorId": "ADMINISTRADOR-DELTA"
+      },
+      "state": "ACCEPTED", "sequence": 2,
+      "events": [
+        {"eventId": "00000000-0000-4000-8000-000000000004", "operationId": "11111111-1111-4111-8111-111111111111", "instructionVersion": 1, "sequence": 1, "origin": "CUSTODIAN", "state": "RECEIVED", "occurredAt": "2026-11-19T12:00:04Z", "previousState": "SENT"},
+        {"eventId": "00000000-0000-4000-8000-000000000005", "operationId": "11111111-1111-4111-8111-111111111111", "instructionVersion": 1, "sequence": 2, "origin": "CUSTODIAN", "state": "ACCEPTED", "occurredAt": "2026-11-19T12:00:05Z", "previousState": "RECEIVED"}
+      ]
+    },
+    "signatures": [{"algorithm": "ECDSA-P256-SHA256", "keyId": "CUSTODIANTE-GAMA-0", "value": "Tk9UX0FfU0lHTkFUVVJF"}]
+  },
+  "notFound": {
+    "protected": {
+      "schemaVersion": "1.0",
+      "messageId": "00000000-0000-4000-8000-000000000199",
+      "messageType": "ERROR",
+      "senderId": "CUSTODIANTE-GAMA",
+      "recipientId": "PLATFORM",
+      "environment": "LAB",
+      "instructionVersion": 1,
+      "issuedAt": "2026-11-19T12:00:00Z",
+      "expiresAt": "2026-11-19T12:02:00Z",
+      "policyVersion": 1,
+      "signatureProfile": "ECDSA",
+      "canonicalization": "JCS",
+      "signers": [{"algorithm": "ECDSA-P256-SHA256", "keyId": "CUSTODIANTE-GAMA-0"}],
+      "operationId": "11111111-1111-4111-8111-111111111111",
+      "requestMessageId": "00000000-0000-4000-8000-000000000107"
+    },
+    "payload": {"code": "NOT_FOUND", "message": "Registro ausente", "correlationId": "00000000-0000-4000-8000-000000000107", "retryable": false, "details": []},
+    "signatures": [{"algorithm": "ECDSA-P256-SHA256", "keyId": "CUSTODIANTE-GAMA-0", "value": "Tk9UX0FfU0lHTkFUVVJF"}]
+  }
+}

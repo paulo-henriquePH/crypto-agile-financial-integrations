@@ -1,0 +1,120 @@
+openapi: 3.1.0
+info:
+  title: Custodiante REST — contrato experimental
+  version: 1.0.0
+  description: >-
+    Especificação sem serviço implementado. Assinaturas dos exemplos são
+    ilustrativas, não criptográficas até S1-17. Respostas e erros após
+    autenticação são assinados e correlacionados; falha de handshake ou parsing
+    pode impedir resposta assinada e não autoriza avanço ou rejeição financeira.
+paths:
+  /v1/instructions:
+    post:
+      operationId: submitInstruction
+      description: >-
+        Autenticar, verificar assinatura, validade e autorização antes de
+        deduplicar. Identidade lógica (senderId, recipientId, messageType,
+        operationId, instructionVersion); digest SHA-256 do negócio normalizado
+        JCS exclui messageId, validade, assinatura e política. Mesmo negócio
+        retorna recibo em novo envelope correlacionado; negócio diferente causa
+        409 IDEMPOTENCY_CONFLICT. 202 confirma recebimento persistido, não
+        aceitação financeira. Timeout não rejeita: consultar antes de retransmitir.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Submit'}
+            examples:
+              instruction: {externalValue: '../messages/examples.json#/cases/4/message'}
+              conflict: {externalValue: 'custodian-examples.json#/conflictRequest'}
+      responses:
+        '202':
+          description: Recebimento persistido; decisão obtida por consulta.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Receipt'}
+              examples:
+                receipt: {externalValue: '../messages/examples.json#/cases/5/message'}
+        '409':
+          description: Conflito de identidade lógica; erro assinado após autenticação.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Error'}
+              examples:
+                conflict: {externalValue: 'custodian-examples.json#/conflict'}
+        '401':
+          description: Autenticação falhou; handshake pode terminar sem HTTP.
+  /v1/instructions/{operationId}/status-queries:
+    post:
+      operationId: queryInstruction
+      description: >-
+        Consulta assinada POST; operationId no caminho deve coincidir com o
+        protegido. Cada consulta nova usa messageId novo e lê snapshot atual;
+        resposta correlaciona requestMessageId à consulta atual. Apenas repetição
+        exata ainda válida pode reutilizar resposta. Histórico remoto completo
+        começa em RECEIVED, sequência 1, contígua por operação e independente da
+        projeção local; estado e sequência finais correspondem ao snapshot.
+        Lacuna não resolvida impede avanço. Timeout conserva estado financeiro,
+        entrega UNKNOWN; apenas NOT_FOUND assinado estabelece ausência no instante,
+        e retransmissão continua idempotente diante de corrida.
+      parameters:
+        - name: operationId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Query'}
+            examples:
+              query: {externalValue: '../messages/examples.json#/cases/6/message'}
+      responses:
+        '200':
+          description: Snapshot e histórico remoto.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/QueryResult'}
+              examples:
+                terminal: {externalValue: '../messages/examples.json#/cases/7/message'}
+                decision: {externalValue: 'custodian-examples.json#/decision'}
+        '404':
+          description: Ausência autenticada, assinada e correlacionada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Error'}
+              examples:
+                absent: {externalValue: 'custodian-examples.json#/notFound'}
+        '401':
+          description: Autenticação falhou; handshake pode terminar sem HTTP.
+security:
+  - mutualTLS: []
+components:
+  securitySchemes:
+    mutualTLS:
+      type: mutualTLS
+      description: >-
+        TLS 1.3, cadeia e nome verificados, certificados individuais vinculados
+        ao senderId e autorização; grupo X25519 ou X25519MLKEM768 conforme
+        política, sem fallback ou 0-RTT.
+  schemas:
+    Submit:
+      allOf:
+        - $ref: ../messages/envelope.schema.json
+        - properties: {protected: {properties: {messageType: {const: SUBMIT_INSTRUCTION}}}}
+    Receipt:
+      allOf:
+        - $ref: ../messages/envelope.schema.json
+        - properties: {protected: {properties: {messageType: {const: SUBMIT_INSTRUCTION_RESULT}}}}
+    Query:
+      allOf:
+        - $ref: ../messages/envelope.schema.json
+        - properties: {protected: {properties: {messageType: {const: QUERY_INSTRUCTION}}}}
+    QueryResult:
+      allOf:
+        - $ref: ../messages/envelope.schema.json
+        - properties: {protected: {properties: {messageType: {const: QUERY_INSTRUCTION_RESULT}}}}
+    Error:
+      allOf:
+        - $ref: ../messages/envelope.schema.json
+        - properties: {protected: {properties: {messageType: {const: ERROR}}}}
