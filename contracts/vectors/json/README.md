@@ -35,3 +35,14 @@ node contracts/vectors/json/reference/check.mjs "$env:TEMP/cafi-s1-jcs-reference
 Em Linux, use `python3 -m venv /tmp/cafi-s1-jcs-venv`, o Python em `bin/python`, `npm` e caminhos equivalentes. O comando Python exige dependência presente e versão exata; indisponibilidade não produz skip. A comparação independente requer Node >=22, conforme o pacote fixado; execução observada em Node 22.14.0. Não é necessário compilar dependências, iniciar Docker ou escolher a stack final.
 
 Resultado observado em Python 3.12.0/Windows: cinco métodos de teste aprovados, 12 casos no manifesto (cinco positivos e sete negativos), cinco comparações JavaScript aprovadas. O limite de 256 KiB é aplicado antes de qualquer parsing; um teste com spies confirma que nenhum dos dois parsers é chamado para entrada excessiva. Hashes e arquivos congelados são a evidência reproduzível; [evidence.json](evidence.json) registra ambiente e comandos. S1-03–08 permanecem pendentes: este resultado comprova canonicalização local, não Linux fixado, assinaturas ou TLS.
+
+## Revalidação S1-12-C1 em Linux
+
+O parágrafo anterior descreve exclusivamente a execução histórica; S1-03–08 foram realizados posteriormente. A execução em CPython 3.13.11 está em [jcs.json](../../../docs/sprint-1/evidence/jcs.json). Na raiz, com Docker disponível, construir `docker build -f deploy/contracts/Dockerfile -t cafi-jcs:s1 .` e executar, substituindo `<repo>` pelo caminho absoluto:
+
+```text
+docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1 cafi-jcs:s1 python -m unittest discover -s tests/contracts -p test_canonical_json.py -v
+docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1 cafi-jcs:s1 python -m unittest discover -s tests/contracts -v
+```
+
+A imagem instala o wheel fixado com verificação de hash e mantém as dependências de schema. As comparações independentes JavaScript são evidência histórica, não foram reexecutadas nesta revalidação; os bytes congelados e hashes foram verificados pelo executor Python. Assinaturas continuam ilustrativas.

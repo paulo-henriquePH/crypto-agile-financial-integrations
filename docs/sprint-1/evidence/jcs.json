@@ -1,0 +1,52 @@
+{
+  "task": "S1-12-C1",
+  "baseRevision": "764c7460e05434fa225f800ba2d5e0a50bc652b8",
+  "priorVectorsCommit": "73e3197",
+  "note": "Hashes dos bytes efetivos, incluindo Dockerfile modificado ainda não commitado; revisão independente pendente.",
+  "environment": {
+    "os": "Linux x86_64 glibc 2.36 kernel 6.18.58.1-microsoft-standard-WSL2",
+    "python": "CPython 3.13.11",
+    "image": "cafi-jcs:s1",
+    "imageId": "sha256:bbab4995585a6af3ac293b2a187e104dee393b1754dc0972afdb8e2ce0c18ccd",
+    "baseImage": "cafi-spikes:s1",
+    "packages": {"rfc8785": "0.1.4", "jsonschema": "4.23.0", "attrs": "24.3.0", "jsonschema-specifications": "2024.10.1", "referencing": "0.35.1", "rpds-py": "0.22.3", "rfc3339-validator": "0.1.4", "six": "1.17.0"},
+    "rfc8785WheelSHA256": "520d690b448ecf0703691c76e1a34a24ddcd4fc5bc41d589cb7c58ec651bcd48",
+    "runtimeIsolation": "--rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1"
+  },
+  "inputsSHA256": {
+    "deploy/contracts/Dockerfile": "74e762f5532757f07b1f84cfca8a9f705092d04b30dea78eadcc6b75a53d2def",
+    "deploy/contracts/requirements-boleta.txt": "a498c407aa914bb6191ab44ed2024de1e5ada85e6ccb08c6f1067449ab0dc8df",
+    "contracts/vectors/json/requirements.txt": "14d26a947e5aa546f02704af73e598a018f52327197e0c5f61b90533955ca8a7",
+    "contracts/vectors/json/manifest.json": "9ec742121be117b33d739448264b9ec4a56c545bba3d23734ac855c318fad96b",
+    "contracts/vectors/json/evidence.json": "57663f78bcb4ded41ee3fdb680470abf2f0be7f3709ec493a9d85444d724454b",
+    "contracts/vectors/json/reference/check.mjs": "12a4614ad8dc6fd4cd816063805790e2c44e6ed4c5edb715fd9f612ad4fb69c6",
+    "tests/contracts/canonical_json.py": "14aaf9734d37b3c616806227950c679c97896077028083abd9834baf56018d70",
+    "tests/contracts/test_canonical_json.py": "090c5f4aeef352858a19b552da581d3dd4af223637c277c7ba451dfc8fa1bd4b",
+    "tests/contracts/validate_message.py": "0af379b2e35902030dd56c6b1a6b83fa53f5bb4e1ca0f3bfbf9c08be26b3648e",
+    "contracts/vectors/json/creation.input.json": "461b1d2f17c302ff66b93086491f3294457858a88666e9ad000082f6aa9eb278",
+    "contracts/vectors/json/creation_reordered.input.json": "9d5060c2a060cf5eb030a5f42d5616abda6fdabfab9b0d4dfbc00d8e4579316f",
+    "contracts/vectors/json/duplicate_nested.input.json": "31bf8022e94125b39a7d67b240728fddc8a89f80b13690a079568a03dffd0988",
+    "contracts/vectors/json/duplicate_root.input.json": "d38245cfdb5d2239d67fe2a719312768b668a6928d8d97d04fbce83215e50b44",
+    "contracts/vectors/json/infinity.input.json": "4a89f646ba203555f194675dd6120e12cd3159f607afda25782a095b859dd20a",
+    "contracts/vectors/json/lone_surrogate.input.json": "971d135f4969633f3d18c3574ddf5692475fc79dcb2b6aaf77c06df000a219dc",
+    "contracts/vectors/json/nan.input.json": "c238cb6e9ac5407491b0988102620ab9445290d2ed7713c516a2b28bd2388968",
+    "contracts/vectors/json/numeric_financial.input.json": "ce7165d5347198fbee2e19fb499c4de968354320a0096aa60b977183d8176d1e",
+    "contracts/vectors/json/payload_array.input.json": "a7752ea54169a70a7760e2c342c7628ff54f138ffa40a2d7b636215ba0f29261",
+    "contracts/vectors/json/rfc_primitives.input.json": "e8bfe9cbb3cec5c3d79505d43116ea6f706db9f00445c971a7edf4bc445859c7",
+    "contracts/vectors/json/rfc_property_sort.input.json": "8d36702b2fcb7a8fbe7dd3b931dda564a096fb39f6a9818a32b40789586517bd",
+    "contracts/vectors/json/unicode_no_normalization.input.json": "854a22689060f24fe0362b36193deed992d01ca4d82d2d76c8ce915215f760a2"
+  },
+  "expectedBytes": "Os SHA-256 dos cinco arquivos canônicos são conferidos no manifesto; creation e creation_reordered têm 906 bytes e o mesmo digest. Expectativas congeladas historicamente com canonicalize 5.1.0/Node 22.14.0 e exemplos RFC 8785; referência independente não reexecutada agora. Ver evidence.json histórico e reference/package-lock.json.",
+  "commands": [
+    {"command": "docker build -f deploy/contracts/Dockerfile -t cafi-jcs:s1 .", "exit": 0, "result": "instala wheels com --require-hashes; dependências anteriores preservadas"},
+    {"command": "docker run [runtimeIsolation] cafi-jcs:s1 python -m unittest discover -s tests/contracts -p test_canonical_json.py -v", "exit": 0, "result": "5 testes, 12 vetores: 5 positivos e 7 negativos"},
+    {"command": "docker run [runtimeIsolation] cafi-jcs:s1 python -m unittest discover -s tests/contracts -v", "exit": 0, "result": "22 testes boleta/eventos/mensagens/JCS"},
+    {"command": "docker run [runtimeIsolation] cafi-jcs:s1 python tests/contracts/check_boleta_schema.py", "exit": 0, "result": "schema e boleta válidos"},
+    {"command": "docker run [runtimeIsolation] cafi-jcs:s1 python tests/contracts/check_events_schema.py", "exit": 0, "result": "metaschema, 39 eventos válidos e 7 inválidos"},
+    {"command": "docker run [runtimeIsolation] cafi-jcs:s1 python tests/contracts/check_messages_schema.py", "exit": 0, "result": "3 metaschemas, 28 mensagens e requisições; data impossível rejeitada"},
+    {"command": "docker run [runtimeIsolation] -e PYTHONPATH=/work/tests/contracts cafi-jcs:s1 python -c \"import test_canonical_json as t, unittest; t.MANIFEST['cases'][0]['sha256']='0'*64; unittest.main(module=t)\"", "exit": 1, "result": "digest creation alterado somente em memória; test_static_vectors falhou"},
+    {"command": "docker run [runtimeIsolation] cafi-events:s1 python -m unittest discover -s tests/contracts -p test_canonical_json.py -v", "exit": 1, "result": "ModuleNotFoundError rfc8785, sem skip"}
+  ],
+  "coverage": ["projeção protected e payload, assinaturas externas excluídas e keyId protegido incluído", "decimais strings, ordenação UTF-16, Unicode sem normalização, escapes e primitivas RFC", "duplicatas raiz e aninhadas rejeitadas antes de JCS, NaN, infinito, surrogate, tipos e limites inválidos"],
+  "limitations": ["Comparação independente é histórica, não reexecutada em Linux.", "Assinaturas são ilustrativas até S1-17; canonicalização não autentica nem substitui validação completa.", "QUERY_INSTRUCTION_RESULT permanece para S1-15; XML permanece para S1-13.", "Revisão independente e commit ainda pendentes."]
+}

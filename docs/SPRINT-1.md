@@ -132,6 +132,10 @@ Após o commit preexistente `66df679`, resolver referências dos schemas e reval
 - **Aceite:** confirmar exatamente os bytes de `{protected, payload}`; preservar decimais como strings; rejeitar propriedades duplicadas antes de canonicalizar.
 - **Verificação:** testar ordem de propriedades, Unicode, escapes e tipos inválidos. Usar vetores de referência ou uma segunda implementação para conferir o esperado; não gerar a expectativa dinamicamente com a mesma função sob teste.
 
+#### Task corretiva S1-12-C1 — revalidação JCS
+
+Após o commit preexistente `73e3197`, reexecutar os vetores e a suíte completa no CPython Linux aprovado com biblioteca JCS fixada por versão e hash, preservando a evidência histórica e as dependências anteriores. Registrar evidência, incluindo falhas deliberadas, e submeter a revisão independente antes do commit atômico `test(contracts): revalida canonicalizacao JSON no ambiente aprovado`. Não altera contratos de domínio nem antecipa S1-13 ou S1-15.
+
 ### S1-13 Produzir vetores de canonicalização XML
 
 - **Entrada:** envelope de S1-11 e regras XML da SPEC.
