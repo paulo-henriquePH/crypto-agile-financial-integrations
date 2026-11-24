@@ -1,0 +1,63 @@
+{
+  "task": "S1-19",
+  "description": "Seleção sanitizada do relatório normal do runner; resultados históricos não foram reexecutados.",
+  "command": "powershell -NoProfile -File scripts/verify-sprint1/verify.ps1",
+  "startedAt": "2026-11-24T21:51:10.6518679Z",
+  "finishedAt": "2026-11-24T21:54:55.5596324Z",
+  "source": {
+    "baseRevision": "d715c2c2980b34ddab6fe62322a6f5f569e669b1",
+    "testedCommit": "d715c2c2980b34ddab6fe62322a6f5f569e669b1",
+    "branch": "sprint-1-completion",
+    "checkoutClean": true,
+    "snapshotSHA256": "beb67116d4c3d5e24301fafa77c43f180757811b742e69a6b1f1553ccba03a89",
+    "snapshotDigestFormat": "SHA-256 de linhas UTF-8 caminho, espaço, hash dos bytes copiados e LF, ordenadas ordinalmente por caminho.",
+    "localReport": ".spikes/verify-sprint1/normal-aa2d968976f44318a08158da2e7d9121.json",
+    "localReportSHA256": "270b2610148cfd71b4cb73633ee766218dcfa6bc108c9598f2d68c8dc540e3c4"
+  },
+  "environment": {
+    "hostPowerShell": "5.1.26100.9711",
+    "platform": "linux/amd64",
+    "python": "3.13.11",
+    "binding": "CPython stdlib ctypes",
+    "openssl": "OpenSSL 3.5.9 29 Sep 2026",
+    "pins": "deploy/spikes/versions.json e deploy/contracts/requirements-*.txt"
+  },
+  "build": {
+    "bothNoCache": true,
+    "cryptoImageId": "sha256:cbb8cc66f0be12aa2113b16d02bc30cffe5663e35d36b29db326f6634b04fb69",
+    "soapImageId": "sha256:193615d74e2e29d68706eed29fbc4c68e8afecf1b8819cf44335b7bb42610ed2",
+    "verifiedCryptoLayerPrefix": true
+  },
+  "results": {
+    "exitCode": 0,
+    "failure": null,
+    "skips": 0,
+    "hostStepsPassed": ["docker-version", "build-crypto", "inspect-crypto", "build-soap", "inspect-soap", "reinspect-crypto", "contracts", "ecdsa", "ml-dsa", "tls-x25519", "tls-hybrid-1", "tls-hybrid-2"],
+    "contractCasesPassed": ["runtime-inventory", "pip-check", "package-lock-versions", "boleta-schema", "events-schema", "messages-schema", "platform-openapi", "custodian-openapi", "administrator-wsdl-xsd-zeep", "unittest-all", "canonical-xml", "signed-static", "signed-generate", "signed-fresh", "unittest-fresh-signed"],
+    "unitTestsPassed": 69,
+    "freshSignedUnitTestsPassed": 15,
+    "staticSignedMessages": 27,
+    "staticSignatures": 36,
+    "freshSignedMessages": 27,
+    "freshSignatures": 36,
+    "tls": {
+      "protocol": "TLSv1.3",
+      "observedClientAndServerGroups": ["x25519", "X25519MLKEM768", "X25519MLKEM768"],
+      "incompatibleX25519ClientRejectedByHybridServer": true,
+      "authentication": "mTLS tradicional ECDSA P-256"
+    }
+  },
+  "selectedSnapshotInputsSHA256": {
+    "contracts/domain/transitions.json": "5566937e639cf38a2ce9b073ef586e9d99e15fa23cc7fee8c8f07e7b3f9189a2",
+    "contracts/messages/envelope.schema.json": "6f4cf7d6c4d9fa67b8f89651b329dc4f63c885e4285974b24b89d2f5c8f91ef1",
+    "contracts/openapi/custodian.yaml": "26699fbd63be57abb4b1b21f06a47c19f04cc105efe8b8101eacd895e9ecc731",
+    "contracts/openapi/platform.yaml": "765aeda0d9f73e1aab762f5835810177939707c03b60c75df1d063bfd8245fda",
+    "contracts/schemas/boleta.schema.json": "8af5084dd5bf9ab2d3b1e6554b28ffca0a04fe7a68883ec8ba5e3de616bf63fc",
+    "contracts/schemas/event.schema.json": "04b9968e3d5293083c9a6c4b8263968ee20b92d4b2c1749d75f0325d2775cd79",
+    "contracts/soap/administrator.wsdl": "df6a49a80a8787c6e33e87e36cda5128fe500b3a9ce2da296dcacf3481a980e3",
+    "contracts/soap/administrator.xsd": "3d055e7413905a0e928011ad7efd7f46be0e4841662bebef54c04fdba403d09e",
+    "contracts/soap/envelope.xsd": "d852d7a83e9d85a569a49e011d77ccd80680ce68cb503a48f8c10f6fd67a62aa",
+    "contracts/vectors/signed/corpus/manifest.json": "ff1edd8be542843b66a14c21f323f327e79e12f16ee0ec50d2b34034e63c7543",
+    "contracts/vectors/signed/corpus/trust.json": "3de633c689d63ca5504aa5774281f72e8bed3625e36c7a10003e8f4b9bdd2cab"
+  }
+}

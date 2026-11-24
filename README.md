@@ -2,7 +2,17 @@
 
 Plataforma de integração entre gestoras, administradores fiduciários e custodiantes, via APIs REST e Web Services SOAP, com foco em criptoagilidade e migração para criptografia pós-quântica.
 
-> Projeto acadêmico desenvolvido para a eletiva Tópicos Avançados de Criptografia. Em fase de especificação; os serviços e experimentos descritos a seguir ainda serão implementados.
+> Projeto acadêmico desenvolvido para a eletiva Tópicos Avançados de Criptografia. A Sprint 1 entregou contratos e provas isoladas; os serviços financeiros e experimentos integrados do MVP ainda não foram implementados.
+
+## Entrega da Sprint 1
+
+Estão disponíveis [contratos REST](contracts/openapi/), [SOAP/WSDL e XSD](contracts/soap/), modelos, vetores e PoCs de assinaturas e TLS. Consulte o [índice da sprint](docs/sprint-1/README.md) para evidências, limitações e reprodução. Em Windows, com Git e Docker Linux disponíveis:
+
+```powershell
+powershell -NoProfile -File scripts/verify-sprint1/verify.ps1
+```
+
+O comando verifica artefatos e provas isoladas; não inicia serviços do MVP nem demonstra interoperabilidade de conectores.
 
 ## Visão geral
 

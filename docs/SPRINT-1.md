@@ -2,7 +2,9 @@
 
 A sprint entrega contratos e vetores de mensagem verificáveis, o modelo da boleta e dos estados, o conteúdo assinado, o modelo de ameaças e uma prova executável de ECDSA, ML-DSA e TLS com X25519 e X25519MLKEM768. A escolha da stack deve resultar dessas provas e registrar suas limitações antes da implementação dos conectores.
 
-**Base:** [README](../README.md) e [SPEC](../SPEC.md). **Status:** planejamento; tasks ainda não executadas. **Execução:** sequencial, com uma task ativa e um commit Conventional Commits por task concluída.
+**Base:** [README](../README.md) e [SPEC](../SPEC.md). **Status:** S1-01 a S1-18 entregues; S1-19 em consolidação documental, pendente de revisão independente e commit. Ver [índice e evidências](sprint-1/README.md). O backlog e o protocolo abaixo preservam o planejamento histórico.
+
+Resumo dos commits efetivos: S1-01 `f267deb`, S1-02 `0261e81`, S1-03 `799aa87`, S1-04 `000b959`, S1-05 `0999a7d`, S1-06 `e577027`, S1-07 `26a5d93`, S1-08 `932acc8`; S1-09 `462454e` e corretiva `d033335`, S1-10 `b46a2b8` e corretiva `63f45d4`, S1-11 `66df679` e corretiva `764c746`, S1-12 `73e3197` e corretiva `17cab84`; S1-13 `0be3bdb`, S1-14 `f79cb43`, S1-15 `0216bef`, S1-16 `e88e05c`, S1-17 `5f2bd5e`, S1-18 `d715c2c`. As corretivas revalidaram boleta, eventos, envelope e JCS no ambiente aprovado; S1-15 também corrigiu o exemplo remoto conforme registro abaixo. A [execução final](sprint-1/evidence/final-verification.json) confirma S1-18 no commit limpo; [integrated.json](sprint-1/evidence/integrated.json) preserva a contraprova histórica anterior ao commit.
 
 ## Escopo e regras de execução
 
@@ -189,7 +191,7 @@ Após o commit preexistente `73e3197`, reexecutar os vetores e a suíte completa
 
 ## Arquitetura multiagente sequencial
 
-O coordenador controla o Git e a passagem entre tasks. Os especialistas trabalham por delegação, um de cada vez. Esta arquitetura é um plano de execução futura; a criação deste documento não inicia as tasks nem cria seus commits.
+O coordenador controla o Git e a passagem entre tasks. Os especialistas trabalham por delegação, um de cada vez. O texto a seguir preserva o protocolo originalmente planejado; a execução efetiva está resumida no status acima.
 
 | Papel | Responsabilidade | Limite de atuação |
 |---|---|---|
