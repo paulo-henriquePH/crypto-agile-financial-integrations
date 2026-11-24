@@ -1,0 +1,68 @@
+{
+  "task": "S1-14",
+  "baseRevision": "0be3bdbbfba97767b41b6d6439c432272b0811d4",
+  "branch": "sprint-1-completion",
+  "note": "Hashes dos arquivos efetivamente testados, incluindo alterações ainda não commitadas; revisão independente pendente.",
+  "environment": {
+    "platform": "linux/amd64",
+    "python": "CPython 3.13.11",
+    "image": "cafi-openapi:s1",
+    "imageId": "sha256:81d36d03d2a49b60346a545dc803e4758d27d0567e32167ad428ccd7cc90001f",
+    "baseImage": "cafi-spikes:s1",
+    "baseImageId": "sha256:564513b961987470c56c2886303d7127e4d66d1de8a925e880c4008373ec17c3",
+    "missingDependencyImage": "cafi-xml:s1",
+    "missingDependencyImageId": "sha256:9b4645f196d4b63ed3306bd58ec6d0c12922876c9c75af1be4604065ad589774",
+    "runtimeIsolation": "--rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1",
+    "packages": {
+      "openapi-spec-validator": "0.7.1", "openapi-schema-validator": "0.6.3",
+      "jsonschema": "4.23.0", "jsonschema-path": "0.3.3", "lazy-object-proxy": "1.12.0",
+      "pathable": "0.4.4", "PyYAML": "6.0.2", "requests": "2.32.3",
+      "charset-normalizer": "3.4.1", "idna": "3.10", "urllib3": "2.3.0",
+      "certifi": "2025.1.31", "attrs": "24.3.0", "jsonschema-specifications": "2024.10.1",
+      "referencing": "0.35.1", "rpds-py": "0.22.3", "rfc3339-validator": "0.1.4",
+      "six": "1.17.0", "lxml": "6.1.3", "rfc8785": "0.1.4"
+    },
+    "packageSources": "https://pypi.org/pypi/<nome>/<versão>/json; hashes dos wheels em deploy/contracts/requirements-openapi.txt, requirements-boleta.txt, requirements-xml.txt e contracts/vectors/json/requirements.txt",
+    "build": "docker build --platform linux/amd64 --target openapi -f deploy/contracts/Dockerfile -t cafi-openapi:s1 .",
+    "buildExit": 0
+  },
+  "inputsSHA256": {
+    "contracts/openapi/platform.yaml": "765aeda0d9f73e1aab762f5835810177939707c03b60c75df1d063bfd8245fda",
+    "contracts/openapi/errors.json": "e9d0f8cb80edbd0f9643bdecbb23f01324636c5c05258cb5a2200967514b2808",
+    "contracts/openapi/scenarios.json": "311c6cbe18c91966ff1eb62e550d8bd6981f80c4a049d527a7f11729b6172778",
+    "contracts/openapi/README.md": "8c21413cc715795c0e19841f7162212e75b6e62888e48dc3f91d3177d16216ec",
+    "tests/contracts/check_platform_openapi.py": "6c67068713811b6f3141fa063ba90cd4173b0159e6c4281f808299334ec40e79",
+    "tests/contracts/test_platform_openapi.py": "87037698481b81ae67e28cdfdeaa0a61d8d9d8673f548cdf1857297697f81fbd",
+    "tests/contracts/validate_message.py": "0af379b2e35902030dd56c6b1a6b83fa53f5bb4e1ca0f3bfbf9c08be26b3648e",
+    "tests/contracts/validate_events.py": "f9c2d68056e0eb8653db990c4017931b92b8b25acb659cd4518598931dd5af6c",
+    "tests/contracts/validate_boleta.py": "f9ee6ad360f3b08aa1b82039572075bcc93ddd5bacd993a76eedf250561892d5",
+    "deploy/contracts/Dockerfile": "42dec2b179443350b211b4fe7d966658c2964ef0a7f3c3d188640a6c5e16960f",
+    "deploy/contracts/requirements-openapi.txt": "f6d888eb3c8fbc73bacff2418fd837a011f2be450219da5638e0128251bb7707",
+    "deploy/contracts/requirements-boleta.txt": "a498c407aa914bb6191ab44ed2024de1e5ada85e6ccb08c6f1067449ab0dc8df",
+    "deploy/contracts/requirements-xml.txt": "17129fcefa0e8f24ea4de4c8ab6d6fcfb97c8dcb443e9124f59c2d8f021b7f3c",
+    "contracts/vectors/json/requirements.txt": "14d26a947e5aa546f02704af73e598a018f52327197e0c5f61b90533955ca8a7",
+    "contracts/messages/envelope.schema.json": "6f4cf7d6c4d9fa67b8f89651b329dc4f63c885e4285974b24b89d2f5c8f91ef1",
+    "contracts/messages/examples.json": "21d3b5a56b589bfde3910b64831e647e44a7774e45856dad30c9ad0ef9414666",
+    "contracts/messages/types.json": "7b0d14589f823281c3db20d7935e3d7ba7e709fb3f575ed29879953e1f70039d",
+    "contracts/domain/transitions.json": "5566937e639cf38a2ce9b073ef586e9d99e15fa23cc7fee8c8f07e7b3f9189a2",
+    "contracts/schemas/boleta.schema.json": "8af5084dd5bf9ab2d3b1e6554b28ffca0a04fe7a68883ec8ba5e3de616bf63fc",
+    "contracts/schemas/event.schema.json": "04b9968e3d5293083c9a6c4b8263968ee20b92d4b2c1749d75f0325d2775cd79"
+  },
+  "commands": [
+    {"command": "docker run [runtimeIsolation] cafi-openapi:s1 python tests/contracts/check_platform_openapi.py", "exit": 0, "result": "OpenAPI 3.1, schemas e 13 exemplos com resolução local e semântica"},
+    {"command": "docker run [runtimeIsolation] cafi-openapi:s1 python -m unittest discover -s tests/contracts -v", "exit": 0, "result": "39 testes, 31 anteriores e 8 novos, sem skips"},
+    {"command": "docker run [runtimeIsolation] cafi-openapi:s1 python tests/contracts/check_boleta_schema.py", "exit": 0, "result": "schema e boleta válidos"},
+    {"command": "docker run [runtimeIsolation] cafi-openapi:s1 python tests/contracts/check_events_schema.py", "exit": 0, "result": "39 eventos válidos aceitos e sete inválidos rejeitados"},
+    {"command": "docker run [runtimeIsolation] cafi-openapi:s1 python tests/contracts/check_messages_schema.py", "exit": 0, "result": "três metaschemas e 28 mensagens verificadas"},
+    {"command": "docker run [runtimeIsolation] cafi-openapi:s1 python tests/contracts/check_platform_openapi.py --invalid", "exit": 1, "result": "info removido em memória; OpenAPIValidationError"},
+    {"command": "docker run [runtimeIsolation] cafi-xml:s1 python tests/contracts/check_platform_openapi.py", "exit": 1, "result": "ModuleNotFoundError: yaml; dependência ausente não vira skip"}
+  ],
+  "limits": [
+    "Contrato sem implementação de serviço; 201/200 e deduplicação são exigências especificadas, não testes de persistência ou concorrência.",
+    "Todas as assinaturas dos exemplos são ilustrativas, não verificadas criptograficamente; vetores reais pertencem a S1-17.",
+    "Exemplos rejeitado e aceito são cenários alternativos com mesmo ID ilustrativo, não duas requisições da mesma sequência.",
+    "Relógio fixo dos exemplos 2026-11-19T12:00:30Z; validação de autorização usa registro ilustrativo local, não autenticação real.",
+    "Histórico remoto QUERY_INSTRUCTION_RESULT permanece fora de escopo, conforme S1-15; replay nesta task somente da projeção local.",
+    "Referências resolvidas a partir da allowlist de documentos e registry local; execução com rede desabilitada."
+  ]
+}
