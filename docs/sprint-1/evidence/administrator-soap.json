@@ -1,0 +1,54 @@
+{
+  "task": "S1-16",
+  "base": "0216befa93836e03751ad77546ce257c73397be3",
+  "branch": "sprint-1-completion",
+  "platform": "linux/amd64",
+  "image": "cafi-soap:s1",
+  "image_manifest_sha256": "67a32af8ff2ce468ad154fd3334f361a90cbba44dafa9169ac1cdf24eb12ed00",
+  "base_image_manifest_sha256": "564513b961987470c56c2886303d7127e4d66d1de8a925e880c4008373ec17c3",
+  "versions": {"python": "3.13.11", "zeep": "4.3.2", "lxml": "6.1.3", "libxml2": "2.14.6", "attrs": "24.3.0"},
+  "sha256": {
+    "contracts/schemas/xml/signed-content.xsd": "5ea06dcebfc8323404829bb48683e099aa6e5d90eb165bbc5831cf0220f5f150",
+    "contracts/soap/README.md": "99cf879798db4cfee525c32ba22942a7255e0738c2f445f20817b57a1017e425",
+    "contracts/soap/administrator.wsdl": "df6a49a80a8787c6e33e87e36cda5128fe500b3a9ce2da296dcacf3481a980e3",
+    "contracts/soap/administrator.xsd": "3d055e7413905a0e928011ad7efd7f46be0e4841662bebef54c04fdba403d09e",
+    "contracts/soap/envelope.xsd": "d852d7a83e9d85a569a49e011d77ccd80680ce68cb503a48f8c10f6fd67a62aa",
+    "contracts/soap/reference/.gitattributes": "9cab8be3663732af310417482435b1c5ea6cfb36a35c740102b9c53aeb2bd2f2",
+    "contracts/soap/reference/validation.xsd": "bd0f5d7ac129f5124617362c86a733ec691239330c2321121c164b1c66c33520",
+    "contracts/soap/reference/wsdl-2003-02-11.xsd": "5ba4c0d0c2804572f1afca3ecda2e9c66b98601d781519e404136fdf766573e6",
+    "contracts/soap/reference/wsdl11soap12.xsd": "01ec1f55fd3aca2d1ed7a29f95fe6fbae659ce45fe71085259203b143b0fddac",
+    "contracts/soap/examples/fault.xml": "2ea3f639d1f8d2238cad8c571b0329c20433ae42df68e9ceb19d688c457369a0",
+    "contracts/soap/examples/get-operation.xml": "e49a08b9b5530795a86b036b7408cda2d63a6f5509496d7b54df7f600a1acc2d",
+    "contracts/soap/examples/get-result.xml": "919e524033c339e5679313fd9b0d7c11f0f312fd6650c3bed9392f368470f9d8",
+    "contracts/soap/examples/register-operation.xml": "05487317d981a567394f071b414e7d37181e55a32811f8f20200364037fd3429",
+    "contracts/soap/examples/register-result.xml": "6ed8b01cb61c51dd0cf2f281a6e08115b01e6faf4ca834d7b5b1fb8d5969c820",
+    "deploy/contracts/Dockerfile": "271811775d7f21b96311e695788618646e9887068f5f2396b7fae4d3de720198",
+    "deploy/contracts/requirements-soap.txt": "e58ae36d4e94d2dbe6dd894bd47d5c03e954c9a2a951d85c786fde18ce57bfe5",
+    "tests/contracts/check_administrator_soap.py": "f0ad82758a058d34f660c1df09122154771403482adcfeb59adbae9070dd7290",
+    "tests/contracts/test_administrator_soap.py": "db715706d1c4ea83dea07c31eba3212521e7cf33a41dc7a1f6fbed905925cad8"
+  },
+  "schema_sources": {
+    "wsdl": "https://schemas.xmlsoap.org/wsdl/2003-02-11.xsd",
+    "soap12": "https://schemas.xmlsoap.org/wsdl/soap12/wsdl11soap12.xsd",
+    "soap12_specification": "https://www.w3.org/submissions/2006/SUBM-wsdl11soap12-20060405/",
+    "notes": "Cópias sem alteração com licença original. A especificação SOAP 1.2 é submissão de membros W3C, não recomendação. validation.xsd combina imports locais. O schema WSDL admite extensibilidade lax: o checker também exige SOAP 1.2 document/literal, operações, ações e Fault."
+  },
+  "runtime": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1",
+  "commands": [
+    {"command": "docker build --platform linux/amd64 --target soap -f deploy/contracts/Dockerfile -t cafi-soap:s1 .", "exit": 0},
+    {"image": "cafi-soap:s1", "command": "python -m unittest discover -s tests/contracts", "exit": 0, "result": "iteração anterior: 51 testes, 46 anteriores e 5 SOAP, antes de adicionar validação estrutural WSDL"},
+    {"image": "cafi-soap:s1", "command": "python -m unittest discover -s tests/contracts -v", "exit": 0, "result": "iteração atual: 54 testes, 46 anteriores e 8 SOAP; inclui WSDL estrutural inválido, extensão inválida, binding incorreto e import remoto"},
+    {"image": "cafi-soap:s1", "command": "python tests/contracts/check_administrator_soap.py", "exit": 0, "result": "schemas oficiais WSDL e SOAP, perfil SOAP, cliente Zeep e cinco exemplos validados offline"},
+    {"image": "cafi-soap:s1", "command": "python tests/contracts/check_administrator_soap.py --invalid-wsdl", "exit": 1, "result": "WSDL XML bem-formado sem atributo obrigatório rejeitado pelo schema oficial"},
+    {"image": "cafi-soap:s1", "command": "python tests/contracts/check_administrator_soap.py --invalid", "exit": 1, "result": "Payload duplicado rejeitado por XSD"},
+    {"image": "cafi-openapi:s1", "command": "python tests/contracts/check_administrator_soap.py", "exit": 1, "result": "ModuleNotFoundError: No module named 'zeep'"},
+    {"image": "cafi-soap:s1", "command": "python -c <subprocess executa check_boleta_schema.py, check_events_schema.py, check_messages_schema.py, canonical_json.py, canonical_xml.py, check_platform_openapi.py, check_custodian_openapi.py e check_administrator_soap.py>", "exit": 0, "result": "cada programa executado individualmente; corpus XML aceitou quatro positivos e rejeitou sete negativos"}
+  ],
+  "limitations": [
+    "Assinaturas ilustrativas, sem verificação criptográfica até S1-17.",
+    "Sem serviço, handshake mTLS ou prova de interoperabilidade.",
+    "Ações são insumo ao checker; não há transporte HTTP implementado.",
+    "Schemas oficiais e verificações do perfil não provam conformidade semântica genérica WSDL nem interoperabilidade.",
+    "Política, autorização, janela temporal e todas as regras financeiras permanecem responsabilidade da integração."
+  ]
+}

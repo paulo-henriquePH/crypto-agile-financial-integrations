@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:c="urn:cafi:v1"
+           targetNamespace="urn:cafi:v1" elementFormDefault="qualified">
+  <xs:include schemaLocation="../schemas/xml/signed-content.xsd"/>
+  <xs:element name="Message">
+    <xs:complexType><xs:sequence>
+      <xs:element ref="c:SignedContent"/>
+      <xs:element ref="c:Signatures"/>
+    </xs:sequence></xs:complexType>
+  </xs:element>
+</xs:schema>

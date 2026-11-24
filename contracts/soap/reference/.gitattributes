@@ -1,0 +1,2 @@
+# Preserve the downloaded reference bytes and the pinned local import harness.
+*.xsd -text

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:c="urn:cafi:v1"
+ targetNamespace="http://www.w3.org/2003/05/soap-envelope" elementFormDefault="qualified">
+ <xs:import namespace="urn:cafi:v1" schemaLocation="administrator.xsd"/>
+ <xs:element name="Envelope"><xs:complexType><xs:sequence>
+  <xs:element name="Body"><xs:complexType><xs:choice>
+   <xs:element ref="c:Message"/>
+   <xs:element name="Fault"><xs:complexType><xs:sequence>
+    <xs:element name="Code"><xs:complexType><xs:sequence><xs:element name="Value" type="xs:QName"/></xs:sequence></xs:complexType></xs:element>
+    <xs:element name="Reason"><xs:complexType><xs:sequence><xs:element name="Text">
+     <xs:complexType><xs:simpleContent><xs:extension base="xs:string">
+      <xs:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="skip"/>
+     </xs:extension></xs:simpleContent></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element>
+    <xs:element name="Detail"><xs:complexType><xs:sequence><xs:element ref="c:Message"/></xs:sequence></xs:complexType></xs:element>
+   </xs:sequence></xs:complexType></xs:element>
+  </xs:choice></xs:complexType></xs:element>
+ </xs:sequence></xs:complexType></xs:element>
+</xs:schema>

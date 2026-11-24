@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Only joins the unmodified upstream schemas for offline validation. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.xmlsoap.org/wsdl/" schemaLocation="wsdl-2003-02-11.xsd"/>
+  <xs:import namespace="http://schemas.xmlsoap.org/wsdl/soap12/" schemaLocation="wsdl11soap12.xsd"/>
+</xs:schema>
