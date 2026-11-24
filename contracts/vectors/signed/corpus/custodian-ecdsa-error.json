@@ -1,0 +1,38 @@
+{
+  "protected": {
+    "schemaVersion": "1.0",
+    "messageId": "00000000-0000-4000-8000-000000000012",
+    "messageType": "ERROR",
+    "senderId": "CUSTODIANTE-GAMA",
+    "recipientId": "PLATFORM",
+    "environment": "LAB",
+    "instructionVersion": 1,
+    "issuedAt": "2026-11-19T12:00:08Z",
+    "expiresAt": "2026-11-19T12:02:08Z",
+    "policyVersion": 1,
+    "signatureProfile": "ECDSA",
+    "canonicalization": "JCS",
+    "signers": [
+      {
+        "algorithm": "ECDSA-P256-SHA256",
+        "keyId": "CUSTODIANTE-GAMA-P256-S117"
+      }
+    ],
+    "operationId": "11111111-1111-4111-8111-111111111111",
+    "requestMessageId": "00000000-0000-4000-8000-000000000010"
+  },
+  "payload": {
+    "code": "IDEMPOTENCY_CONFLICT",
+    "message": "Conteúdo diferente para a mesma identidade lógica.",
+    "correlationId": "00000000-0000-4000-8000-000000000010",
+    "retryable": false,
+    "details": []
+  },
+  "signatures": [
+    {
+      "algorithm": "ECDSA-P256-SHA256",
+      "keyId": "CUSTODIANTE-GAMA-P256-S117",
+      "value": "MEYCIQCdA6a1YIMcBatAUP719mE1n/A1bELXZdyKyencWMKUSAIhAL2LtcY7B80yQBR9Me2chOENN851OeXAsSogmDAsb7Be"
+    }
+  ]
+}

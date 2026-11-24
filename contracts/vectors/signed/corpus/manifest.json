@@ -1,0 +1,275 @@
+{
+  "referenceNow": "2026-11-19T12:00:30Z",
+  "vectors": [
+    {
+      "integration": "platform",
+      "profile": "ECDSA",
+      "role": "request",
+      "wire": "platform-ecdsa-request.json",
+      "canonical": "platform-ecdsa-request.canonical.b64",
+      "request": null,
+      "expected": "accepted",
+      "sha256": "438287893cea502ff4a9cdd93010badf06d59fd8e57644aeda1ee96f6051e79c"
+    },
+    {
+      "integration": "platform",
+      "profile": "ECDSA",
+      "role": "response",
+      "wire": "platform-ecdsa-response.json",
+      "canonical": "platform-ecdsa-response.canonical.b64",
+      "request": "platform-ecdsa-request",
+      "expected": "accepted",
+      "sha256": "b66ee78d8304faaca2c77fc44e08fdefc568cce30b0f4afdc065053527102d7c"
+    },
+    {
+      "integration": "platform",
+      "profile": "ECDSA",
+      "role": "error",
+      "wire": "platform-ecdsa-error.json",
+      "canonical": "platform-ecdsa-error.canonical.b64",
+      "request": "platform-ecdsa-request",
+      "expected": "accepted",
+      "sha256": "da28f00fecc0a0e20c88b9545c1592330f55710ac2f642b110189b336df49b4b"
+    },
+    {
+      "integration": "platform",
+      "profile": "ML_DSA",
+      "role": "request",
+      "wire": "platform-ml_dsa-request.json",
+      "canonical": "platform-ml_dsa-request.canonical.b64",
+      "request": null,
+      "expected": "accepted",
+      "sha256": "4cee2750ee65bf9c96072b7711f1a9b46291851aad31592255befb2ba4a0a2d0"
+    },
+    {
+      "integration": "platform",
+      "profile": "ML_DSA",
+      "role": "response",
+      "wire": "platform-ml_dsa-response.json",
+      "canonical": "platform-ml_dsa-response.canonical.b64",
+      "request": "platform-ml_dsa-request",
+      "expected": "accepted",
+      "sha256": "8797093ce1ec98828514250032afa803189b7f607899a8cec707a64f4201c3ad"
+    },
+    {
+      "integration": "platform",
+      "profile": "ML_DSA",
+      "role": "error",
+      "wire": "platform-ml_dsa-error.json",
+      "canonical": "platform-ml_dsa-error.canonical.b64",
+      "request": "platform-ml_dsa-request",
+      "expected": "accepted",
+      "sha256": "ba1dc2ceb5006ed1c867105436b74bcb5429d0af0b1a08eae8f3148ee63897e2"
+    },
+    {
+      "integration": "platform",
+      "profile": "DUAL",
+      "role": "request",
+      "wire": "platform-dual-request.json",
+      "canonical": "platform-dual-request.canonical.b64",
+      "request": null,
+      "expected": "accepted",
+      "sha256": "20325372c8cc256b1a44121cbf8f44bdf7582a67ef488d5debaa5e10eaff959c"
+    },
+    {
+      "integration": "platform",
+      "profile": "DUAL",
+      "role": "response",
+      "wire": "platform-dual-response.json",
+      "canonical": "platform-dual-response.canonical.b64",
+      "request": "platform-dual-request",
+      "expected": "accepted",
+      "sha256": "4ebc56c68fc75f376b8bfc756a481643f347954ac9fc22678219b4cfc4f9d3c8"
+    },
+    {
+      "integration": "platform",
+      "profile": "DUAL",
+      "role": "error",
+      "wire": "platform-dual-error.json",
+      "canonical": "platform-dual-error.canonical.b64",
+      "request": "platform-dual-request",
+      "expected": "accepted",
+      "sha256": "7a52a0f0f6dd48d21e04725c852c09838c82a671807557fc8014fc6fb6cb4d96"
+    },
+    {
+      "integration": "custodian",
+      "profile": "ECDSA",
+      "role": "request",
+      "wire": "custodian-ecdsa-request.json",
+      "canonical": "custodian-ecdsa-request.canonical.b64",
+      "request": null,
+      "expected": "accepted",
+      "sha256": "eeba1d821eeeadd8eac6800d8a2b8b000364d6fcb917e2da701b6d362d240658"
+    },
+    {
+      "integration": "custodian",
+      "profile": "ECDSA",
+      "role": "response",
+      "wire": "custodian-ecdsa-response.json",
+      "canonical": "custodian-ecdsa-response.canonical.b64",
+      "request": "custodian-ecdsa-request",
+      "expected": "accepted",
+      "sha256": "9ce79da72352e2a0318a1303ce3f199ba662e56097b94bb1e541f52268bd0ea7"
+    },
+    {
+      "integration": "custodian",
+      "profile": "ECDSA",
+      "role": "error",
+      "wire": "custodian-ecdsa-error.json",
+      "canonical": "custodian-ecdsa-error.canonical.b64",
+      "request": "custodian-ecdsa-request",
+      "expected": "accepted",
+      "sha256": "dd5240fd5457d950a9b642126cb78809f008210cdaf57023d3a9f863d1f246c4"
+    },
+    {
+      "integration": "custodian",
+      "profile": "ML_DSA",
+      "role": "request",
+      "wire": "custodian-ml_dsa-request.json",
+      "canonical": "custodian-ml_dsa-request.canonical.b64",
+      "request": null,
+      "expected": "accepted",
+      "sha256": "8158c8b0756809a6206859305a2bbc786ba570ba60f6c348387702aa1ccbcd43"
+    },
+    {
+      "integration": "custodian",
+      "profile": "ML_DSA",
+      "role": "response",
+      "wire": "custodian-ml_dsa-response.json",
+      "canonical": "custodian-ml_dsa-response.canonical.b64",
+      "request": "custodian-ml_dsa-request",
+      "expected": "accepted",
+      "sha256": "3c3284a6312a9c5cdd89c2d89a89ba0a010a9a462de642b11d12a8fa81d1b4d6"
+    },
+    {
+      "integration": "custodian",
+      "profile": "ML_DSA",
+      "role": "error",
+      "wire": "custodian-ml_dsa-error.json",
+      "canonical": "custodian-ml_dsa-error.canonical.b64",
+      "request": "custodian-ml_dsa-request",
+      "expected": "accepted",
+      "sha256": "dd0952d18e965edb674f238d9aac6a2da8f5e030e86a57515c0ed7541eddfbb6"
+    },
+    {
+      "integration": "custodian",
+      "profile": "DUAL",
+      "role": "request",
+      "wire": "custodian-dual-request.json",
+      "canonical": "custodian-dual-request.canonical.b64",
+      "request": null,
+      "expected": "accepted",
+      "sha256": "3da4420c209f4156843dd274fc49909b5d32b761e964dbcab5fe3f19ef6e8eeb"
+    },
+    {
+      "integration": "custodian",
+      "profile": "DUAL",
+      "role": "response",
+      "wire": "custodian-dual-response.json",
+      "canonical": "custodian-dual-response.canonical.b64",
+      "request": "custodian-dual-request",
+      "expected": "accepted",
+      "sha256": "b72f3635f170ce0cb59b33da2763bda8a1c2b34518ce95192ab638c0915bfe44"
+    },
+    {
+      "integration": "custodian",
+      "profile": "DUAL",
+      "role": "error",
+      "wire": "custodian-dual-error.json",
+      "canonical": "custodian-dual-error.canonical.b64",
+      "request": "custodian-dual-request",
+      "expected": "accepted",
+      "sha256": "9990affd6349d7656f8837535c022ba569b3b2f6c8ed015a51d218eeb86458b7"
+    },
+    {
+      "integration": "administrator",
+      "profile": "ECDSA",
+      "role": "request",
+      "wire": "administrator-ecdsa-request.xml",
+      "canonical": "administrator-ecdsa-request.canonical.b64",
+      "request": null,
+      "expected": "accepted",
+      "sha256": "6a1ed7545a7b285d3100f30fb211c936e93b8f8eb919044fe00a73b2713d71e2"
+    },
+    {
+      "integration": "administrator",
+      "profile": "ECDSA",
+      "role": "response",
+      "wire": "administrator-ecdsa-response.xml",
+      "canonical": "administrator-ecdsa-response.canonical.b64",
+      "request": "administrator-ecdsa-request",
+      "expected": "accepted",
+      "sha256": "c881e9f0017a6922b0b07d15fc6deda589a42aa4f6242473fde1e607be551a43"
+    },
+    {
+      "integration": "administrator",
+      "profile": "ECDSA",
+      "role": "error",
+      "wire": "administrator-ecdsa-error.xml",
+      "canonical": "administrator-ecdsa-error.canonical.b64",
+      "request": "administrator-ecdsa-request",
+      "expected": "accepted",
+      "sha256": "0519457fc5e9751a84d470df66104e7d4ee3a5aa849c1371c5614189adc7068b"
+    },
+    {
+      "integration": "administrator",
+      "profile": "ML_DSA",
+      "role": "request",
+      "wire": "administrator-ml_dsa-request.xml",
+      "canonical": "administrator-ml_dsa-request.canonical.b64",
+      "request": null,
+      "expected": "accepted",
+      "sha256": "500cc42b0ace33a5c6c0b41add8db3b47d5fd545eb0105dcb5dd123a2d25f8f9"
+    },
+    {
+      "integration": "administrator",
+      "profile": "ML_DSA",
+      "role": "response",
+      "wire": "administrator-ml_dsa-response.xml",
+      "canonical": "administrator-ml_dsa-response.canonical.b64",
+      "request": "administrator-ml_dsa-request",
+      "expected": "accepted",
+      "sha256": "f525b8d2952038c4132ca65fd3659a413877b4f048aec7880a4fc7a8de99230a"
+    },
+    {
+      "integration": "administrator",
+      "profile": "ML_DSA",
+      "role": "error",
+      "wire": "administrator-ml_dsa-error.xml",
+      "canonical": "administrator-ml_dsa-error.canonical.b64",
+      "request": "administrator-ml_dsa-request",
+      "expected": "accepted",
+      "sha256": "819abacaee33c165e22cc1e8eb783e75b784f5f4e5307d6bd33be84b8e338333"
+    },
+    {
+      "integration": "administrator",
+      "profile": "DUAL",
+      "role": "request",
+      "wire": "administrator-dual-request.xml",
+      "canonical": "administrator-dual-request.canonical.b64",
+      "request": null,
+      "expected": "accepted",
+      "sha256": "f6dd8191c090af41cbbe13f24aa063bad67d0c750f1b83f6443d64e99876850a"
+    },
+    {
+      "integration": "administrator",
+      "profile": "DUAL",
+      "role": "response",
+      "wire": "administrator-dual-response.xml",
+      "canonical": "administrator-dual-response.canonical.b64",
+      "request": "administrator-dual-request",
+      "expected": "accepted",
+      "sha256": "6dfc77a40a43ffcd762b689fe85d6dddcdee04997e34d9a054771b69169f7604"
+    },
+    {
+      "integration": "administrator",
+      "profile": "DUAL",
+      "role": "error",
+      "wire": "administrator-dual-error.xml",
+      "canonical": "administrator-dual-error.canonical.b64",
+      "request": "administrator-dual-request",
+      "expected": "accepted",
+      "sha256": "c6434ecc33d213689ec5c952eb595b769faf29bde29a5d6fcaa49169aa64b052"
+    }
+  ]
+}

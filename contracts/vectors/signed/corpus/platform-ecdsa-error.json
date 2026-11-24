@@ -1,0 +1,37 @@
+{
+  "protected": {
+    "schemaVersion": "1.0",
+    "messageId": "00000000-0000-4000-8000-000000000003",
+    "messageType": "ERROR",
+    "senderId": "PLATFORM",
+    "recipientId": "GESTORA-ALFA",
+    "environment": "LAB",
+    "instructionVersion": 1,
+    "issuedAt": "2026-11-19T12:00:08Z",
+    "expiresAt": "2026-11-19T12:02:08Z",
+    "policyVersion": 1,
+    "signatureProfile": "ECDSA",
+    "canonicalization": "JCS",
+    "signers": [
+      {
+        "algorithm": "ECDSA-P256-SHA256",
+        "keyId": "PLATFORM-P256-S117"
+      }
+    ],
+    "requestMessageId": "00000000-0000-4000-8000-000000000001"
+  },
+  "payload": {
+    "code": "IDEMPOTENCY_CONFLICT",
+    "message": "Conteúdo diferente para a mesma identidade lógica.",
+    "correlationId": "00000000-0000-4000-8000-000000000001",
+    "retryable": false,
+    "details": []
+  },
+  "signatures": [
+    {
+      "algorithm": "ECDSA-P256-SHA256",
+      "keyId": "PLATFORM-P256-S117",
+      "value": "MEUCIBJKy60xKpqLq8HMH60dwN5ghPjVJO1gErbK/V8oZOrEAiEA1Eiksm+zCnujI2+4kxWC1o4BfwJJItFN/g60R2aO7VM="
+    }
+  ]
+}

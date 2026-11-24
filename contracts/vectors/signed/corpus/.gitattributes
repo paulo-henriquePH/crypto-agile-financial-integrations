@@ -1,0 +1,2 @@
+# Keep the public fixture files byte-identical across checkouts.
+* text eol=lf

@@ -1,0 +1,62 @@
+{
+  "protected": {
+    "schemaVersion": "1.0",
+    "messageId": "00000000-0000-4000-8000-000000000016",
+    "messageType": "SUBMIT_INSTRUCTION",
+    "senderId": "PLATFORM",
+    "recipientId": "CUSTODIANTE-GAMA",
+    "environment": "LAB",
+    "instructionVersion": 1,
+    "issuedAt": "2026-11-19T12:00:00Z",
+    "expiresAt": "2026-11-19T12:02:00Z",
+    "policyVersion": 3,
+    "signatureProfile": "DUAL",
+    "canonicalization": "JCS",
+    "signers": [
+      {
+        "algorithm": "ECDSA-P256-SHA256",
+        "keyId": "PLATFORM-P256-S117"
+      },
+      {
+        "algorithm": "ML-DSA-65",
+        "keyId": "PLATFORM-ML65-S117"
+      }
+    ],
+    "operationId": "11111111-1111-4111-8111-111111111111"
+  },
+  "payload": {
+    "managerId": "GESTORA-ALFA",
+    "boleta": {
+      "clientOrderId": "OP-000001",
+      "portfolioId": "FUNDO-ALFA",
+      "operationType": "BUY",
+      "assetType": "DEBENTURE",
+      "assetId": "DEB-FICTICIA-01",
+      "issuerId": "EMISSOR-01",
+      "counterpartyId": "INSTITUICAO-BETA",
+      "tradeDate": "2026-11-19",
+      "settlementDate": "2026-11-20",
+      "indexer": "IPCA",
+      "issueRate": "6.000000",
+      "negotiatedRate": "6.500000",
+      "quantity": "100",
+      "unitPrice": "980.500000",
+      "grossAmount": "98050.00",
+      "currency": "BRL",
+      "custodianId": "CUSTODIANTE-GAMA",
+      "administratorId": "ADMINISTRADOR-DELTA"
+    }
+  },
+  "signatures": [
+    {
+      "algorithm": "ECDSA-P256-SHA256",
+      "keyId": "PLATFORM-P256-S117",
+      "value": "MEQCIFReWJBUJankqyk03QSdEPEwDlKXCcf1cYlhRNukniLnAiAa+0NuvJ9EqbAqATAsczeC7hCFdzEWk3ybs7/wIjei5Q=="
+    },
+    {
+      "algorithm": "ML-DSA-65",
+      "keyId": "PLATFORM-ML65-S117",
+      "value": "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"
+    }
+  ]
+}
