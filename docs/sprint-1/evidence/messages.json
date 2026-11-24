@@ -1,0 +1,40 @@
+{
+  "task": "S1-11-C1",
+  "baseRevision": "63f45d4b743a8255bdb7b9486d3dd6653702d9ef",
+  "priorMessagesCommit": "66df679",
+  "note": "Hashes dos bytes montados, incluindo alterações não commitadas; revisão independente pendente.",
+  "environment": {
+    "os": "Linux x86_64, glibc 2.36, kernel 6.18.58.1-microsoft-standard-WSL2",
+    "python": "CPython 3.13.11",
+    "image": "cafi-events:s1",
+    "imageId": "sha256:ba36ecd74babea54b63bbd26aef71743ef059b3dbc3c147563b4b09bbb337c0e",
+    "packages": {"jsonschema": "4.23.0", "attrs": "24.3.0", "jsonschema-specifications": "2024.10.1", "referencing": "0.35.1", "rpds-py": "0.22.3", "rfc3339-validator": "0.1.4", "six": "1.17.0"},
+    "dialect": "https://json-schema.org/draft/2020-12/schema",
+    "runtimeIsolation": "--rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1"
+  },
+  "inputsSHA256": {
+    "contracts/messages/envelope.schema.json": "6f4cf7d6c4d9fa67b8f89651b329dc4f63c885e4285974b24b89d2f5c8f91ef1",
+    "contracts/messages/examples.json": "21d3b5a56b589bfde3910b64831e647e44a7774e45856dad30c9ad0ef9414666",
+    "contracts/messages/types.json": "7b0d14589f823281c3db20d7935e3d7ba7e709fb3f575ed29879953e1f70039d",
+    "tests/contracts/check_messages_schema.py": "fa6c1983c3f830a809ea086b33e0936dc52c12e7a3d21a42268af2a40e07c184",
+    "tests/contracts/test_messages.py": "b94fd76b6866387dcd03c03584d8fc20a572fc5dd4f2f224bde5c2429c51bc55",
+    "tests/contracts/validate_message.py": "0af379b2e35902030dd56c6b1a6b83fa53f5bb4e1ca0f3bfbf9c08be26b3648e",
+    "tests/contracts/validate_boleta.py": "f9ee6ad360f3b08aa1b82039572075bcc93ddd5bacd993a76eedf250561892d5",
+    "tests/contracts/validate_events.py": "f9c2d68056e0eb8653db990c4017931b92b8b25acb659cd4518598931dd5af6c",
+    "contracts/schemas/boleta.schema.json": "8af5084dd5bf9ab2d3b1e6554b28ffca0a04fe7a68883ec8ba5e3de616bf63fc",
+    "contracts/schemas/event.schema.json": "04b9968e3d5293083c9a6c4b8263968ee20b92d4b2c1749d75f0325d2775cd79",
+    "contracts/domain/transitions.json": "5566937e639cf38a2ce9b073ef586e9d99e15fa23cc7fee8c8f07e7b3f9189a2",
+    "fixtures/boletas/references.json": "c20f8b5338d46aaac3701dd7d520a100705ec96bc56ab73c9003e77918178ca8",
+    "deploy/contracts/Dockerfile": "d601aff0da7e4b5c1786502653384b379d4b82664421a703a071e964507f43b5",
+    "deploy/contracts/requirements-boleta.txt": "a498c407aa914bb6191ab44ed2024de1e5ada85e6ccb08c6f1067449ab0dc8df"
+  },
+  "commands": [
+    {"command": "docker run [runtimeIsolation] cafi-events:s1 python -m unittest discover -s tests/contracts -p test_messages.py -v", "exit": 0, "result": "5 testes e 28 casos com subcasos OK"},
+    {"command": "docker run [runtimeIsolation] cafi-events:s1 python tests/contracts/check_messages_schema.py", "exit": 0, "result": "3 metaschemas, todas as 28 mensagens e requisições associadas; data impossível rejeitada"},
+    {"command": "docker run [runtimeIsolation] cafi-events:s1 python tests/contracts/check_messages_schema.py --invalid", "exit": 1, "result": "ValidationError: date-time impossível"},
+    {"command": "docker run [runtimeIsolation] cafi-spikes:s1 python tests/contracts/check_messages_schema.py", "exit": 1, "result": "ModuleNotFoundError: jsonschema ausente"},
+    {"command": "docker run [runtimeIsolation] cafi-boleta:s1 python tests/contracts/check_messages_schema.py", "exit": 1, "result": "RuntimeError: date-time indisponível"}
+  ],
+  "coverage": ["tipos, versões, contexto e criação sem UUID", "correlação e consultas novas", "signatários e perfil duplo, chave/política e validade", "respostas e erros estruturais assinados por contrato", "todos os exemplos pelo motor e negativos pelo validador contextual", "metaschemas e resolução local de referências, date-time efetivamente testado"],
+  "limitations": ["Assinaturas são ilustrativas, não verificadas criptograficamente; S1-17.", "QUERY_INSTRUCTION_RESULT contém histórico de plataforma iniciado em REGISTERED; apenas estrutura/envelope verificados, corrigir histórico e sequência própria do custodiante iniciado em RECEIVED na S1-15.", "Sem execução de canonicalização, serviços, transporte ou persistência.", "Schemas e validadores compartilhados de boleta e eventos não foram modificados."]
+}

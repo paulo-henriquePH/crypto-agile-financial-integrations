@@ -121,6 +121,10 @@ Após o commit preexistente `b46a2b8`, revalidar tabela, sequências e schema co
 - **Aceite:** definir a obrigatoriedade por tipo, inclusive criação sem UUID, respostas e erros assinados. Vincular algoritmo e `keyId` ao conteúdo protegido; perfil duplo exige ambas as assinaturas. Diferenciar identidade lógica de comando e identidade de mensagem; consultas novas não reutilizam estado antigo.
 - **Verificação:** exemplos estruturais válidos e inválidos para ausência de contexto, versão não suportada e signatários incompatíveis. Marcar valores ilustrativos de assinatura como não criptográficos até S1-17.
 
+#### Task corretiva S1-11-C1 — revalidação do envelope
+
+Após o commit preexistente `66df679`, resolver referências dos schemas e revalidar todos os exemplos com JSON Schema fixado no runtime aprovado. Registrar evidência e submeter a revisão independente antes do commit atômico `fix(contracts): revalida envelope no ambiente aprovado`. O histórico remoto de `QUERY_INSTRUCTION_RESULT` requer correção semântica em S1-15, não nesta task.
+
 ### S1-12 Produzir vetores de canonicalização JSON
 
 - **Entrada:** envelope de S1-11.

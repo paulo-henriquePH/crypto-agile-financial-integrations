@@ -540,7 +540,7 @@
       "then": {
         "properties": {
           "payload": {
-            "$ref": "../schemas/boleta.schema.json"
+            "$ref": "urn:cafi:boleta:v1"
           }
         }
       }
@@ -802,7 +802,7 @@
           "pattern": "^[A-Za-z0-9_-]{1,64}(?![\\s\\S])"
         },
         "boleta": {
-          "$ref": "../schemas/boleta.schema.json"
+          "$ref": "urn:cafi:boleta:v1"
         },
         "state": {
           "enum": [
@@ -830,7 +830,7 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "../schemas/event.schema.json"
+            "$ref": "urn:cafi:v1:event"
           }
         },
         "deliveryStatus": {
@@ -916,7 +916,7 @@
           "pattern": "^[A-Za-z0-9_-]{1,64}(?![\\s\\S])"
         },
         "boleta": {
-          "$ref": "../schemas/boleta.schema.json"
+          "$ref": "urn:cafi:boleta:v1"
         }
       }
     },
@@ -935,7 +935,7 @@
           "pattern": "^[A-Za-z0-9_-]{1,64}(?![\\s\\S])"
         },
         "boleta": {
-          "$ref": "../schemas/boleta.schema.json"
+          "$ref": "urn:cafi:boleta:v1"
         },
         "state": {
           "enum": [

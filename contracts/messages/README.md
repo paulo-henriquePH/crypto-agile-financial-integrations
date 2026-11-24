@@ -64,10 +64,15 @@ Consultas não são comandos de efeito e não usam essa chave para cachear snaps
 
 ## Verificação e limites da entrega
 
-```text
-py -3 -m unittest discover -s tests/contracts -p test_messages.py -v
+```powershell
+$env:PATH = "C:\Users\Inteli\AppData\Local\Programs\DockerDesktop\resources\bin;$env:PATH"
+$isolation = @('--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--mount',"type=bind,source=$((Get-Location).Path),target=/work,readonly",'-w','/work','-e','PYTHONDONTWRITEBYTECODE=1')
+docker run @isolation cafi-events:s1 python -m unittest discover -s tests/contracts -p test_messages.py -v
+docker run @isolation cafi-events:s1 python tests/contracts/check_messages_schema.py
+docker run @isolation cafi-events:s1 python tests/contracts/check_messages_schema.py --invalid # saída 1 esperada
+docker run @isolation cafi-spikes:s1 python tests/contracts/check_messages_schema.py # dependência ausente, saída 1 esperada
 ```
 
-Em Linux use `python3`. Cinco métodos de teste passaram com 28 exemplos estruturais e subcasos de contexto, versões, signatários, perfil duplo, validade, revogação, correlação, JSON duplicado, nulos e limites, incluindo motivo de registro terminal e boleta financeiramente inválida preservada em rejeição local. Nenhum teste assina/verifica criptografia. O schema expressa estrutura e formatos; regras cruzadas de tipo, perfil, política, calendário e correlação são aplicadas explicitamente por `tests/contracts/validate_message.py`. Validação por ferramenta JSON Schema fixada permanece pendente junto à stack.
+O ambiente `cafi-events:s1` é reproduzido pelo `deploy/contracts/Dockerfile` e dependências fixadas em `deploy/contracts/requirements-boleta.txt`; executar na raiz. [Evidência S1-11-C1](../../docs/sprint-1/evidence/messages.json) registra imagem, versões, hashes e resultados. O registry local resolve os URNs sem rede; o checker exige suporte efetivo a formatos, inclusive data impossível. Todos os 28 exemplos e requisições associadas são examinados; negativos de perfil, correspondência de signatários e relógio são rejeitados pelo validador contextual, não necessariamente pelo schema. Nenhum teste assina/verifica criptografia. O schema expressa estrutura e formatos; regras cruzadas de tipo, perfil, política, calendário e correlação são aplicadas explicitamente por `tests/contracts/validate_message.py`.
 
-S1-11 foi executada sobre `b46a2b8`, por autorização do usuário para avançar sem build. S1-03–08 continuam pendentes. Não há serviço de negócio, transporte ou migração implementados.
+O exemplo histórico `query_instruction_result` começa com evento `REGISTERED` da plataforma, não com `RECEIVED` e sequência própria do custodiante. Sua verificação aqui é somente estrutural e de envelope, **não aprovação semântica do histórico**; corrigir e verificar a sequência em S1-15. Não há serviço de negócio, transporte ou migração implementados.
