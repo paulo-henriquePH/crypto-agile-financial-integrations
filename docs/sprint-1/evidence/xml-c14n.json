@@ -1,0 +1,119 @@
+{
+  "task": "S1-13",
+  "baseRevision": "17cab84896142db69f27c5d09d6072da11dbf051",
+  "branch": "sprint-1-completion",
+  "note": "Hashes dos bytes efetivos da prova local, incluindo os arquivos novos e o Dockerfile ainda não commitados.",
+  "environment": {
+    "os": "Linux amd64 glibc 2.36, kernel 6.18.58.1-microsoft-standard-WSL2",
+    "python": "CPython 3.13.11",
+    "image": "cafi-xml:s1",
+    "imageId": "sha256:9b4645f196d4b63ed3306bd58ec6d0c12922876c9c75af1be4604065ad589774",
+    "baseImage": "cafi-spikes:s1",
+    "baseImageId": "sha256:564513b961987470c56c2886303d7127e4d66d1de8a925e880c4008373ec17c3",
+    "missingDependencyImageId": "sha256:bbab4995585a6af3ac293b2a187e104dee393b1754dc0972afdb8e2ce0c18ccd",
+    "packages": {
+      "lxml": "6.1.3",
+      "rfc8785": "0.1.4",
+      "jsonschema": "4.23.0",
+      "attrs": "24.3.0",
+      "jsonschema-specifications": "2024.10.1",
+      "referencing": "0.35.1",
+      "rpds-py": "0.22.3",
+      "rfc3339-validator": "0.1.4",
+      "six": "1.17.0",
+      "pip": "25.3"
+    },
+    "libraries": {
+      "Expat": "2.7.3",
+      "libxml2": {"loaded": "2.14.6", "compiled": "2.14.6"},
+      "libxslt": {"loaded": "1.1.43", "compiled": "1.1.43", "use": "incluída no wheel; a prova não executa XSLT"}
+    },
+    "lxmlWheel": {
+      "filename": "lxml-6.1.3-cp313-cp313-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl",
+      "pypiMetadata": "https://pypi.org/pypi/lxml/6.1.3/json",
+      "sha256": "d85dfab42dd672f87a7f76e9de7172962aee69fa12044f0d6e1a23cbd53fb80e",
+      "transitivePythonDependencies": []
+    },
+    "runtimeIsolation": "--rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1",
+    "tmpfs": "não utilizado"
+  },
+  "independentReference": {
+    "tool": "Windows PowerShell 5.1 / .NET Framework 4.8.1 (Release 533509), XmlDsigExcC14NTransform",
+    "assembly": "System.Security, Version=4.0.0.0; arquivo 4.8.9363.0 (NET481REL1LAST_25H2_B)",
+    "source": "https://learn.microsoft.com/dotnet/api/system.security.cryptography.xml.xmldsigexcc14ntransform",
+    "normativeRules": "https://www.w3.org/TR/xml-exc-c14n/#sec-Specification",
+    "procedure": "O DOM .NET toma o nó pelo caminho fixo nos quatro positivos conhecidos e fornece os namespaces em escopo ao transform gerenciado sem comentários. Os bytes congelados vieram desse transform, não da libxml2. A execução de conferência comparou bytes e digest sem sobrescrever os arquivos.",
+    "matches": [
+      {"name": "query", "bytes": 802, "sha256": "9125dd686595e0746194a97f5eeb42d3416a31732354035d963c46214f31dd60"},
+      {"name": "query-recontextualized", "bytes": 802, "sha256": "9125dd686595e0746194a97f5eeb42d3416a31732354035d963c46214f31dd60"},
+      {"name": "error", "bytes": 1257, "sha256": "6dc3b935d537eefb7c62fd077db59a380eb466fe0951c59ac41e6fb416c50490"},
+      {"name": "registration", "bytes": 1551, "sha256": "9904178667de462561f0cd965c868333c5d1d144f61f43c4953021449d44dbac"}
+    ]
+  },
+  "inputsSHA256": {
+    "deploy/contracts/Dockerfile": "de5432673ba1bc90f4f79a47b1e083b721d7c411d827b46221ba7846fb821f6d",
+    "deploy/contracts/requirements-boleta.txt": "a498c407aa914bb6191ab44ed2024de1e5ada85e6ccb08c6f1067449ab0dc8df",
+    "deploy/contracts/requirements-xml.txt": "17129fcefa0e8f24ea4de4c8ab6d6fcfb97c8dcb443e9124f59c2d8f021b7f3c",
+    "contracts/vectors/json/requirements.txt": "14d26a947e5aa546f02704af73e598a018f52327197e0c5f61b90533955ca8a7",
+    "contracts/vectors/json/README.md": "e29de32ec69a0d0c0797a35d87e7004c7bff4e346270883d3c83f2d9e3427d23",
+    "contracts/schemas/xml/signed-content.xsd": "5ea06dcebfc8323404829bb48683e099aa6e5d90eb165bbc5831cf0220f5f150",
+    "tests/contracts/canonical_xml.py": "fcfe638f791f9098650d49d6caa9216f260e0947806dde33ed3971523b456d96",
+    "tests/contracts/test_canonical_xml.py": "396edee278b94e403d7147b5ffd862c2d22eec136bab76c9ab627245a36774d8",
+    "contracts/vectors/xml/.gitattributes": "42e83e11e012d3abc5ce8fcf4569a2c201b12b926a239424ff2213426fa3c689",
+    "contracts/vectors/xml/dtd.input.xml": "a65ba2fa3fddf35598c7682b7122b0cf49f877beed5bb8f9b77de758c32be442",
+    "contracts/vectors/xml/duplicate-body.input.xml": "f77529aeee44e4546a1f9a5f24e002964ec4ddbbf2318fe0fc4b8812b73c51a7",
+    "contracts/vectors/xml/duplicate-content.input.xml": "1b011dc0214b9f9ea775782106f5f9efb9939909c96ab8d5883af4dbc93d07db",
+    "contracts/vectors/xml/error.canonical.b64": "848f8c71313808fa65dab58dd620caa21e0e224a8178da6517be46e057385ec1",
+    "contracts/vectors/xml/error.input.xml": "ad0ee15d68f89ef47ecf4a9ea18a11f0854e6e51c49f8ad48898fe74dcea6f53",
+    "contracts/vectors/xml/external-reference.input.xml": "bfefdfa89304daa821d53781271653b338e7eb2415f8ffb0c9fa9348d5f4494a",
+    "contracts/vectors/xml/manifest.json": "36be1b170d6573f01e067fd672952a80ac8392877f4dd378e9a8bc196c997ee7",
+    "contracts/vectors/xml/query-recontextualized.input.xml": "1ed781f4aec99b43496d4866993d330ef6ae85a4f481d8ea6c7a38631493f767",
+    "contracts/vectors/xml/query.canonical.b64": "68cbe3dbb1734ebc10650ebf1a1cfa7aee8f61f7c3561bab4ea816104773414a",
+    "contracts/vectors/xml/query.input.xml": "331672876d7d24f57276618366361e0b49921dc1933a82f3b654b2371481726f",
+    "contracts/vectors/xml/README.md": "3f66b799a00451b724fc50d5cfdde2e1166cd87af9e7fdd536ed040f0f798668",
+    "contracts/vectors/xml/registration.canonical.b64": "4182b94e282ada96ac616c30faa4d95cda1f316747364b30d50b5fa919c00ac0",
+    "contracts/vectors/xml/registration.input.xml": "642d06d1d930f6b6bb48333ee4d51a706a87ceb6df26e85f0df711f28b8efeb6",
+    "contracts/vectors/xml/schema-hint.input.xml": "42159a98406568558304ef5c36ff836abecf1c805a1ee0c2c6ae8893ae90d78c",
+    "contracts/vectors/xml/substituted-content.input.xml": "fdc465add831ece6b0dbdb6b0bf8118514f79c558efeabe18042be990b4cf912",
+    "contracts/vectors/xml/xinclude.input.xml": "5985635c4c2613a5927e7176de10e69656529935aad1052bb9a210b67dfd4e3a",
+    "contracts/vectors/xml/reference/check.ps1": "c19313195634e5ffcd35c4f5128507ef12ab526ad7b25d021176fd2a43c87fa7"
+  },
+  "commands": [
+    {"command": "docker build --platform linux/amd64 --target xml -f deploy/contracts/Dockerfile -t cafi-xml:s1 .", "exit": 0, "result": "wheel fixado instalado com --require-hashes e --only-binary=:all:; camadas JCS/JSON Schema reutilizadas"},
+    {"command": "docker image inspect cafi-spikes:s1 cafi-jcs:s1 cafi-xml:s1", "exit": 0, "result": "IDs e arquitetura obtidos do Docker"},
+    {"command": "docker run [runtimeIsolation] cafi-xml:s1 python -c \"import platform, sys, importlib.metadata as im; from lxml import etree as x; from xml.parsers import expat as e; print(sys.version, platform.platform(), platform.libc_ver()); print(x.LXML_VERSION, x.LIBXML_VERSION, x.LIBXML_COMPILED_VERSION, x.LIBXSLT_VERSION, x.LIBXSLT_COMPILED_VERSION, e.EXPAT_VERSION); print(sorted((d.metadata['Name'], d.version) for d in im.distributions()))\"", "exit": 0, "result": "versões observadas em execução"},
+    {"command": "& .\\contracts\\vectors\\xml\\reference\\check.ps1 -PrintExpected", "exit": 0, "result": "autoria dos bytes esperados via biblioteca gerenciada; apenas saída, sem editar os arquivos"},
+    {"command": "& .\\contracts\\vectors\\xml\\reference\\check.ps1", "exit": 0, "result": "quatro correspondências de bytes e SHA-256 com os arquivos estáticos"},
+    {"command": "docker run [runtimeIsolation] cafi-xml:s1 python tests/contracts/canonical_xml.py", "exit": 0, "result": "11 vetores estáticos: quatro positivos e sete negativos por código esperado"},
+    {"command": "docker run [runtimeIsolation] cafi-xml:s1 python -m unittest discover -s tests/contracts -p test_canonical_xml.py -v", "exit": 0, "result": "nove testes XML, zero skips"},
+    {"command": "docker run [runtimeIsolation] -e PYTHONPATH=/work/tests/contracts cafi-xml:s1 python -m unittest -v test_boleta test_events test_messages test_canonical_json", "exit": 0, "result": "22 testes anteriores, zero skips"},
+    {"command": "docker run [runtimeIsolation] cafi-xml:s1 python -m unittest discover -s tests/contracts -v", "exit": 0, "result": "31 testes combinados, zero skips"},
+    {"command": "docker run [runtimeIsolation] cafi-xml:s1 python tests/contracts/check_boleta_schema.py", "exit": 0, "result": "schema e boleta válidos"},
+    {"command": "docker run [runtimeIsolation] cafi-xml:s1 python tests/contracts/check_events_schema.py", "exit": 0, "result": "metaschema, 39 eventos válidos aceitos, sete inválidos rejeitados"},
+    {"command": "docker run [runtimeIsolation] cafi-xml:s1 python tests/contracts/check_messages_schema.py", "exit": 0, "result": "três metaschemas, 28 mensagens e requisições; data impossível rejeitada"},
+    {"command": "docker run [runtimeIsolation] cafi-xml:s1 python tests/contracts/canonical_xml.py --invalid", "exit": 1, "result": "digest esperado de query zerado em memória, reference-mismatch; arquivos não alterados"},
+    {"command": "docker run [runtimeIsolation] cafi-jcs:s1 python -m unittest discover -s tests/contracts -p test_canonical_xml.py -v", "exit": 1, "result": "ModuleNotFoundError lxml, sem skip"}
+  ],
+  "reproductionDocumentationRecheck": {
+    "note": "Correção apenas nos roteiros JSON/XML. Reexecutados os comandos documentados abaixo; suíte XML positiva, checkers e referência independente mantêm os resultados da execução original.",
+    "jcsImageId": "sha256:610e0a5dd0f955267d95ad99f8a407ea0d5200cb4ad51468732aa1bf1b20fd2a",
+    "commands": [
+      {"command": "docker build -f deploy/contracts/Dockerfile -t cafi-jcs:s1 .", "exit": 0, "result": "alvo padrão sem lxml, derivado da imagem existente com camadas reutilizadas"},
+      {"command": "docker run [runtimeIsolation] cafi-jcs:s1 python -m unittest discover -s tests/contracts -p test_canonical_json.py -v", "exit": 0, "result": "cinco testes JCS, zero skips"},
+      {"command": "docker run [runtimeIsolation] -e PYTHONPATH=/work/tests/contracts cafi-jcs:s1 python -m unittest -v test_boleta test_events test_messages test_canonical_json", "exit": 0, "result": "22 testes de S1-12-C1 explicitamente selecionados, zero skips"},
+      {"command": "docker run [runtimeIsolation] cafi-jcs:s1 python -m unittest discover -s tests/contracts -p test_canonical_xml.py -v", "exit": 1, "result": "contraprova reproduzida na imagem recém-construída: ModuleNotFoundError lxml, sem skip"}
+    ]
+  },
+  "coverages": {
+    "A08": "caminho único e XSD; Body/conteúdo duplicados, namespace substituído, conteúdo encaixado, cabeçalho/atributo externo, troca válida no caminho correto que não satisfaz os bytes/digest; teste consome mesmo nó entregue",
+    "A09": "DTD interna e DTD com referência externa, entidade indefinida, XInclude, schemaLocation, PI e atributos de contexto rejeitados na pré-validação; resolvedor do lxml configurado para negar também acesso local",
+    "A11": "256 KiB e 256 KiB + 1; profundidade 32 aceita no preflight antes do XSD e 33 rejeitada; de uma a duas assinaturas conforme perfil",
+    "canonicalization": "namespace default e com prefixo, contextos ancestrais diferentes, posição de declarações visíveis, escapes de atributos e texto, CDATA, Unicode, whitespace, comentários e exclusão das assinaturas irmãs"
+  },
+  "limitations": [
+    "Estrutura da prova não é WSDL/SOAP final; ação, wrappers e Fault ficam em S1-16.",
+    "Valores de assinatura são ilustrativos; digest verifica a expectativa, não autentica. Sem regras de autorização, política, janela de validade ou efeitos de negócio. Assinatura e verificação reais em S1-17.",
+    "Referência .NET executada sobre fixtures positivas conhecidas no Windows. Controles de rejeição exercitados no executor Linux; não se alega validação de segurança de um segundo parser nem resistência sob carga.",
+    "Não altera o histórico de QUERY_INSTRUCTION_RESULT. Revisão independente e commit pendentes."
+  ]
+}

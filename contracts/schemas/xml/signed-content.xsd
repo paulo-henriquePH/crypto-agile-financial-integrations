@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:c="urn:cafi:v1"
+           targetNamespace="urn:cafi:v1" elementFormDefault="qualified">
+  <!-- Elementos globais reutilizáveis; caminhos e ações SOAP não pertencem a este XSD. -->
+  <xs:element name="SignedContent" type="c:SignedContentType"/>
+  <xs:element name="Signatures" type="c:SignaturesType"/>
+
+  <xs:simpleType name="Identifier">
+    <xs:restriction base="xs:string"><xs:pattern value="[A-Za-z0-9_-]{1,64}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Uuid">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="UtcTimestamp">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,6})?Z"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="PositiveInteger">
+    <xs:restriction base="xs:string"><xs:pattern value="[1-9][0-9]*"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Text">
+    <xs:restriction base="xs:string"><xs:minLength value="1"/><xs:maxLength value="256"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="MessageType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="REGISTER_OPERATION"/>
+      <xs:enumeration value="QUERY_ADMIN_RECORD"/>
+      <xs:enumeration value="REGISTER_OPERATION_RESULT"/>
+      <xs:enumeration value="QUERY_ADMIN_RECORD_RESULT"/>
+      <xs:enumeration value="ERROR"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Profile">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ECDSA"/><xs:enumeration value="ML_DSA"/><xs:enumeration value="DUAL"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Algorithm">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ECDSA-P256-SHA256"/><xs:enumeration value="ML-DSA-65"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:attributeGroup name="SignerIdentity">
+    <xs:attribute name="algorithm" type="c:Algorithm" use="required"/>
+    <xs:attribute name="keyId" type="c:Identifier" use="required"/>
+  </xs:attributeGroup>
+  <xs:complexType name="ProtectedType">
+    <xs:sequence>
+      <xs:element name="SchemaVersion">
+        <xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="1.0"/></xs:restriction></xs:simpleType>
+      </xs:element>
+      <xs:element name="MessageId" type="c:Uuid"/>
+      <xs:element name="MessageType" type="c:MessageType"/>
+      <xs:element name="SenderId" type="c:Identifier"/>
+      <xs:element name="RecipientId" type="c:Identifier"/>
+      <xs:element name="Environment" type="c:Identifier"/>
+      <xs:element name="OperationId" type="c:Uuid"/>
+      <xs:element name="InstructionVersion">
+        <xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="1"/></xs:restriction></xs:simpleType>
+      </xs:element>
+      <xs:element name="IssuedAt" type="c:UtcTimestamp"/>
+      <xs:element name="ExpiresAt" type="c:UtcTimestamp"/>
+      <xs:element name="PolicyVersion" type="c:PositiveInteger"/>
+      <xs:element name="SignatureProfile" type="c:Profile"/>
+      <xs:element name="Canonicalization">
+        <xs:simpleType>
+          <xs:restriction base="xs:string"><xs:enumeration value="EXCLUSIVE_C14N_1_0"/></xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Signers">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Signer" minOccurs="1" maxOccurs="2">
+              <xs:complexType><xs:attributeGroup ref="c:SignerIdentity"/></xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="RequestMessageId" type="c:Uuid" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="IsoDate">
+    <xs:restriction base="xs:string"><xs:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Rate">
+    <xs:restriction base="xs:string"><xs:pattern value="100\.000000|(0|[1-9][0-9]?)\.[0-9]{6}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Quantity">
+    <xs:restriction base="xs:string"><xs:pattern value="[1-9][0-9]{0,8}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="UnitPrice">
+    <xs:restriction base="xs:string"><xs:pattern value="(0|[1-9][0-9]{0,13})\.[0-9]{6}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="GrossAmount">
+    <xs:restriction base="xs:string"><xs:pattern value="(0|[1-9][0-9]{0,17})\.[0-9]{2}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="BoletaType">
+    <xs:sequence>
+      <xs:element name="ClientOrderId" type="c:Identifier"/>
+      <xs:element name="PortfolioId" type="c:Identifier"/>
+      <xs:element name="OperationType">
+        <xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="BUY"/></xs:restriction></xs:simpleType>
+      </xs:element>
+      <xs:element name="AssetType">
+        <xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="DEBENTURE"/></xs:restriction></xs:simpleType>
+      </xs:element>
+      <xs:element name="AssetId" type="c:Identifier"/>
+      <xs:element name="IssuerId" type="c:Identifier"/>
+      <xs:element name="CounterpartyId" type="c:Identifier"/>
+      <xs:element name="TradeDate" type="c:IsoDate"/>
+      <xs:element name="SettlementDate" type="c:IsoDate"/>
+      <xs:element name="Indexer">
+        <xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="IPCA"/></xs:restriction></xs:simpleType>
+      </xs:element>
+      <xs:element name="IssueRate" type="c:Rate"/>
+      <xs:element name="NegotiatedRate" type="c:Rate"/>
+      <xs:element name="Quantity" type="c:Quantity"/>
+      <xs:element name="UnitPrice" type="c:UnitPrice"/>
+      <xs:element name="GrossAmount" type="c:GrossAmount"/>
+      <xs:element name="Currency">
+        <xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="BRL"/></xs:restriction></xs:simpleType>
+      </xs:element>
+      <xs:element name="CustodianId" type="c:Identifier"/>
+      <xs:element name="AdministratorId" type="c:Identifier"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="TerminalState">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="REJECTED"/><xs:enumeration value="SETTLED"/>
+      <xs:enumeration value="SETTLEMENT_FAILED"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="RejectionOrigin">
+    <xs:restriction base="xs:string"><xs:enumeration value="LOCAL"/><xs:enumeration value="CUSTODIAN"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Boolean">
+    <xs:restriction base="xs:string"><xs:enumeration value="true"/><xs:enumeration value="false"/></xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="PayloadType">
+    <xs:choice minOccurs="0">
+      <!-- Snapshot terminal; a alternativa vazia é exclusiva da consulta. -->
+      <xs:sequence>
+        <xs:element name="ManagerId" type="c:Identifier"/>
+        <xs:element name="Boleta" type="c:BoletaType"/>
+        <xs:element name="State" type="c:TerminalState"/>
+        <xs:element name="Sequence" type="c:PositiveInteger"/>
+        <xs:element name="Reason" type="c:Text" minOccurs="0"/>
+        <xs:element name="RejectionOrigin" type="c:RejectionOrigin" minOccurs="0"/>
+      </xs:sequence>
+      <xs:sequence>
+        <xs:element name="Code" type="c:Identifier"/>
+        <xs:element name="Message" type="c:Text"/>
+        <xs:element name="CorrelationId" type="c:Uuid"/>
+        <xs:element name="Retryable" type="c:Boolean"/>
+        <xs:element name="Details">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Detail" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="field" type="c:Text" use="required"/>
+                  <xs:attribute name="issue" type="c:Text" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="SignedContentType">
+    <xs:sequence>
+      <xs:element name="Protected" type="c:ProtectedType"/>
+      <xs:element name="Payload" type="c:PayloadType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="SignatureValue">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="4"/>
+      <xs:pattern value="([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="SignaturesType">
+    <xs:sequence>
+      <xs:element name="Signature" minOccurs="1" maxOccurs="2">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="c:SignatureValue"><xs:attributeGroup ref="c:SignerIdentity"/></xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

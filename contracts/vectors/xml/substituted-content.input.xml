@@ -1,0 +1,3 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:c="urn:cafi:v1" xmlns:other="urn:other">
+  <s:Body><c:Message><other:SignedContent/><c:Signatures/></c:Message></s:Body>
+</s:Envelope>

@@ -1,0 +1,3 @@
+*.xml text eol=lf
+*.b64 text eol=lf
+*.json text eol=lf

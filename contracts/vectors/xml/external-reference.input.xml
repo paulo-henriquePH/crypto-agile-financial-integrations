@@ -1,0 +1,2 @@
+<!DOCTYPE s:Envelope SYSTEM "https://example.invalid/synthetic-test.dtd">
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope"><s:Body/></s:Envelope>

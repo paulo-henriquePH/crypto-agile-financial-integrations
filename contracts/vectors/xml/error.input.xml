@@ -1,0 +1,19 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns="urn:cafi:v1" xmlns:d="urn:cafi:v1" xmlns:u="urn:unused:test">
+  <s:Body><Message>
+    <SignedContent>
+      <Protected>
+        <SchemaVersion>1.0</SchemaVersion><MessageId>74444444-4444-4444-8444-444444444444</MessageId>
+        <MessageType>ERROR</MessageType><SenderId>ADMIN</SenderId><RecipientId>PLATFORM</RecipientId>
+        <Environment>LAB</Environment><OperationId>71111111-1111-4111-8111-111111111111</OperationId>
+        <InstructionVersion>1</InstructionVersion><IssuedAt>2026-11-19T12:00:04Z</IssuedAt><ExpiresAt>2026-11-19T12:02:04Z</ExpiresAt>
+        <PolicyVersion>2</PolicyVersion><SignatureProfile>DUAL</SignatureProfile><Canonicalization>EXCLUSIVE_C14N_1_0</Canonicalization>
+        <Signers><Signer keyId="ADMIN-P256" algorithm="ECDSA-P256-SHA256"/><Signer keyId="ADMIN-ML" algorithm="ML-DSA-65"/></Signers>
+        <RequestMessageId>73333333-3333-4333-8333-333333333333</RequestMessageId>
+      </Protected>
+      <!-- No comments, but the whitespace on both sides stays. -->
+      <Payload><Code>NOT_FOUND</Code><Message>  Operação &lt;A&gt; &amp; "B"<!--ignored-->&#xD;
+<![CDATA[line 2 > café]]>  </Message><CorrelationId>73333333-3333-4333-8333-333333333333</CorrelationId><Retryable>false</Retryable><Details><d:Detail issue='&quot;A&quot;&#x9;&lt;&amp;&#xA;&#xD;' field="operationId"/></Details></Payload>
+    </SignedContent>
+    <Signatures><Signature keyId="ADMIN-P256" algorithm="ECDSA-P256-SHA256">VEVTVA==</Signature><Signature keyId="ADMIN-ML" algorithm="ML-DSA-65">VEVTVA==</Signature></Signatures>
+  </Message></s:Body>
+</s:Envelope>

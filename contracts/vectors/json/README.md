@@ -42,7 +42,7 @@ O parágrafo anterior descreve exclusivamente a execução histórica; S1-03–0
 
 ```text
 docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1 cafi-jcs:s1 python -m unittest discover -s tests/contracts -p test_canonical_json.py -v
-docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1 cafi-jcs:s1 python -m unittest discover -s tests/contracts -v
+docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount type=bind,source=<repo>,target=/work,readonly -w /work -e PYTHONDONTWRITEBYTECODE=1 -e PYTHONPATH=/work/tests/contracts cafi-jcs:s1 python -m unittest -v test_boleta test_events test_messages test_canonical_json
 ```
 
-A imagem instala o wheel fixado com verificação de hash e mantém as dependências de schema. As comparações independentes JavaScript são evidência histórica, não foram reexecutadas nesta revalidação; os bytes congelados e hashes foram verificados pelo executor Python. Assinaturas continuam ilustrativas.
+A imagem instala o wheel fixado com verificação de hash e mantém as dependências de schema. O segundo comando executa explicitamente os 22 testes de S1-12-C1; para a descoberta completa, que inclui XML e exige `lxml`, veja o [roteiro S1-13](../xml/README.md#reprodução). As comparações independentes JavaScript são evidência histórica, não foram reexecutadas nesta revalidação; os bytes congelados e hashes foram verificados pelo executor Python. Assinaturas continuam ilustrativas.

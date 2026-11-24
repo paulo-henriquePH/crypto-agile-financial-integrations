@@ -1,0 +1,4 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="urn:cafi:v1 https://example.invalid/synthetic-test.xsd">
+  <s:Body/>
+</s:Envelope>

@@ -1,0 +1,17 @@
+{
+  "algorithm": "EXCLUSIVE_C14N_1_0",
+  "encoding": "UTF-8; expected files transport the exact bytes in base64",
+  "cases": [
+    {"name":"query", "input":"query.input.xml", "expected":"query.canonical.b64", "sha256":"9125dd686595e0746194a97f5eeb42d3416a31732354035d963c46214f31dd60"},
+    {"name":"query-recontextualized", "input":"query-recontextualized.input.xml", "expected":"query.canonical.b64", "sha256":"9125dd686595e0746194a97f5eeb42d3416a31732354035d963c46214f31dd60"},
+    {"name":"error", "input":"error.input.xml", "expected":"error.canonical.b64", "sha256":"6dc3b935d537eefb7c62fd077db59a380eb466fe0951c59ac41e6fb416c50490"},
+    {"name":"registration", "input":"registration.input.xml", "expected":"registration.canonical.b64", "sha256":"9904178667de462561f0cd965c868333c5d1d144f61f43c4953021449d44dbac"},
+    {"name":"duplicate-body", "input":"duplicate-body.input.xml", "reject":"soap-path"},
+    {"name":"duplicate-content", "input":"duplicate-content.input.xml", "reject":"soap-path"},
+    {"name":"substituted-content", "input":"substituted-content.input.xml", "reject":"soap-path"},
+    {"name":"dtd", "input":"dtd.input.xml", "reject":"doctype"},
+    {"name":"external-reference", "input":"external-reference.input.xml", "reject":"doctype"},
+    {"name":"xinclude", "input":"xinclude.input.xml", "reject":"xinclude"},
+    {"name":"schema-hint", "input":"schema-hint.input.xml", "reject":"context-attribute"}
+  ]
+}
