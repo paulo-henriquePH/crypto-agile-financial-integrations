@@ -2,23 +2,23 @@
 
 Plataforma de integração entre gestoras, administradores fiduciários e custodiantes, via APIs REST e Web Services SOAP, com foco em criptoagilidade e migração para criptografia pós-quântica.
 
-> Projeto acadêmico desenvolvido para a eletiva Tópicos Avançados de Criptografia. A Sprint 1 entregou contratos e provas isoladas; os serviços financeiros e experimentos integrados do MVP ainda não foram implementados.
+> Projeto acadêmico desenvolvido para a eletiva Tópicos Avançados de Criptografia.
 
 ## Entrega da Sprint 1
 
-Estão disponíveis [contratos REST](contracts/openapi/), [SOAP/WSDL e XSD](contracts/soap/), modelos, vetores e PoCs de assinaturas e TLS. Consulte o [índice da sprint](docs/sprint-1/README.md) para evidências, limitações e reprodução. Em Windows, com Git e Docker Linux disponíveis:
+A Sprint 1 entregou [contratos REST](contracts/openapi/), [SOAP/WSDL e XSD](contracts/soap/), modelos, vetores e provas isoladas de assinaturas e TLS. Consulte o [índice da sprint](docs/sprint-1/README.md) para evidências, limitações e reprodução. No Windows, com Git e Docker em modo Linux:
 
 ```powershell
 powershell -NoProfile -File scripts/verify-sprint1/verify.ps1
 ```
 
-O comando verifica artefatos e provas isoladas; não inicia serviços do MVP nem demonstra interoperabilidade de conectores.
+A verificação não executa serviços nem demonstra interoperabilidade dos conectores. Serviços, conectores operacionais, migração, rotação de chaves e experimentos integrados são entregas previstas para o MVP.
 
 ## Visão geral
 
-As integrações entre instituições financeiras sustentam o envio de operações, a consulta de posições e movimentações e o acompanhamento da liquidação de ativos. Essas conexões dependem de autenticação, certificados, chaves e algoritmos criptográficos. A substituição desses elementos em uma migração pós-quântica pode comprometer a interoperabilidade e a continuidade dos processos.
+As integrações entre instituições financeiras sustentam o envio de operações, a consulta de posições e movimentações e o acompanhamento da liquidação de ativos. A substituição de mecanismos de autenticação, certificados, chaves e algoritmos em uma migração pós-quântica pode comprometer a interoperabilidade e a continuidade desses processos.
 
-O projeto propõe uma camada de integração com componentes criptográficos substituíveis e políticas específicas por participante, para experimentar a transição entre perfis tradicional, pós-quântico e combinado. A ISO/IEC 25010 orienta os requisitos de qualidade, com ênfase em segurança, compatibilidade e eficiência de desempenho.
+O projeto propõe uma camada de integração com componentes criptográficos substituíveis e políticas específicas por participante, para experimentar a transição entre perfis tradicional, pós-quântico e combinado.
 
 **Questão de pesquisa:** qual o custo operacional e de compatibilidade de migrar, de forma gradual e sem interromper o processamento, integrações heterogêneas (REST/JSON e SOAP/XML) para criptografia pós-quântica?
 
@@ -26,7 +26,7 @@ O projeto propõe uma camada de integração com componentes criptográficos sub
 
 Segundo o Banco Central do Brasil, o Sistema Financeiro Nacional (SFN) compreende as entidades e instituições que promovem a intermediação financeira, aproximando os agentes que disponibilizam recursos daqueles que necessitam de financiamento.
 
-Nesse sistema, gestoras de recursos, administradores fiduciários e custodiantes exercem funções distintas e complementares de gestão, administração e custódia dos investimentos, e trocam informações para o processamento e o acompanhamento das operações. O cenário inicial simula esses três participantes (Tabela 1).
+O cenário inicial simula a troca de informações entre gestoras de recursos, administradores fiduciários e custodiantes para processar e acompanhar operações (Tabela 1).
 
 <div align="center">
 <sub>Tabela 1: Agentes de Mercado</sub>
@@ -40,11 +40,11 @@ Nesse sistema, gestoras de recursos, administradores fiduciários e custodiantes
 <sup>Fonte: material elaborado pelos autores (2026).</sup>
 </div>
 
-As responsabilidades no cenário constituem um recorte experimental e não abrangem as atribuições regulatórias integrais dos participantes.
+As responsabilidades no cenário não abrangem todas as atribuições regulatórias dos participantes.
 
 ## Fluxo inicial
 
-O fluxo representa a integração entre gestora, custodiante e administrador após a negociação de uma operação de renda fixa. A negociação com a contraparte ocorre fora da plataforma; o fluxo inicia com o registro da operação em uma boleta. O exemplo considera a compra fictícia de uma debênture no mercado secundário (Tabela 2).
+O fluxo previsto integra gestora, custodiante e administrador a partir do registro da boleta, após a negociação de renda fixa com a contraparte fora da plataforma. O exemplo considera a compra fictícia de uma debênture no mercado secundário (Tabela 2).
 
 <div align="center">
 <sub>Tabela 2: Boleta da Operação</sub>
@@ -75,17 +75,17 @@ O fluxo representa a integração entre gestora, custodiante e administrador ap�
 
 O processamento segue as etapas abaixo:
 
-1. **Registro da boleta:** a gestora informa condições negociadas, carteira, ativo e contraparte. A plataforma atribui um identificador único e registra a versão da instrução.
+1. **Registro da boleta:** a gestora informa os dados da operação. A plataforma atribui um identificador único e registra a versão da instrução.
 
-2. **Validação local:** a plataforma verifica campos obrigatórios, permissões, cadastros, datas, duplicidade e consistência entre quantidade, PU e financeiro. A validação entre taxa e PU depende de um motor de cálculo compatível com o título e não integra o escopo inicial.
+2. **Validação local:** a plataforma verifica campos obrigatórios, permissões, cadastros, datas, duplicidade e consistência entre quantidade, PU e financeiro. A validação entre taxa e PU requer um motor de cálculo compatível com o título, fora do escopo inicial.
 
-3. **Preparação e proteção:** o conector adapta a instrução ao contrato REST/JSON ou SOAP/XML do destinatário e aplica o perfil criptográfico da integração. A assinatura protege os dados financeiros e o contexto da mensagem: emissor, destinatário, ambiente, identificador, versão e validade.
+3. **Preparação e proteção:** o conector adapta a instrução ao contrato REST/JSON ou SOAP/XML do destinatário e aplica o perfil criptográfico da integração. A assinatura protege os dados financeiros e o [contexto da mensagem](contracts/messages/).
 
-4. **Recebimento e aceitação:** o custodiante simulado verifica a proteção criptográfica, a autorização, a validade e as regras operacionais, e retorna aceitação ou rejeição com justificativa. O reenvio da mesma instrução não gera nova operação; o mesmo identificador com conteúdo diferente gera conflito.
+4. **Recebimento e aceitação:** o custodiante simulado verifica a proteção criptográfica, a autorização, a validade e as regras operacionais. Reenvio idêntico não gera nova operação; conteúdo diferente para o mesmo identificador gera conflito.
 
-5. **Liquidação simulada:** a plataforma acompanha a operação por consultas de status no MVP. Em uma compra, a simulação considera a saída de recursos e a entrada dos títulos na carteira. Impedimentos geram pendência ou falha com motivo informado.
+5. **Liquidação simulada:** a plataforma consulta o status da operação. Na compra, a simulação considera a saída de recursos e a entrada dos títulos na carteira. Impedimentos geram pendência ou falha com motivo informado.
 
-6. **Atualização e conciliação:** o administrador recebe os dados para os registros e controles do fundo. A plataforma compara as informações dos participantes e sinaliza divergências de carteira, ativo, quantidade, taxa negociada, PU, financeiro ou data de liquidação.
+6. **Atualização e conciliação:** o administrador recebe os dados para os registros e controles do fundo. A plataforma sinaliza divergências de carteira, ativo, quantidade, taxa negociada, PU, financeiro ou data de liquidação.
 
 ```mermaid
 flowchart TD
@@ -100,7 +100,7 @@ flowchart TD
     I --> J["Atualizar gestora e administrador"]
 ```
 
-A conciliação verifica se os registros dos participantes representam a mesma operação:
+A conciliação compara os registros dos participantes:
 
 ```mermaid
 flowchart TD
@@ -132,13 +132,13 @@ Os estados da operação são apresentados na Tabela 3.
 <sup>Fonte: material elaborado pelos autores (2026).</sup>
 </div>
 
-**Recebimento, aceitação e liquidação são eventos distintos.** A confirmação de recebimento não implica aceitação ou liquidação. Na ausência de confirmação conclusiva, a plataforma consulta o estado antes de repetir o envio.
+**Recebimento, aceitação e liquidação são eventos distintos.** Sem confirmação conclusiva, a plataforma consulta o estado antes de repetir o envio.
 
-O resultado da conciliação é acompanhado separadamente: uma operação pode estar liquidada e ainda apresentar divergências entre os registros. Todo o fluxo utiliza dados sintéticos, sem movimentação em infraestrutura real de mercado.
+O resultado da conciliação é acompanhado separadamente: uma operação liquidada pode apresentar divergências entre os registros.
 
 ## Criptoagilidade
 
-A criptoagilidade é aplicada ao estabelecimento de chaves nas conexões e às assinaturas das mensagens financeiras. Esses mecanismos são configurados por integração e desacoplados da lógica de negócio, o que permite sua evolução sem alterar o processamento das operações.
+No MVP, os mecanismos de estabelecimento de chaves e de assinatura de mensagens serão configurados por integração e desacoplados da lógica de negócio.
 
 | Camada | Aplicação no projeto | Mecanismos previstos |
 |---|---|---|
@@ -146,15 +146,15 @@ A criptoagilidade é aplicada ao estabelecimento de chaves nas conexões e às a
 | Proteção do transporte | Cifrar e verificar a integridade dos dados transmitidos, com chaves derivadas pelo TLS. | Criptografia autenticada, como AES-GCM. |
 | Assinatura das mensagens | Verificar a autenticidade e a integridade de boletas e confirmações, independentemente da conexão. | ECDSA P-256, ML-DSA-65 e perfil duplo com ambas as assinaturas obrigatórias. |
 
-O estabelecimento híbrido combina mecanismos tradicionais e pós-quânticos, mas não torna a autenticação do canal pós-quântica. Os certificados e algoritmos de assinatura do TLS são identificados separadamente e, neste projeto, utilizam algoritmos tradicionais (limitação declarada). A autenticação pós-quântica é aplicada na camada de mensagem.
+O estabelecimento híbrido combina mecanismos tradicionais e pós-quânticos, sem tornar pós-quântica a autenticação do canal. Os certificados e algoritmos de assinatura do TLS serão identificados separadamente e permanecerão tradicionais; a autenticação pós-quântica ficará na camada de mensagem.
 
-Cada integração possui uma política que define grupos de estabelecimento de chaves, perfis de assinatura e chaves autorizadas. A implementação utiliza protocolos e bibliotecas consolidados, sem desenvolver algoritmos ou combinações criptográficas próprias.
+A política de cada integração definirá grupos de estabelecimento de chaves, perfis de assinatura e chaves autorizadas. A implementação usará protocolos e bibliotecas consolidados, sem desenvolver algoritmos ou combinações criptográficas próprias.
 
-A demonstração contempla a migração entre configurações, a rotação de chaves, o tratamento de conexões e mensagens em andamento e a rejeição de mecanismos desabilitados. Mudanças no grupo de estabelecimento de chaves exigem novas conexões. Incompatibilidades geram falhas explícitas, sem redução automática da proteção exigida (*downgrade*).
+Na migração, mudanças no grupo de estabelecimento de chaves exigirão novas conexões. Incompatibilidades deverão gerar falhas explícitas, sem redução automática da proteção exigida (*downgrade*).
 
 ## Escopo do MVP
 
-O MVP deve demonstrar uma compra de debênture de ponta a ponta, com três participantes simulados, persistência do estado e troca de política criptográfica durante o processamento. O recorte utiliza um custodiante REST/JSON e um administrador SOAP/XML; a gestora envia a boleta pela API da plataforma. Os conectores traduzem os contratos externos para um modelo interno comum.
+O MVP deve demonstrar uma compra de debênture de ponta a ponta, com três participantes simulados, persistência do estado e troca de política criptográfica durante o processamento. A gestora enviará a boleta pela API da plataforma; os conectores do custodiante REST/JSON e do administrador SOAP/XML traduzirão os contratos externos para um modelo interno comum.
 
 | Entrega | Implementação mínima | Critério de aceite |
 |---|---|---|
@@ -171,7 +171,7 @@ O MVP deve demonstrar uma compra de debênture de ponta a ponta, com três parti
 
 ## Plano de desenvolvimento
 
-O plano mantém cinco semanas como referência, com uma entrega executável por etapa. Os critérios de conclusão orientam o avanço; a escolha da stack depende da validação das bibliotecas na primeira semana.
+O plano mantém cinco semanas como referência, com uma entrega executável por etapa. A escolha da stack para os serviços depende da validação das bibliotecas na primeira semana.
 
 | Semana | Trabalho e entrega | Critério de conclusão |
 |---|---|---|
@@ -183,11 +183,11 @@ O plano mantém cinco semanas como referência, com uma entrega executável por 
 
 ## Metodologia de avaliação
 
-A avaliação compara custo computacional, tráfego e continuidade do processamento, usando a ISO/IEC 25010 como referência para segurança, compatibilidade e eficiência de desempenho. Os testes funcionais e de segurança precedem a coleta de desempenho.
+A ISO/IEC 25010 orienta os requisitos de qualidade, com ênfase em segurança, compatibilidade e eficiência de desempenho. A avaliação comparará custo computacional, tráfego e continuidade do processamento. Os testes funcionais e de segurança precederão a coleta de desempenho.
 
 ### Configurações e medidas
 
-O experimento cruza dois grupos de estabelecimento de chaves com três perfis de assinatura (fatorial 2 × 3). **C1 é a referência**; a autenticação TLS permanece tradicional em todas as configurações.
+O experimento é fatorial 2 × 3. **C1 é a referência**; a autenticação TLS permanece tradicional em todas as configurações.
 
 | Configuração | Estabelecimento de chaves | Assinatura da mensagem |
 |---|---|---|
@@ -205,20 +205,20 @@ O experimento cruza dois grupos de estabelecimento de chaves com três perfis de
 | Fluxo REST/JSON e SOAP/XML | Latência do envio até aceitação ou rejeição e da consulta de status (ms); canonicalização e serialização separadas (µs); tamanho do envelope (bytes), vazão (ops/s), CPU e memória por processo. A espera pela liquidação simulada não compõe a latência de aceitação. |
 | Migração e rotação | Taxa de erro, perdas, duplicidades e tempo de convergência: da ativação da política até todas as novas mensagens e conexões usarem a configuração-alvo. |
 
-As seis configurações são comparadas sob o mesmo contrato e carga. Para separar o efeito do protocolo do papel de cada participante, os testes dos conectores usam instruções equivalentes em REST e SOAP; o fluxo integrado valida o cenário completo. Falhas, rejeições indevidas e timeouts são contabilizados separadamente das rejeições esperadas nos testes negativos.
+As seis configurações serão comparadas sob o mesmo contrato e carga. Para separar o efeito do protocolo do papel de cada participante, os testes dos conectores usarão instruções equivalentes em REST e SOAP; o fluxo integrado validará o cenário completo. Falhas, rejeições indevidas e timeouts serão contados à parte das rejeições esperadas nos testes negativos.
 
 ### Execução e controles
 
 1. **Preparar o ambiente:** registrar hardware, sistema operacional, versões fixadas das bibliotecas, afinidade e política de frequência da CPU. Usar máquina dedicada ou VM com recursos fixos e sem carga concorrente. Gerar boletas com semente e tamanho fixos por cenário; medir tempos com relógio monotônico e minimizar a interferência da instrumentação.
 2. **Validar em piloto:** conferir tamanhos de chaves e assinaturas com as especificações, estabilidade das medidas e rejeição de mensagens adulteradas, expiradas ou com contexto incorreto. Confirmar o grupo TLS negociado e os algoritmos utilizados; invalidar execuções com mecanismos diferentes dos configurados. Ajustar e registrar aquecimento, amostragem e duração antes da coleta definitiva.
-3. **Coletar com repetição:** adotar inicialmente 30 execuções independentes por cenário, com processos reiniciados e configurações intercaladas em ordem aleatória de semente registrada. Por execução, coletar ao menos 10.000 amostras de primitivas, 1.000 conexões TLS e 5.000 ciclos de envio e consulta. Descartar o aquecimento: nas primitivas, pelo menos 1.000 iterações e 10 s; no TLS, 200 conexões; no fluxo, 500 ciclos. Esses valores são confirmados ou ajustados no piloto.
-4. **Controlar rede e carga:** avaliar loopback e rede emulada com RTT de 20 e 80 ms. No fluxo, separar conexões novas de persistentes, com retomada TLS desabilitada; medir handshakes isolados sempre em conexões novas. Avaliar limites de concorrência de 1, 8 e 32 clientes e taxa de chegada fixa (*open-loop*), registrando filas, atrasos e requisições não atendidas para evitar omissão coordenada. Determinar a vazão máxima sustentável por rampa de carga, registrando duração dos patamares, saturação e primeiro erro.
-5. **Exercitar a transição:** manter carga constante nas migrações C1→C4, C1→C5 e C1→C6 e na rotação de chaves, com operações em trânsito no instante da troca. Repetir os cenários e registrar janela de transição, política aplicada e tempo de convergência. Exigir zero perdas e duplicidades, verificadas pela correspondência entre instruções enviadas e registros finais; incompatibilidade e downgrade devem produzir falhas explícitas.
+3. **Coletar com repetição:** adotar inicialmente 30 execuções independentes por cenário, com reinício de processos e configurações intercaladas em ordem aleatória (semente registrada). Por execução, coletar ao menos 10.000 amostras de primitivas, 1.000 conexões TLS e 5.000 ciclos de envio e consulta. Descartar o aquecimento: nas primitivas, pelo menos 1.000 iterações e 10 s; no TLS, 200 conexões; no fluxo, 500 ciclos. Confirmar ou ajustar esses valores no piloto.
+4. **Controlar rede e carga:** avaliar loopback e rede emulada com RTT de 20 e 80 ms. No fluxo, separar conexões novas de persistentes, sem retomada TLS; medir handshakes isolados apenas em conexões novas. Avaliar limites de concorrência de 1, 8 e 32 clientes e taxa de chegada fixa (*open-loop*), registrando filas, atrasos e requisições não atendidas para evitar omissão coordenada. Determinar a vazão máxima sustentável por rampa de carga, registrando duração dos patamares, saturação e primeiro erro.
+5. **Exercitar a transição:** manter carga constante nas migrações C1→C4, C1→C5 e C1→C6 e na rotação de chaves, com operações em trânsito no instante da troca. Repetir os cenários e registrar janela de transição, política aplicada e tempo de convergência. Conferir que instruções enviadas e registros finais correspondem sem perdas ou duplicidades; incompatibilidade e downgrade devem produzir falhas explícitas.
 
 ### Análise e reprodução
 
 Reportar mediana, intervalo interquartil, p95 e p99 das latências; média e desvio-padrão de vazão e recursos entre execuções; e sobrecarga de tempo e bytes em relação a C1, sob condições equivalentes. A unidade independente de análise é a **execução**, não cada requisição. Calcular intervalos de confiança de 95% por bootstrap com 10.000 reamostragens entre execuções, inclusive para as razões em relação à referência. Manter os valores atípicos e discutir sua influência.
 
-Os critérios funcionais exigem aceitação de mensagens legítimas, rejeição das violações previstas e ausência de perdas e duplicidades na migração. O desempenho é comparativo, sem limite absoluto de aprovação previamente definido. Diferenças entre bibliotecas, variabilidade do ambiente, carga sintética e ausência de HSM limitam a atribuição dos custos aos algoritmos e a generalização para produção.
+O desempenho é comparativo, sem limite absoluto de aprovação previamente definido. Diferenças entre bibliotecas, variabilidade do ambiente, carga sintética e ausência de HSM limitam a atribuição dos custos aos algoritmos e a generalização para produção.
 
-A implementação deverá reunir em `bench/` o manifesto do ambiente, configurações, sementes, scripts de execução e análise, dados brutos e tabelas e gráficos gerados. O relatório identificará a revisão do código e os parâmetros de cada experimento. Um comando documentado deverá reproduzir a coleta e a análise; esses artefatos ainda fazem parte do plano de desenvolvimento.
+A implementação deverá reunir em `bench/` o manifesto do ambiente, configurações, sementes, scripts de execução e análise, dados brutos, tabelas e gráficos gerados. O relatório identificará a revisão do código e os parâmetros de cada experimento. Um comando documentado deverá reproduzir a coleta e a análise.
