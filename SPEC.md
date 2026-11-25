@@ -43,6 +43,8 @@ O ambiente de referência será Linux em contêineres, com configuração equiva
 
 Não usar execução de processos de linha de comando por assinatura na aplicação ou no benchmark de primitivas. Se a terminação TLS exigir componente separado, documentar a fronteira de confiança, proteger o trecho interno e incluir seu custo nas medições; o grupo negociado deve vir do terminador, nunca de um cabeçalho fornecido pelo cliente.
 
+**Resultado do gate S2-02/S2-03:** a [ADR 0001](docs/adr/0001-stack.md#decisão-para-os-serviços--s2-03) seleciona terminação direta nos adaptadores CPython/OpenSSL e HTTP/1.1 via h11 para REST e SOAP 1.2. O corpo bruto segue para os parsers de S2-02. As [trocas mínimas nos três enlaces](docs/sprint-2/evidence/s2-03.json) observaram os dois grupos nas duas pontas, com a suíte e os controles de sessão do §5; a [regressão dos parsers e assinaturas](docs/sprint-2/evidence/s2-03-body.json) passou na imagem do transporte. O fluxo financeiro C1 e sua autorização operacional continuam dependentes de integração.
+
 ## 3. Modelo de domínio e persistência
 
 ### Boleta

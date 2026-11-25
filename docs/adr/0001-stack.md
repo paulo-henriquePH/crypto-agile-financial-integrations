@@ -1,6 +1,6 @@
 # ADR 0001 — Stack de referência para viabilidade criptográfica
 
-**Status:** decisão S1-08: caminho criptográfico viável no laboratório; stack de serviços ainda não aprovada.
+**Status:** S1-08 comprovou o caminho criptográfico no laboratório. S2-02/S2-03 demonstraram o gate técnico dos adaptadores; ver [decisão para os serviços](#decisão-para-os-serviços--s2-03).
 
 **Data:** 2026-11-24. **Base revisada:** `26a5d93be49afc2da5d27b875974aa7c8c5de6a2` (`sprint-1-completion`).
 
@@ -73,3 +73,11 @@ A [execução final](../sprint-1/evidence/final-verification.json), em checkout 
 O [índice da Sprint 1](../sprint-1/README.md#reprodução-e-evidência) reúne a reprodução e os pré-requisitos do comando `powershell -NoProfile -File scripts/verify-sprint1/verify.ps1`. As bibliotecas usadas no verificador não são, por isso, escolhas aprovadas para os serviços.
 
 **Gate ainda pendente:** verificar assinatura e canonicalização interoperável com os parsers escolhidos, garantindo que o mesmo nó XML verificado seja processado, e demonstrar mTLS com o grupo exigido nos clientes e servidores REST/SOAP reais, conforme a [SPEC §2](../../SPEC.md#2-arquitetura-e-execução). As provas não validam endpoints, persistência, C1–C6 nos adaptadores nem T01–T14 completos. Dependência indispensável ausente ou prova obrigatória falhando bloqueia o gate; não reduzir proteções para integrar.
+
+## Decisão para os serviços — S2-03
+
+Selecionar CPython 3.13.11, `ctypes` e OpenSSL 3.5.9 com terminação direta em cada processo. Cliente e servidor usam [Endpoint sobre h11 0.16.0](../../spikes/s2-03/transport.py) nos três enlaces. h11 opera sobre bytes e não possui o socket TLS: isso permite observar **a conexão do próprio POST** antes e depois da troca. REST usa `json` da stdlib e `rfc8785` 0.1.4; o adaptador SOAP 1.2 usa Expat da stdlib, `lxml` 6.1.3/libxml2 2.14.6, XSD local e Exclusive C14N. O binding EVP e os parsers são os mesmos de S2-02. Este caminho dispensa proxy, ASGI e reserialização por cliente WSDL; Zeep permanece ferramenta contratual offline.
+
+`SSL_get0_group_name`, `SSL_get_version` e `SSL_get_current_cipher`/`SSL_CIPHER_get_name` confirmaram nas duas pontas TLS 1.3, X25519 ou X25519MLKEM768 conforme política e `TLS_AES_256_GCM_SHA384`. As APIs de cadeia/SAN/certificado e sessão da tabela S1 foram chamadas pelos clientes e servidores de cada integração. SAN exato e chaves públicas cadastradas por participante vinculam mTLS ao `senderId` do conteúdo verificado. Não há trecho interno de rede nem cabeçalho confiado como identidade. A fronteira do modelo de ameaças permanece a mesma.
+
+O [roteiro de build e execução](../../spikes/s2-03/README.md) e os resultados de [transporte](../sprint-2/evidence/s2-03.json) e [regressão S2-02](../sprint-2/evidence/s2-03-body.json) documentam os seis caminhos enlace/grupo, negativos e limites. A escolha cobre uma troca mínima em cada cliente/servidor, não todos os endpoints financeiros. Conexões persistentes, isolamento de implantação, controle de concorrência, carga e migração exigirão provas próprias. Mudança de parser, binding, pilha HTTP ou terminação exige repetir o recorte afetado.
