@@ -1,0 +1,48 @@
+{
+  "task": "S2-04",
+  "date": "2026-11-25",
+  "baseRevision": "32d27895c951f7f95438cbf2b8cff4bc85b327c7",
+  "workingTree": "S2-04 uncommitted; preexisting README.md modification and untracked docs/SPRINT-2.md",
+  "environment": {
+    "host": "Windows / Docker Desktop",
+    "hostPython": "3.15.2",
+    "engine": "29.9.3",
+    "compose": "5.7.1",
+    "container": "linux/amd64",
+    "image": "postgres:17.7-bookworm@sha256:86e0b703649d7a792bd9243ee28afc9d8f7c6b2b5638077c9d6882d4d472bbfd",
+    "serverVersionNumObserved": "170007"
+  },
+  "command": "py -3 -B deploy/persistence/lab.py verify",
+  "exitCode": 0,
+  "skips": 0,
+  "result": "passed",
+  "observations": {
+    "newComposeProjects": 2,
+    "serviceDatabases": ["platform", "custodian", "administrator"],
+    "migrationReplay": "applied again on primary; each catalog matched fixtures/boletas/references.json",
+    "crossServiceConnectDenied": 6,
+    "maintenanceConnectDenied": 6,
+    "anotherServicesPasswordRejected": 3,
+    "transactionsPerDatabase": "commit visible, explicit rollback absent, duplicate PK (23505) rolled back preceding insert",
+    "concurrentInsertResultsPerDatabase": [0, 1],
+    "afterContainerRecreation": "service login succeeded and both committed probe rows survived in each database",
+    "afterPrimaryDown": "no labeled volumes, networks or containers (including stopped); catalog query succeeded in each neighboring database",
+    "cleanup": "down --volumes succeeded for both projects"
+  },
+  "additionalCliRun": {
+    "steps": ["up <scenario>", "restart <scenario>", "sql <scenario> platform: SELECT * FROM portfolio;", "down <scenario>"],
+    "observedRow": "FUNDO-ALFA|CUSTODIANTE-GAMA|ADMINISTRADOR-DELTA",
+    "exitCode": 0
+  },
+  "inputsSHA256": {
+    "deploy/persistence/compose.yaml": "6b5f2926739bcfc281d854777680ec21503172b48dbc6b2149d4299efdb9f748",
+    "deploy/persistence/start.sh": "d2a874ed2e83b85e5c2e492050c091032b6a0f46f4451dcfccd188b4b69b160a",
+    "deploy/persistence/connect.sh": "ee8881b32e3f5a8e63d4786cad6ede2636ba9118b5f381457c66a86b186192f6",
+    "deploy/persistence/provision.sql": "6d157c2878b7cda50f3a4b2cb5a0c9602b5c1f83cb259379d011b7c503bfd8ff",
+    "deploy/persistence/migrations/001_catalog.sql": "3bf90bc8ca1f028d327ac83f242fbe4fa282fb9f4e3a8746071ed14e1b338677",
+    "deploy/persistence/lab.py": "5c2f12267bfd47413c903d83a4e4ffc77b066eb28b579fd69e4a144a77c35838",
+    "deploy/persistence/verify_db.py": "b79fac0012733c7f3e2f3e2dfa91199909f5db478683bf950f8cdc8d25255ce6",
+    "fixtures/boletas/references.json": "c20f8b5338d46aaac3701dd7d520a100705ec96bc56ab73c9003e77918178ca8"
+  },
+  "scope": "Database foundation only; no business service, financial transaction flow or C1 end-to-end acceptance."
+}
