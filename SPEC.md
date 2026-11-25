@@ -2,7 +2,7 @@
 
 **Status:** especificação para implementação do MVP. **Versão:** 0.1. **Data:** 2026-11-19.
 
-Este documento detalha o [README](README.md) e define comportamentos, contratos e critérios de conclusão. Os nomes de campos e serviços são decisões de projeto; os componentes e comandos descritos ainda serão implementados. Alterações que afetem contratos, segurança ou resultados experimentais devem atualizar esta especificação e registrar a justificativa em uma decisão de arquitetura (ADR).
+Este documento detalha o [README](README.md) e define comportamentos, contratos e critérios de conclusão. A [Sprint 1](docs/sprint-1/README.md) entregou contratos, vetores e provas isoladas; os serviços e comandos operacionais do MVP ainda serão implementados. Alterações que afetem contratos, segurança ou resultados experimentais devem atualizar esta especificação e registrar a justificativa em uma decisão de arquitetura (ADR).
 
 ## 1. Objetivo e limites
 
@@ -35,9 +35,11 @@ flowchart LR
 
 A plataforma pode ser um único serviço com worker interno. Os simuladores devem executar em processos separados, com armazenamento independente; podem compartilhar uma instância de banco com bases e credenciais distintas. Não introduzir broker no MVP: usar fila persistida no banco (*outbox*) e consulta periódica. Falhas de um participante não devem apagar o estado dos demais.
 
-O ambiente de referência será Linux em contêineres, com configuração equivalente em Docker Compose. Desenvolvimento no Windows pode usar WSL2. O banco deve suportar transações, unicidade e atualização concorrente; PostgreSQL é a escolha de referência. Versões e imagens serão fixadas após a prova de viabilidade.
+O ambiente de referência será Linux em contêineres, com configuração equivalente em Docker Compose. Desenvolvimento no Windows pode usar WSL2. O banco deve suportar transações, unicidade e atualização concorrente; PostgreSQL é a escolha de referência. Versões e imagens dos serviços serão fixadas após a validação da stack.
 
-**Gate de stack:** antes dos serviços, demonstrar no runtime escolhido assinatura/verificação dos dois algoritmos, canonicalização interoperável e controle dos grupos TLS nos clientes e servidores. A [ADR 0001](docs/adr/0001-stack.md) registra a referência de laboratório: CPython 3.13.11 com `ctypes` e OpenSSL 3.5.9, com assinaturas e ambos os grupos TLS comprovados via API e terminação direta no harness, sem componente separado. A prova local não aprova canonicalização no ambiente escolhido nem frameworks, clientes ou servidores de aplicação; a verificação do suporte nesses componentes não pode ser inferida da versão instalada. Registrar na ADR a linguagem, o runtime, os frameworks, clientes, servidores e bibliotecas selecionados, com suas versões, o mecanismo de observação do grupo negociado e os comandos das provas correspondentes. [OpenSSL: ML-DSA](https://docs.openssl.org/3.5/man7/EVP_SIGNATURE-ML-DSA/), [OpenSSL: configuração TLS](https://docs.openssl.org/3.5/man3/SSL_CONF_cmd/).
+**Viabilidade em laboratório:** a [ADR 0001](docs/adr/0001-stack.md) registra CPython 3.13.11 com `ctypes` e OpenSSL 3.5.9 como referência. A [verificação final da Sprint 1](docs/sprint-1/evidence/final-verification.json) conferiu JCS e Exclusive XML C14N 1.0 contra bytes de referência, gerou e verificou assinaturas nos perfis `ECDSA`, `ML_DSA` e `DUAL` sobre vetores JSON/XML e observou os dois grupos TLS via API, em mTLS com terminação direta no harness. Essas provas não aprovam a stack dos serviços.
+
+**Gate de stack dos serviços:** antes de implementar o fluxo C1, demonstrar no runtime escolhido assinatura e verificação com ambos os algoritmos e canonicalização interoperável com os parsers selecionados. Nos clientes e servidores REST/SOAP candidatos, em processos separados, demonstrar mTLS, identidade vinculada à política e controle e observação dos grupos X25519 e X25519MLKEM768 efetivamente negociados, sem fallback. O suporte não pode ser inferido da versão instalada. Registrar na ADR a linguagem, o runtime, os frameworks, clientes, servidores e bibliotecas selecionados, com suas versões, o mecanismo de observação do grupo negociado e os comandos e evidências das provas. [OpenSSL: ML-DSA](https://docs.openssl.org/3.5/man7/EVP_SIGNATURE-ML-DSA/), [OpenSSL: configuração TLS](https://docs.openssl.org/3.5/man3/SSL_CONF_cmd/).
 
 Não usar execução de processos de linha de comando por assinatura na aplicação ou no benchmark de primitivas. Se a terminação TLS exigir componente separado, documentar a fronteira de confiança, proteger o trecho interno e incluir seu custo nas medições; o grupo negociado deve vir do terminador, nunca de um cabeçalho fornecido pelo cliente.
 
@@ -97,11 +99,11 @@ Aplicar deduplicação, efeito de negócio e registro do resultado na mesma tran
 
 ## 4. Contratos de integração
 
-Publicar OpenAPI para REST, WSDL/XSD para SOAP e exemplos válidos e inválidos em `contracts/`. Congelar esses artefatos antes dos conectores. Os esquemas devem rejeitar campos desconhecidos, duplicados, tipos e versões não suportados. Usar UTF-8, timestamps UTC em RFC 3339 e identificadores UUID para mensagens e operações.
+A [baseline congelada da Sprint 1](docs/sprint-1/README.md#congelamento-e-compatibilidade) é a referência para os conectores: inclui [OpenAPI para REST](contracts/openapi/), [WSDL/XSD para SOAP](contracts/soap/) e exemplos e vetores em `contracts/`. Avaliar a compatibilidade antes de alterar esses artefatos; mudanças incompatíveis exigem versão e migração explícitas, atualização dos vetores e repetição das verificações afetadas e da verificação integrada. Rejeitar campos desconhecidos ou duplicados e tipos ou versões não suportados. Usar UTF-8, timestamps UTC em RFC 3339 e identificadores UUID para mensagens e operações.
 
 | Interface | Operação | Resultado |
 |---|---|---|
-| Plataforma REST | `POST /v1/operations` | Envelope assinado `CREATE_OPERATION`; `201` com operação e `Location`, ou resultado da criação anterior em reenvio. |
+| Plataforma REST | `POST /v1/operations` | `CREATE_OPERATION` assinado; `201` no primeiro registro, inclusive se persistido como `REJECTED` com origem `LOCAL`; `200` no reenvio idempotente. Ambos devolvem `CREATE_OPERATION_RESULT` e `Location`. |
 | Plataforma REST | `POST /v1/operations/{operationId}/status-queries` | `QUERY_OPERATION`; `200` com estado, histórico, situação de entrega e conciliação. |
 | Custodiante REST | `POST /v1/instructions` | `SUBMIT_INSTRUCTION`; `202` com recibo persistido. A decisão financeira é obtida por consulta. |
 | Custodiante REST | `POST /v1/instructions/{operationId}/status-queries` | `QUERY_INSTRUCTION`; `200` com snapshot, sequência e eventos, ou `404` autenticado. |
@@ -110,7 +112,7 @@ Publicar OpenAPI para REST, WSDL/XSD para SOAP e exemplos válidos e inválidos 
 
 Consultas usam POST para transportar contexto assinado. Caminho REST e ação SOAP devem corresponder ao tipo e ao identificador protegidos pela assinatura. Não confiar em parâmetros externos ao conteúdo assinado. Respostas de negócio contêm `requestMessageId`, `operationId`, `instructionVersion`, sequência, estado, motivo quando aplicável e snapshot da boleta quando necessário. O destinatário confere a correlação antes de atualizar seu estado.
 
-Erros REST seguem `{code, message, correlationId, retryable, details}`; SOAP Fault transporta os mesmos campos em `Detail`. Aplicar `400` para esquema inválido, `401` para ausência/falha de autenticação, `403` para autorização, `404` para ausência, `409` para conflito, `422` para regra de negócio, `429` para limite e `503` para indisponibilidade. Não expor stack trace ou material criptográfico. Respostas de negócio e erros posteriores à autenticação são assinados; falhas de handshake ou parsing podem não ser assinadas e jamais justificam mudança de estado financeiro remoto.
+Erros posteriores à autenticação usam o envelope assinado `ERROR`, com `{code, message, correlationId, retryable, details}` no payload. Em REST, o corpo é o envelope; em SOAP, o envelope fica em `Fault/Detail/Message`. O `Code` e o `Reason` externos do Fault não substituem o erro assinado. Em REST, aplicar `400` para esquema inválido, `401` para ausência/falha de autenticação, `403` para autorização, `404` para ausência, `409` para conflito, `422` para regra de negócio não processável (na criação, sem registro), `429` para limite e `503` para indisponibilidade. Rejeição local persistida é resultado de criação, não erro `422`. Não expor stack trace ou material criptográfico. Respostas de negócio são assinadas; falhas de handshake ou parsing podem impedir uma resposta assinada e jamais justificam mudança de estado financeiro remoto.
 
 ### Idempotência e recuperação
 
@@ -219,7 +221,9 @@ Não declarar ausência de perdas apenas pela falta de erros: após interromper 
 | T13 | Reinício após outbox e após aplicação de efeito, antes da confirmação. | Estado recuperável e efeito aplicado uma única vez. |
 | T14 | Vetores de canonicalização e assinatura e seis configurações nos dois adapters. | Verificação interoperável e mecanismo efetivo igual ao exigido. |
 
-Separar testes unitários de domínio, contratos, integração com banco e TLS reais, cenários de segurança e demonstrações ponta a ponta. A suíte de CI executa o fluxo C1 e verificações criptográficas disponíveis no ambiente fixado; a liberação do MVP exige todos os casos acima e as seis configurações, sem considerar testes pulados como aprovados. Benchmarks completos são executados fora da CI compartilhada.
+A [verificação integrada da Sprint 1](docs/sprint-1/README.md#reprodução-e-evidência) cobre contratos, vetores e provas isoladas. Os vetores cobrem a parte de canonicalização e assinatura de T14, mas não demonstram C1–C6 nos dois adaptadores. A verificação da sprint não substitui a execução integral de T01–T14 para o aceite do MVP.
+
+Separar testes unitários de domínio, contratos, integração com banco e TLS reais, cenários de segurança e demonstrações ponta a ponta. A suíte de CI do MVP deve executar o fluxo C1 e verificações criptográficas disponíveis no ambiente fixado; a liberação do MVP exige todos os casos acima e as seis configurações, sem considerar testes pulados como aprovados. Benchmarks completos são executados fora da CI compartilhada.
 
 ## 9. Organização e sequência de implementação
 
@@ -240,8 +244,8 @@ docs/adr/            # decisões técnicas e evidências de viabilidade
 
 | Etapa | Entrega verificável |
 |---|---|
-| 1 — Viabilidade e contratos | ADR de stack, prova real de algoritmos/TLS, esquemas, vetores canônicos e fixtures. |
-| 2 — Fluxo C1 | Banco, outbox/inbox, API, simuladores, mTLS, ECDSA e cenário completo com recuperação e conciliação. |
+| 1 — Viabilidade e contratos | Entregue na Sprint 1: referência de laboratório na ADR 0001, provas isoladas de assinatura e TLS, contratos congelados, vetores canônicos e assinados e fixtures. |
+| 2 — Fluxo C1 | Primeiro cumprir o gate de stack dos serviços (§2). Depois, entregar banco, outbox/inbox, API, simuladores, mTLS, ECDSA e cenário completo com recuperação e conciliação. |
 | 3 — Seis configurações | Provedores ML-DSA e duplo, TLS híbrido, políticas e instrumentação por camada. |
 | 4 — Continuidade | Migração, rotação, falhas em trânsito, testes negativos e piloto de medição. |
 | 5 — Avaliação | Coleta, análise, instruções reproduzíveis e demonstração final. |
