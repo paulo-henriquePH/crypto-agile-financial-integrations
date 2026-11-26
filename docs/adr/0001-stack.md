@@ -93,3 +93,11 @@ Usar o [adaptador C1](../sprint-2/c1.md) nos dois sentidos de cada enlace. O mes
 Esta decisão mantém TLS direto, contratos v1 e bytes assinados da Sprint 1. A [evidência](../sprint-2/evidence/s2-05.json) cobre adaptadores nos dois papéis, não serviços implantados.
 
 A correlação local de criação guarda somente o digest JCS da boleta para conferir o snapshot: uma referência ao dicionário do handler permitiria mutação depois da verificação. A comparação é simétrica no cliente e no servidor, assim como a vinculação entre erro assinado e status REST. Não se adiciona campo ao envelope.
+
+## Registro da gestora — S2-06
+
+Conectar o processo C1 diretamente ao PostgreSQL via psycopg 3.2.13 e libpq da imagem Bookworm. O operador aplica migrações comuns e específicas da base, com o mesmo controle de checksum. O handler usa transação `READ COMMITTED`, travas transacionais por identidade lógica e mensagem, além de restrições únicas; consultar uma chave ausente sem trava não serializaria duas primeiras entregas. O digest do recibo inclui a assinatura e a representação recebida; o da ordem considera apenas a boleta JCS. Guardar resultados lógicos permite correlacionar e assinar novamente cada resposta. Uma consulta nova lê a projeção atual em um único `SELECT`; o resultado de criação permanece ligado à decisão original.
+
+Nos dois contêineres do enlace, volumes privados separados e registro público local mantêm a identidade observada na conexão vinculada ao participante. A base executa em rede interna com SCRAM e a plataforma monta apenas sua própria credencial. O [roteiro e as limitações](../../deploy/platform/README.md) e a [evidência de concorrência, rollback e sigilo](../sprint-2/evidence/s2-06.json) se aplicam à recepção da gestora em C1.
+
+Na primeira chamada simultânea, um cache sozinho não serializa a compilação do XSD. O adaptador C1 usa validador JSON por thread e só compila o XSD na primeira mensagem SOAP, sob a mesma trava que protege seu uso. Cada mensagem XML conserva parser e árvore próprios. Para uma rota divergente, somente após autenticar os bytes o adaptador entrega contexto restrito a `INVALID_SCHEMA`, derivado do pedido protegido: permite assinar o erro antes de qualquer leitura do banco, sem autorizar a consulta.

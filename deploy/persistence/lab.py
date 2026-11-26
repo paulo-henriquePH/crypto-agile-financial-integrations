@@ -48,7 +48,8 @@ def migrate(scenario):
                 name text PRIMARY KEY, checksum text NOT NULL);
             REVOKE CREATE ON SCHEMA public FROM PUBLIC;
         """
-        for path in sorted((HERE / "migrations").glob("*.sql")):
+        common = HERE / "migrations"
+        for path in sorted([*common.glob("*.sql"), *(common / db).glob("*.sql")], key=lambda p: p.name):
             if not re.fullmatch(r"\d{3}_[a-z0-9_]+\.sql", path.name):
                 raise ValueError("invalid migration name")
             body = path.read_text(encoding="utf-8")

@@ -6,6 +6,8 @@ from dataclasses import replace
 import json
 from pathlib import Path
 import socket
+import subprocess
+import sys
 from tempfile import TemporaryDirectory
 import unittest
 import h11
@@ -54,6 +56,11 @@ def query_template(wire, action):
     env['protected'].update(messageType=action, operationId=OP)
     env['payload'] = {}
     return json.dumps(env).encode()
+
+
+class ColdParsers(unittest.TestCase):
+    def test_parallel_json_then_soap_from_cold_process(self):
+        subprocess.run([sys.executable, str(ROOT / 'tests/c1/cold_parsers.py')], check=True, timeout=40)
 
 
 class Controls(unittest.TestCase):

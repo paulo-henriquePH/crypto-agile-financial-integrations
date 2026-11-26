@@ -103,6 +103,13 @@ Aplicar deduplicação, efeito de negócio e registro do resultado na mesma tran
 
 ## 4. Contratos de integração
 
+Na [plataforma C1 da S2-06](deploy/platform/README.md), o login `platform` grava recibo, boleta,
+eventos e intenção em uma transação PostgreSQL. O resultado de criação usa a decisão inicial;
+a consulta autenticada lê o histórico atual. A migração se aplica apenas à base da plataforma.
+A [verificação com conexões concorrentes](docs/sprint-2/evidence/s2-06.json) cobre esses dois POSTs.
+Em consulta já autenticada, divergência entre UUID da rota e UUID assinado retorna `400`
+com `ERROR/INVALID_SCHEMA` correlacionado à mensagem e ao UUID protegidos, antes da consulta de titularidade.
+
 A [baseline congelada da Sprint 1](docs/sprint-1/README.md#congelamento-e-compatibilidade) é a referência para os conectores: inclui [OpenAPI para REST](contracts/openapi/), [WSDL/XSD para SOAP](contracts/soap/) e exemplos e vetores em `contracts/`. Avaliar a compatibilidade antes de alterar esses artefatos; mudanças incompatíveis exigem versão e migração explícitas, atualização dos vetores e repetição das verificações afetadas e da verificação integrada. Rejeitar campos desconhecidos ou duplicados e tipos ou versões não suportados. Usar UTF-8, timestamps UTC em RFC 3339 e identificadores UUID para mensagens e operações.
 
 | Interface | Operação | Resultado |

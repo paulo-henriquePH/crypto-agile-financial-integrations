@@ -1,0 +1,45 @@
+{
+  "task": "S2-06",
+  "date": "2026-11-26",
+  "baseRevision": "4d503cb7cf7ee36edf3726463c837418270ab85b",
+  "workingTree": "sprint-2-c1 pre-commit; README.md e docs/SPRINT-2.md preexistentes",
+  "environment": {
+    "host": "Windows, Docker Engine 29.9.3, Compose v5.7.1; contêineres linux/amd64",
+    "services": "CPython 3.13.11, OpenSSL 3.5.9, h11 0.16.0, psycopg 3.2.13, PostgreSQL 17.7",
+    "initialPlatformImageConfig": "sha256:dc413137af9033ace56c4cf3204e48445f7a599e32b3e3b93b1c796ba9fc1f40",
+    "testedPlatformImageConfig": "sha256:42da17f39c3e9096b6ada44d255115ffe002571268842699298c71941755c8dd",
+    "link": "HTTP/1.1 em TCP, mTLS 1.3 X25519 TLS_AES_256_GCM_SHA384; ECDSA P-256/SHA-256 sobre JCS",
+    "data": "catálogo e boleta sintéticos, PKI e identidades privadas em volumes descartáveis; relógio UTC real para validade"
+  },
+  "commands": [
+    {"command": "py -B deploy/platform/lab.py verify", "freshScenariosAfterCorrection": 2, "exitCodeEach": 0, "skips": 0},
+    {"command": "py -B deploy/persistence/lab.py verify", "exitCode": 0, "skips": 0, "phase": "entrega inicial; migrações sem alteração na correção"},
+    {"command": "powershell -NoProfile -File scripts/verify-c1/verify.ps1", "exitCode": 0, "tests": 11, "skips": 0},
+    {"command": "powershell -NoProfile -File spikes/s2-03/verify.ps1 -BodyProof", "exitCode": 0},
+    {"command": "powershell -NoProfile -File spikes/s2-03/verify.ps1", "exitCode": 0, "exchanges": 6},
+    {"command": "docker run --rm --network none --read-only --mount \"type=bind,source=$((Get-Location).Path),target=/repo,readonly\" -w /repo -e PYTHONDONTWRITEBYTECODE=1 cafi-transport:s2-03 python tests/contracts/check_platform_openapi.py", "exitCode": 0, "examples": 13}
+  ],
+  "observed": {
+    "coldParsers": "Processo Python novo: oito threads sincronizadas, quatro leituras por thread em cada rodada (JSON, SOAP, mista). Nenhuma compilação XSD para JSON; exatamente uma na rodada SOAP, com validação dos vetores reais.",
+    "wrongQueryPath": "Com SELECT em operations revogado para o serviço, UUID protegido existente/caminho ausente e a combinação inversa retornaram 400 INVALID_SCHEMA não retentável em ERROR ECDSA verificado. O cliente conferiu requestMessageId, correlationId e UUID do pedido assinado; nenhum snapshot ou recibo novo. Contagens 10/20/3/16 antes e depois.",
+    "cli": "Sessão interativa em cenário separado: create 201, segunda criação 200 com o mesmo UUID, query 200/VALIDATED; cenário removido.",
+    "http": "Uma criação concorrente 201, a outra 200, mesmo UUID e Location; replay exato e reemissão 200. Conflitos de negócio, bytes e messageId retornaram 409. Corrida de ordens distintas com messageId compartilhado: um 201, um 409.",
+    "domain": "Sete rejeições locais persistidas, dois eventos por operação, sem intenção para rejeitada. Motivo do erro financeiro preservado no replay e na consulta. Caso de arredondamento de 0.005000 para 0.01 validado.",
+    "countsOrder": ["operations", "operation_events", "outbox", "message_receipts"],
+    "afterHttpCases": [10, 20, 3, 16],
+    "afterSyntheticEventRestartQueryAndCreateReplay": [10, 21, 3, 18],
+    "afterRollback": [10, 21, 3, 18],
+    "afterForeignOwnerFixtureAndDeniedRequests": [11, 21, 3, 18],
+    "rollback": "Operador retirou INSERT do recibo final; resposta 503 assinada, sem gravações parciais. Papel platform sem UPDATE em operations e sem DELETE em operation_events (SQLSTATE 42501).",
+    "currentRead": "Após evento de teste SENT e reinício, consulta nova retornou sequência 3/SENT; replay de criação conservou sequência 2/VALIDATED.",
+    "negative": "Corpo fora do esquema 400 INVALID_SCHEMA; envelope antigo com ID já usado 401; consulta de ausente 404 assinado; registro existente de outro titular e catálogo sem concessão 403 assinado sem snapshot. Corpo e correlação verificados no cliente.",
+    "confidentiality": "Verificados campos e detalhes vazios das negativas e ausência de marcadores de boleta, assinatura, privada, senha ou traceback nos logs do serviço. Nenhuma privada no pacote de evidência.",
+    "cleanup": "down --volumes com perfil tools removeu os volumes de ambos os participantes e do banco e a rede do cenário."
+  },
+  "developmentNotes": "Uma execução preliminar falhou na expectativa de contagem de recibos: replay e colisão do mesmo ID não inserem recibos novos. Corrigidos o testemunho e a limpeza do volume da gestora pelo perfil tools; cenário completo repetido com sucesso.",
+  "independentReviewFindings": [
+    "Na primeira chamada concorrente JSON, a revisão observou XMLSchemaParseError ao compilar o XSD SOAP. A versão inicial compilava os dois schemas e o cache não garantia exclusão mútua.",
+    "Com UUID da rota diferente do assinado, a revisão observou 400 sem envelope. O contexto agora é restrito a INVALID_SCHEMA depois da autenticação e antes do lookup."
+  ],
+  "limits": "Testemunho funcional da plataforma C1; não é benchmark. Evento SENT e registro de outro titular são fixtures injetadas pelo operador, não envio a um custodiante. Sem worker, liquidação, SOAP ou aceite ponta a ponta."
+}

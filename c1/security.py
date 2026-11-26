@@ -6,6 +6,7 @@ from functools import cache
 from hashlib import sha256
 import json
 import re
+from threading import Lock, local
 from uuid import UUID
 
 from jsonschema import Draft202012Validator, FormatChecker
@@ -41,9 +42,13 @@ class Route:
         require(len(media) == 1, 'request media')
         return cls(head.method.decode('ascii'), head.target.decode('ascii'), media[0].decode('ascii'))
 
-    def check(self, action, operation):
+    @classmethod
+    def expected(cls, action, operation):
         path, media = ROUTES[action]
-        require(self == Route('POST', path.format(id=operation), media), 'route/action')
+        return cls('POST', path.format(id=operation), media)
+
+    def check(self, action, operation):
+        require(self == self.expected(action, operation), 'route/action')
 
 
 @dataclass(frozen=True)
@@ -124,19 +129,35 @@ class Forbidden(ValueError):
         self.request = request
 
 
+class InvalidRoute(ValueError):
+    """Authenticated request; only the protected route can correlate an error."""
+    def __init__(self, request, protected_route):
+        super().__init__('route/action')
+        self.request = request
+        self.protected_route = protected_route
+
+
 def utc(value):
     require(re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,6})?Z', value),
             'UTC timestamp')
     return datetime.fromisoformat(value)
 
 
-@cache
-def schemas():
+def json_validator():
     files = ['messages/envelope.schema.json', 'schemas/boleta.schema.json', 'schemas/event.schema.json']
     docs = [json.loads((ROOT / 'contracts' / f).read_bytes()) for f in files]
     registry = Registry().with_resources((d['$id'], Resource.from_contents(d)) for d in docs)
-    return (Draft202012Validator(docs[0], registry=registry, format_checker=FormatChecker()),
-            body.soap_schema(ROOT / 'contracts'))
+    return Draft202012Validator(docs[0], registry=registry, format_checker=FormatChecker())
+
+
+_validators = local()
+_xml_lock = Lock()
+
+
+@cache
+def _soap_schema():
+    # Called only inside _xml_lock, including the first compilation.
+    return body.soap_schema(ROOT / 'contracts')
 
 
 def fields(node):
@@ -160,8 +181,13 @@ def fields(node):
 
 
 def parse(wire, xml):
-    schema, xsd = schemas()
-    parsed = body.parse_xml(wire, xsd) if xml else body.parse_json(wire)
+    if xml:
+        # The shared libxml2 validator (including its error log) is never used
+        # concurrently. XMLParser and parsed trees remain local to each call.
+        with _xml_lock:
+            parsed = body.parse_xml(wire, _soap_schema())
+    else:
+        parsed = body.parse_json(wire)
     require(parsed.profile == 'ECDSA', 'C1 profile')
     if xml:
         node = parsed.content
@@ -173,7 +199,9 @@ def parse(wire, xml):
     alg, kid, raw = parsed.signatures[0]
     logical = dict(protected=p, payload=payload, signatures=[
         dict(algorithm=alg, keyId=kid, value=base64.b64encode(raw).decode())])
-    require(schema.is_valid(logical), 'envelope schema')
+    if not hasattr(_validators, 'json'):
+        _validators.json = json_validator()
+    require(_validators.json.is_valid(logical), 'envelope schema')
     require(type(p['instructionVersion']) is int and p['instructionVersion'] == 1
             and type(p['policyVersion']) is int and p['policyVersion'] == 1, 'C1 version')
     for field in ('messageId', 'operationId', 'requestMessageId'):
@@ -201,19 +229,23 @@ class Boundary:
 
     def receive(self, wire, route, session, *, request=None, lookup=None):
         """Return (signed content, correlation). Call for EVERY attempt before effects/cache."""
+        parsed, p, payload = parse(wire, route.path == '/soap')
+        self.authenticate(parsed, p, session)
+        ctx = self._context(p, payload, route, request, lookup, incoming=True)
+        return parsed.content, ctx
+
+    def authenticate(self, parsed, p, session):
+        """Verify the channel and signed bytes; this alone does not authorize processing."""
         d = self.policy
         observation = session.observation
         require(observation['peerDnsSan'] == d.sender_dns and observation['verifyCode'] == 0
                 and observation['group'].upper() == 'X25519' and observation['protocol'] == 'TLSv1.3'
                 and observation['ciphersuite'] == 'TLS_AES_256_GCM_SHA384', 'authenticated link')
-        parsed, p, payload = parse(wire, route.path == '/soap')
         now = self.clock()
         self._direction_time(p, now)
         alg, kid, sig = parsed.signatures[0]
         key = self.key(kid, session.peer_spki, now, False)
         require(self.crypto.verify(alg, key.spki, parsed.canonical, sig), 'invalid signature')
-        ctx = self._context(p, payload, route, request, lookup, incoming=True)
-        return parsed.content, ctx
 
     def _direction_time(self, p, now):
         d = self.policy
@@ -228,7 +260,12 @@ class Boundary:
         typ, op = p['messageType'], p.get('operationId')
         action = typ if request is None else request.action
         require(action in ROUTES, 'unknown request type')
-        route.check(action, op if request is None else request.operation)
+        expected = Route.expected(action, op if request is None else request.operation)
+        if route != expected:
+            if incoming and request is None and action in d.actions:
+                raise InvalidRoute(Request(action, p['messageId'], op, d.sender, d.recipient,
+                                           d.environment, None, error_only='INVALID_SCHEMA'), expected)
+            raise ValueError('route/action')
         if request is not None:
             require(action in d.actions or (request.scope is None and typ == 'ERROR'), 'action permission')
             require(typ in ('ERROR', action + '_RESULT') and
