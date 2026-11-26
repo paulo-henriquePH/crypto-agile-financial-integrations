@@ -101,6 +101,8 @@ Manter `deliveryStatus` (`PENDING`, `UNKNOWN`, `CONFIRMED`, `BLOCKED`) por desti
 
 Aplicar deduplicação, efeito de negócio e registro do resultado na mesma transação no destinatário. Usar restrições de unicidade e controle concorrente; uma verificação prévia isolada não evita corrida. Na liquidação, gravar débito de caixa e crédito de ativos de forma atômica, com unicidade por operação e tipo de lançamento. Após reinício, reconstruir o trabalho a partir do estado persistido.
 
+No [simulador C1 do custodiante](deploy/custodian/README.md#decisão-e-liquidação--s2-08), caixa por carteira/moeda, posição por carteira/ativo, lançamentos e eventos remotos vivem na base `custodian`. O débito, o crédito e o evento terminal são confirmados em uma só transação; `SETTLEMENT_FAILED` por saldo insuficiente não grava lançamentos. Uma instrução repetida conserva o recibo `202 RECEIVED` original; novas consultas assinam o estado e histórico atuais, inclusive motivo/origem quando aplicáveis.
+
 ## 4. Contratos de integração
 
 Na [plataforma C1 da S2-06](deploy/platform/README.md), o login `platform` grava recibo, boleta,
@@ -200,6 +202,8 @@ O plano de controle é separado das APIs financeiras, restrito a uma identidade 
 ## 6. Simulação e conciliação
 
 Fixtures definem carteira, participantes, ativo, caixa inicial, posição inicial, calendário, relógio financeiro e desfecho. O custodiante aceita a instrução ou rejeita com motivo configurado; na liquidação, verifica saldo e aplica uma única vez os lançamentos. Saldo insuficiente gera `SETTLEMENT_FAILED`, sem débito parcial. O avanço do relógio financeiro é explícito pelo runner e não exige esperar D+1 real.
+
+Na S2-08, a [fixture sintética](fixtures/custodian/settlement.json) é inicializada antes de receber a primeira instrução. O CLI de teste não é uma rota REST: usa rede interna e credencial SCRAM próprias, não montadas pelos clientes financeiros. O relógio persistido só avança e é separado da validade C1. Cada passo do runner aplica no máximo uma transição por instrução; `PENDING_SETTLEMENT` só pode avançar em dia útil na data prevista ou depois. No modo simulado, `occurredAt` do histórico remoto é a data financeira à meia-noite UTC; o evento `SETTLED` e os lançamentos indicam a data efetiva sem mudar `boleta.settlementDate`. Não há alteração do contrato congelado.
 
 Disponibilizar cenários determinísticos: sucesso, rejeição operacional, saldo insuficiente, resposta perdida após commit, indisponibilidade temporária, reenvio concorrente, divergência no administrador e reinício após persistência antes da confirmação. Controles de falha ficam em interface de teste isolada, indisponível para identidades financeiras.
 

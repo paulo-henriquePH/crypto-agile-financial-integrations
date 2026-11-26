@@ -5,11 +5,15 @@ from uuid import uuid4
 import rfc8785
 from psycopg.types.json import Jsonb
 
-from services.platform.store import error, lock_message, stamp
+from services.platform.store import error, lock_message, stamp, state_fields
+
+
+def lock_operation(db, operation):
+    db.execute('SELECT pg_advisory_xact_lock(1,hashtext(%s))', (operation,))
 
 
 def owner(db, ref):
-    db.execute('SELECT pg_advisory_xact_lock(1,hashtext(%s))', (ref.operation,))
+    lock_operation(db, ref.operation)
     return db.execute("SELECT payload->>'managerId',payload->'boleta'->>'portfolioId' "
                       "FROM inbox WHERE operation_id=%s", (ref.operation,)).fetchone()
 
@@ -17,6 +21,17 @@ def owner(db, ref):
 def conflict(ctx, reason):
     status, op, payload = error(ctx, 409, 'IDEMPOTENCY_CONFLICT')
     return status, op, {**payload, 'message': reason}
+
+
+def append(db, op, sequence, previous, state, day, reason=None):
+    event = dict(sequence=sequence, state=state, previousState=previous,
+                 eventId=str(uuid4()), operationId=op, instructionVersion=1, origin='CUSTODIAN',
+                 occurredAt=f'{day}T00:00:00Z' if day else stamp())
+    if reason:
+        event['reason'] = reason
+    if state == 'REJECTED':
+        event['rejectionOrigin'] = 'CUSTODIAN'
+    db.execute('INSERT INTO instruction_events(operation_id,event) VALUES (%s,%s)', (op, Jsonb(event)))
 
 
 def submit(db, ctx, payload):
@@ -29,12 +44,14 @@ def submit(db, ctx, payload):
         if row[0] != digest:
             return conflict(ctx, 'BUSINESS_DIGEST_MISMATCH')
         return 202, ctx.operation, row[1]
+    # Do not race fixture initialization: a scenario cannot change time basis
+    # after its first instruction. Processing does not take this setup lock.
+    db.execute('SELECT pg_advisory_xact_lock_shared(208)')
+    clock = db.execute('SELECT financial_day FROM settlement_clock').fetchone()
     result = dict(state='RECEIVED', sequence=1)
     db.execute('INSERT INTO inbox VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',
                (*identity, digest, Jsonb(payload), Jsonb(result)))
-    event = dict(**result, previousState='SENT', eventId=str(uuid4()), operationId=ctx.operation,
-                 instructionVersion=1, occurredAt=stamp(), origin='CUSTODIAN')
-    db.execute('INSERT INTO instruction_events(operation_id,event) VALUES (%s,%s)', (ctx.operation, Jsonb(event)))
+    append(db, ctx.operation, 1, 'SENT', 'RECEIVED', clock[0] if clock else None)
     return 202, ctx.operation, result
 
 
@@ -54,8 +71,7 @@ def apply(db, ctx, payload, wire):
         business, events = db.execute('SELECT payload,(SELECT jsonb_agg(event ORDER BY sequence) '
             'FROM instruction_events WHERE operation_id=i.operation_id) FROM inbox i WHERE operation_id=%s',
             (ctx.operation,)).fetchone()
-        result = 200, ctx.operation, dict(**business, events=events, state=events[-1]['state'],
-                                          sequence=events[-1]['sequence'])
+        result = 200, ctx.operation, dict(**business, events=events, **state_fields(events[-1]))
     db.execute('INSERT INTO message_receipts(message_id,digest,result) VALUES (%s,%s,%s)',
                (ctx.message, digest, Jsonb(result)))
     return result
