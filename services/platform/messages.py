@@ -4,17 +4,17 @@ import json
 from pathlib import Path
 from uuid import uuid4
 
-from c1.policy import PARTICIPANTS, direction
+from c1.policy import LINKS, PARTICIPANTS, direction
 from c1.security import Boundary, ECDSA, registry
 
 CREDENTIAL = Path('/identity')
 SECRET = CREDENTIAL / 'message/message-private.pem'
 
 
-def boundary(response):
-    kid = PARTICIPANTS['platform' if response else 'manager'] + '-0'
+def boundary(response, integration='platform'):
+    kid = PARTICIPANTS[integration if response else LINKS[integration][0]] + '-0'
     keys = registry(json.loads((CREDENTIAL / 'public.json').read_bytes()))
-    return Boundary(direction('platform', response=response, signing_key_id=kid, trusted_key_ids=[kid]), keys)
+    return Boundary(direction(integration, response=response, signing_key_id=kid, trusted_key_ids=[kid]), keys)
 
 
 def envelope(policy, typ, payload, op=None, correlation=None, **overrides):

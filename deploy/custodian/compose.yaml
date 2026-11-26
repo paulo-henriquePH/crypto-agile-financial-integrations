@@ -1,0 +1,37 @@
+x-runtime: &runtime
+  image: cafi-custodian:s2-07
+  platform: linux/amd64
+  working_dir: /repo
+  read_only: true
+  user: "999:999"
+  security_opt: [no-new-privileges:true]
+  environment: {PYTHONPATH: /repo, PYTHONDONTWRITEBYTECODE: "1"}
+  cap_drop: [ALL]
+services:
+  custodian:
+    <<: *runtime
+    command: [python, -m, services.custodian.serve]
+    volumes:
+      - custodian_identity:/identity:ro
+      - custodian_key:/credentials/custodian:ro
+    networks:
+      default:
+        aliases: [custodian.cafi.test]
+  client:
+    <<: *runtime
+    profiles: [tools]
+    volumes: [platform_identity:/identity:ro]
+  identity:
+    <<: *runtime
+    profiles: [tools]
+    user: "0:0"
+    cap_add: [CHOWN, DAC_OVERRIDE]
+    network_mode: none
+    tmpfs: [/tmp]
+    command: [python, -c, "from deploy.platform.identity import provision_link; provision_link('platform','custodian')"]
+    volumes:
+      - platform_identity:/identities/platform
+      - custodian_identity:/identities/custodian
+volumes:
+  platform_identity:
+  custodian_identity:

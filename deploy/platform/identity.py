@@ -10,8 +10,8 @@ from c1.provision import provision
 from spikes.tls.certificates import issue_ca, issue_leaf
 
 
-def main():
-    roles = ('manager', 'platform')
+def provision_link(client, server):
+    roles = (client, server)
     if all((Path('/identities') / role / 'public.json').is_file() for role in roles):
         return  # Already provisioned. Never silently replace an existing identity.
     with TemporaryDirectory() as tmp:
@@ -20,7 +20,7 @@ def main():
         rows = []
         for role in roles:
             target = Path('/identities') / role
-            issue_leaf(ca, role, 'lab-ca', 'client' if role == 'manager' else 'server',
+            issue_leaf(ca, role, 'lab-ca', 'client' if role == client else 'server',
                        role + '.cafi.test', role)
             provision(target / 'message', PARTICIPANTS[role], PARTICIPANTS[role] + '-0')
             rows += json.loads((target / 'message/registry.json').read_bytes())
@@ -34,4 +34,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    provision_link('manager', 'platform')
