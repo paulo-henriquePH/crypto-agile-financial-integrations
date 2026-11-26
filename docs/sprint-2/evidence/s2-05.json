@@ -1,0 +1,32 @@
+{
+  "task": "S2-05",
+  "date": "2026-11-26",
+  "baseRevision": "408edd8a94ca9e98c1f1eac5eef099a29c2a1773",
+  "workingTree": "S2-05 pre-commit; README.md and docs/SPRINT-2.md preexisting",
+  "environment": {
+    "engine": "Docker 29.9.3, linux/amd64",
+    "image": "cafi-transport:s2-03",
+    "imageId": "sha256:a58721fe3b2a71285b8cdcaea6855d0c64b60ee9d0856aa9ebd9a66bdcea8a92",
+    "runtime": "CPython 3.13.11; OpenSSL 3.5.9; h11 0.16.0",
+    "envelopeClock": "2026-11-19T12:00:30Z",
+    "secrets": "ephemeral private tmpfs, uid 65534, no external network"
+  },
+  "checks": [
+    {"command": "powershell -NoProfile -File scripts/verify-c1/verify.ps1", "exitCode": 0, "tests": 10, "skips": 0},
+    {"command": "docker run --rm --platform linux/amd64 --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 65534:65534 --mount \"type=bind,source=$((Get-Location).Path),target=/repo,readonly\" -w /repo -e PYTHONDONTWRITEBYTECODE=1 cafi-transport:s2-03 python tests/contracts/check_platform_openapi.py", "exitCode": 0, "result": "OpenAPI 3.1, 13 illustrative examples and local references"},
+    {"command": "powershell -NoProfile -File spikes/s2-03/verify.ps1 -BodyProof", "exitCode": 0},
+    {"command": "powershell -NoProfile -File spikes/s2-03/verify.ps1", "exitCode": 0}
+  ],
+  "observed": {
+    "creationSnapshot": "HTTP send and receive rejected a different clientOrderId and a different counterparty under the same manager/portfolio; editing the handler dictionary did not alter the retained digest. Receive checked a valid frozen ECDSA result.",
+    "restStatus": "HTTP send and receive accepted FORBIDDEN/403 and INVALID_SCHEMA/400; both rejected FORBIDDEN/401, INVALID_SCHEMA/403, INVALID_SCHEMA/422, IDEMPOTENCY_CONFLICT/503, NOT_FOUND/503 and FORBIDDEN/404 with signed envelopes on receive.",
+    "frozenC1": "9/9 signed request, response and error vectors; canonical bytes match frozen references",
+    "freshHttp": "12/12 exchanges: command/result, command/error, query/result and query/NOT_FOUND on each of three links; verified TLS 1.3 X25519 TLS_AES_256_GCM_SHA384, independently generated message keys",
+    "replay": "one authorized callback; invalid retries did not release cached result; stored portfolio, direction, grants, key state, validity, route and signature checked",
+    "queries": "wrong REST UUID or SOAP action rejected before scope lookup; wrong owner, stale/mismatched correlation and unauthorized result scope rejected",
+    "certificates": "untrusted client chain (verify code 20) and wrong client SAN (62) rejected",
+    "keys": "wrong signing secret, revoked/expired/wrong-use key and TLS SPKI reuse rejected; VERIFY_ONLY verified but could not sign",
+    "parsers": "duplicate JSON property, 7 frozen XML rejection fixtures, depth 33, envelope over 256 KiB, oversized Content-Length header without body rejected"
+  },
+  "limits": "Adapter boundary only. Local socket pairs, synthetic ownership resolver, real cryptography. No endpoint, persistent replay cache, service isolation, transaction, load or end-to-end financial flow tested."
+}

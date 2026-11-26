@@ -158,6 +158,10 @@ Validade padrão de mensagem: 120 s; tolerância máxima de relógio: 5 s. Exigi
 
 ### TLS, políticas e chaves
 
+Para `CREATE_OPERATION_RESULT`, a correlação da tentativa inclui o digest SHA-256 da boleta em JCS; a boleta integral no snapshot deve corresponder à enviada. Em REST, conferir o código assinado contra o status também na recepção: `FORBIDDEN` corresponde exclusivamente a `403`, e `NOT_FOUND` a `404`.
+
+Na implementação C1 v1, a [fronteira de segurança](docs/sprint-2/c1.md) usa a identidade observada na própria conexão e uma política local por direção. Antes de liberar o pedido, o adaptador verifica o escopo `(managerId, portfolioId)` declarado ou persistido. Uma consulta por UUID lê somente metadados de titularidade nessa etapa; ausência e carteira proibida têm saídas distintas, restritas a erro assinado. A mesma verificação precede cada replay. O endpoint continua responsável pela transação, digest e resultado idempotente. Ver [ADR 0001](docs/adr/0001-stack.md).
+
 TLS deve aceitar apenas versão 1.3, com grupo X25519 ou X25519MLKEM768 conforme política, sem fallback. Fixar a mesma suíte simétrica nas comparações; usar `TLS_AES_256_GCM_SHA384` como referência se suportada em todos os componentes. Registrar grupo, suíte, versão TLS e algoritmo do certificado efetivamente usados. Desabilitar 0-RTT; retomada de sessão permanece desabilitada nos experimentos.
 
 | Campo da política | Regra |

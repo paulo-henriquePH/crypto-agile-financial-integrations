@@ -85,3 +85,11 @@ O [roteiro de build e execução](../../spikes/s2-03/README.md) e os resultados 
 ## Persistência de laboratório — S2-04
 
 Adotar PostgreSQL 17.7 Bookworm em Linux `amd64`, com a imagem oficial fixada por digest no [Compose](../../deploy/persistence/compose.yaml). A [SPEC §2](../../SPEC.md#2-arquitetura-e-execução) permite uma instância compartilhada: três bases e três logins preservam a separação dos registros sem exigir três servidores por cenário. O operador aplica migrações; cada login de serviço autentica por SCRAM e só pode conectar à própria base. O processo do banco e o operador Docker são confiáveis: a instância é um ponto de falha comum, e este isolamento não cobre comprometimento do host. [Reprodução](../../deploy/persistence/README.md) e [verificação sanitizada](../sprint-2/evidence/s2-04.json).
+
+## Fronteira reutilizável C1 — S2-05 (2026-11-26)
+
+Usar o [adaptador C1](../sprint-2/c1.md) nos dois sentidos de cada enlace. O mesmo binding que verifica cadeia e SAN expõe a chave pública do certificado da conexão para compará-la com a chave de mensagem do participante. Registro público e permissões vêm da configuração local, inclusive para replays. A alternativa de decidir a autorização no handler, depois de procurar um resultado idempotente, permitiria devolver dados mesmo após expiração ou revogação. A fronteira consulta somente titularidade; o handler recebe exclusivamente conteúdo verificado e conserva a responsabilidade por atomicidade, deduplicação e semântica financeira.
+
+Esta decisão mantém TLS direto, contratos v1 e bytes assinados da Sprint 1. A [evidência](../sprint-2/evidence/s2-05.json) cobre adaptadores nos dois papéis, não serviços implantados.
+
+A correlação local de criação guarda somente o digest JCS da boleta para conferir o snapshot: uma referência ao dicionário do handler permitiria mutação depois da verificação. A comparação é simétrica no cliente e no servidor, assim como a vinculação entre erro assinado e status REST. Não se adiciona campo ao envelope.

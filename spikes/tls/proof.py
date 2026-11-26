@@ -12,7 +12,10 @@ from select import select
 import socket
 from time import monotonic
 
-from certificates import CLIENT_NAME, PREFIX, SERVER_CN, SERVER_NAME, lab_certificates
+if __package__:
+    from .certificates import CLIENT_NAME, PREFIX, SERVER_CN, SERVER_NAME, lab_certificates
+else:
+    from certificates import CLIENT_NAME, PREFIX, SERVER_CN, SERVER_NAME, lab_certificates
 
 LIBCRYPTO = PREFIX / 'lib/libcrypto.so.3'
 LIBSSL = PREFIX / 'lib/libssl.so.3'
@@ -103,7 +106,7 @@ class OpenSSL:
             ('SSL_is_init_finished', i, p), ('SSL_get_version', s, p),
             ('SSL_get0_group_name', s, p), ('SSL_get_current_cipher', p, p),
             ('SSL_CIPHER_get_name', s, p), ('SSL_get_verify_result', l, p),
-            ('SSL_get0_peer_certificate', p, p), ('SSL_get0_peername', s, p),
+            ('SSL_get0_peer_certificate', p, p), ('SSL_get_certificate', p, p), ('SSL_get0_peername', s, p),
             ('SSL_get0_verified_chain', p, p),
             ('SSL_session_reused', i, p), ('SSL_get_session', p, p),
             ('SSL_SESSION_has_ticket', i, p), ('SSL_SESSION_is_resumable', i, p),

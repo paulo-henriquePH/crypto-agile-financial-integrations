@@ -6,7 +6,10 @@ from time import monotonic
 
 import h11
 
-from proof import require  # spikes/tls: the pinned OpenSSL binding
+if __package__:
+    from spikes.tls.proof import require
+else:
+    from proof import require  # standalone gate
 
 
 class TLSFailure(Exception):
