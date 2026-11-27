@@ -22,16 +22,22 @@ FRI, MON = '2026-11-20', '2026-11-23'
 
 
 class Scenario:
+    files = FILES
+    prefix = 's209'
+    tag = 's2-09'
+
     def __init__(self, name):
         self.name = name
-        self.project = 's209-' + name + '-' + uuid4().hex[:8]
-        self.env = {**os.environ, 'S2_09_FACTS': '', 'S2_09_REUSE_ID': '', 'S2_09_COLLISION_ID': ''}
+        self.project = self.prefix + '-' + name + '-' + uuid4().hex[:8]
+        self.env = {**os.environ, 'S2_09_FACTS': '', 'S2_09_REUSE_ID': '', 'S2_09_COLLISION_ID': '',
+                    'CAFI_CUSTODY_PLATFORM_IMAGE': f'cafi-platform:{self.tag}',
+                    'CAFI_CUSTODY_REMOTE_IMAGE': f'cafi-custodian:{self.tag}'}
         self.composed = ['docker', 'compose', '-p', db.project(self.project),
-                         *(arg for path in FILES for arg in ('-f', str(ROOT / path)))]
+                         *(arg for path in self.files for arg in ('-f', str(ROOT / path)))]
 
     def compose(self, *args, rc=0, capture=False):
         out = subprocess.run([*self.composed, *args], check=False, capture_output=capture,
-                             timeout=120, env=self.env, text=True, encoding='utf-8')
+                             stdin=subprocess.DEVNULL, timeout=120, env=self.env, text=True, encoding='utf-8')
         expected = (rc,) if isinstance(rc, int) else rc
         assert out.returncode in expected, (args, out.returncode, out.stdout, out.stderr)
         return out.stdout
@@ -43,9 +49,10 @@ class Scenario:
         return self.compose('run', '--rm', '-T', 'manager', 'python', 'tests/platform/custody_flow.py',
                             *args, capture=True).strip()
 
-    def history(self, *states):
-        history = json.loads(self.manager('history', self.operation, *states))
-        result = replay(history, 'CONFIRMED' if len(states) >= 4 else 'PENDING')
+    def history(self, *states, delivery=None):
+        delivery = delivery or ('CONFIRMED' if len(states) >= 4 else 'PENDING')
+        history = json.loads(self.manager('history', self.operation, f'delivery={delivery}', *states))
+        result = replay(history, delivery)
         assert (result['state'], result['sequence'], result['ignoredRepeatedEvents']) == (states[-1], len(states), 0)
         return history
 
@@ -53,10 +60,25 @@ class Scenario:
         out = json.loads(self.compose('run', '--rm', '-T', 'runner', *args, capture=True))
         assert (out['financialDay'], out['transitions']) == (day, transitions), out
 
+    def once(self, *args, expected, service='worker'):
+        # Avoid an attach/auto-remove race in Compose on Docker Desktop; wait
+        # for the real process and read its exit status and logs separately.
+        name = f'{self.project}-job-{uuid4().hex[:8]}'
+        self.compose('run', '-d', '-T', '--no-deps', '--name', name, service, '--once', *args, capture=True)
+
+        def docker(*command):
+            return subprocess.run(['docker', *command, name], check=True, capture_output=True,
+                                  stdin=subprocess.DEVNULL, timeout=50, text=True, encoding='utf-8')
+        try:
+            rc = int(docker('wait').stdout)
+            result = docker('logs')
+            assert rc in expected, (args, rc, result.stdout, result.stderr)
+            return [json.loads(line) for line in result.stdout.splitlines()]
+        finally:
+            docker('rm', '-f')
+
     def worker(self, error=None, *, interval=1, race=False):
-        lines = self.compose('run', '--rm', '-T', 'worker', '--once', '--poll-interval', str(interval),
-                             rc=(0, 1) if race else (1 if error else 0), capture=True).splitlines()
-        logs = [json.loads(line) for line in lines]
+        logs = self.once('--poll-interval', str(interval), expected=(0, 1) if race else (int(bool(error)),))
         if error:
             assert logs[-1]['result'] == 'FAILED' and logs[-1]['code'] == error, logs
         return logs
@@ -65,13 +87,13 @@ class Scenario:
         self.wait(lambda: self.sql('SELECT poll_after<=now() FROM outbox') == 't')
         return self.worker(error=error)
 
-    def wait(self, ready):
-        deadline = monotonic() + 15
+    def wait(self, ready, *, timeout=15):
+        deadline = monotonic() + timeout
         while monotonic() < deadline:
             if ready():
                 return
             sleep(.2)
-        raise RuntimeError('worker or poll not ready in 15 s')
+        raise RuntimeError(f'worker or poll not ready in {timeout} s')
 
     def evidence(self, states, **observed):
         print(json.dumps(dict(scenario=self.name, operationId=self.operation, history=states,
@@ -87,10 +109,10 @@ class Scenario:
             'messageId',message_id,'digest',encode(digest,'hex'),'result',result) ORDER BY message_id),'[]')
             FROM message_receipts WHERE result->>'kind'='CUSTODY_RESPONSE'"""))
 
-    def run(self, exercise):
+    def run(self, exercise, *, migrate=db.migrate):
         try:
             self.compose('up', '-d', '--wait', '--wait-timeout', '30', 'db')
-            db.migrate(self.project)
+            migrate(self.project)
             self.compose('exec', '-T', 'db', 'sh', '/opt/provision-runner.sh')
             self.runner('init', self.name if self.name == 'rejection' else 'acceptance')
             self.compose('run', '--rm', '-T', 'manager-identity-init')
@@ -219,18 +241,20 @@ def defensive(s):
     s.compose('stop', 'custodian')
     s.compose('--profile', 'tools', 'up', '-d', '--wait', '--wait-timeout', '15', 'defensive-peer')
     checks = ['response correlation', 'custody history regression', 'custody history changed',
-               'inconsistent custodian snapshot', 'invalid local transition', 'custody business mismatch',
+               'custody history gap', 'invalid local transition', 'custody business mismatch',
                'response message ID reused', '23514']
     for check in checks:
         if check == '23514':
             s.sql("ALTER TABLE operation_events ADD CONSTRAINT deny_terminal "
                   "CHECK (event->>'state'<>'SETTLED') NOT VALID")
         # Re-arm explicitly only as test operator to present each independent negative.
-        s.sql('UPDATE outbox SET poll_after=now()')
+        s.sql("UPDATE operations SET delivery_status='CONFIRMED'; "
+              "UPDATE outbox SET poll_after=now(),recovery_failures=0,gap_through=NULL")
         s.poll(error=check)
-        assert s.history(*states) == accepted
+        transient = check in ('custody history gap', '23514')
+        assert s.history(*states, delivery='CONFIRMED' if transient else 'BLOCKED') == accepted
         assert s.sql('SELECT jsonb_agg(event ORDER BY sequence) FROM custody_facts') == facts
-        assert s.sql('SELECT updated_at FROM operations') == updated
+        assert s.sql('SELECT updated_at FROM operations') >= updated  # Only delivery can change.
         assert s.response_receipts() == receipts
         assert s.sql('SELECT attempts,poll_after IS NULL FROM outbox') == '1|t'
     logs = s.compose('logs', '--no-log-prefix', 'defensive-peer', capture=True)
@@ -244,7 +268,7 @@ def receipt_rollback(s):
     s.sql("ALTER TABLE operation_events ADD CONSTRAINT deny_received "
           "CHECK (event->>'state'<>'RECEIVED') NOT VALID")
     s.worker(error='23514')
-    s.history(*LOCAL[:3])
+    s.history(*LOCAL[:3], delivery='UNKNOWN')
     witnesses = s.responses()
     assert len(witnesses) == 1 and witnesses[0]['result']['status'] == 202
     assert s.sql('SELECT attempts,prepared_envelope IS NOT NULL,poll_after IS NULL FROM outbox') == '1|t|t'
@@ -271,7 +295,7 @@ def receipt_race(s):
     s.operation = winner
     s.history(*LOCAL)
     s.operation = loser
-    s.history(*LOCAL[:3])
+    s.history(*LOCAL[:3], delivery='BLOCKED')
     assert s.sql('SELECT count(*) FROM inbox', 'custodian') == '2'
     s.evidence(LOCAL[:3], confirmedOperationId=winner, collisionMessageId=collision, resultReceipts=1)
 

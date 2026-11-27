@@ -176,8 +176,10 @@ class OpenSSL:
             self.SSL_free(ssl)
 
     def io(self, operation, ssl, sock, deadline, *args):
-        while (remaining := deadline - monotonic()) > 0:
+        while True:
             self.ERR_clear_error()
+            if monotonic() >= deadline:
+                break
             result = operation(ssl, *args)
             if result == 1:
                 return {'return': result}
@@ -190,6 +192,9 @@ class OpenSSL:
                         'reason': reason.decode('ascii') if reason else None,
                         'verifyCode': code,
                         'verifyReason': text(self.X509_verify_cert_error_string(code), 'verify reason')}
+            remaining = deadline - monotonic()
+            if remaining <= 0:
+                break
             readable, writable, _ = select([sock] if error == SSL_ERROR_WANT_READ else [],
                                            [sock] if error == SSL_ERROR_WANT_WRITE else [],
                                            [], remaining)

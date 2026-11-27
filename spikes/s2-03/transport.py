@@ -18,24 +18,35 @@ class TLSFailure(Exception):
         self.detail = {'stage': stage, **result}
 
 
+class WriteDeadlineExpired(TimeoutError):
+    """A caller-supplied deadline stopped TLS writes, not response reads."""
+
+
 class Channel:
     def __init__(self, api, ssl, sock, deadline, role, limit):
         self.api, self.ssl, self.sock, self.deadline = api, ssl, sock, deadline
         self.http = h11.Connection(role, max_incomplete_event_size=16384)
         self.limit = limit
 
-    def io(self, stage, op, *args):
-        result = self.api.io(op, self.ssl, self.sock, self.deadline, *args)
+    def io(self, stage, op, *args, deadline=None):
+        result = self.api.io(op, self.ssl, self.sock, self.deadline if deadline is None else deadline, *args)
         if result['return'] != 1:
             raise TLSFailure(stage, result)
 
-    def send(self, headers, body):
+    def send(self, headers, body, *, write_deadline=None):
         require(len(body) <= self.limit, 'outbound body limit')
+        bounded = write_deadline is not None and write_deadline <= self.deadline
+        deadline = write_deadline if bounded else self.deadline
         for event in (headers, h11.Data(data=body), h11.EndOfMessage()):
             data = self.http.send(event)
             while data:
                 count = c.c_size_t()
-                self.io('write', self.api.SSL_write_ex, data, len(data), c.byref(count))
+                try:
+                    self.io('write', self.api.SSL_write_ex, data, len(data), c.byref(count), deadline=deadline)
+                except TimeoutError as exc:
+                    if bounded:
+                        raise WriteDeadlineExpired('caller write deadline') from exc
+                    raise
                 require(0 < count.value <= len(data), 'short TLS write without progress')
                 data = data[count.value:]
 

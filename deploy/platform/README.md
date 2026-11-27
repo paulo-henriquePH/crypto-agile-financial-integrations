@@ -69,12 +69,35 @@ na ordem usada pelo verificador. O serviço `worker` executa continuamente por p
 executa apenas uma rodada e falha se algum item da rodada falhar. O intervalo inicial das consultas é
 1 s; os limites de conexão e de troca são 3 s e 10 s, configuráveis por
 `--poll-interval`, `--connect-timeout` e `--exchange-timeout`. Cada consulta cria novo `messageId`.
-Uma falha não gera rejeição financeira, não rearma o acompanhamento e não provoca retransmissão.
+Na S2-09, uma falha não gerava rejeição financeira, não rearmava o acompanhamento e não provocava retransmissão. A regressão deste comando na árvore S2-10 verifica que a recuperação não altera os efeitos financeiros da S2-09.
 Respostas autenticadas e correlacionadas usam a mesma reserva transacional de IDs da API da gestora.
 O worker guarda o digest SHA-256 dos bytes recebidos, não reserializados, e apenas os metadados
 necessários para identificar o resultado. O [registro de recibos](../../services/platform/response_receipts.py)
 usa a transação do chamador e não decide a ação de negócio. O custodiante do verificador observa o
 digest dos bytes enviados sem salvar o envelope nos logs.
-Recuperação de uma entrega inconclusiva, inclusive `UNKNOWN`, preenchimento de lacunas e política de
-retentativas, é S2-10. SOAP e conciliação não estão neste recorte.
 [Evidência sanitizada](../../docs/sprint-2/evidence/s2-09.json).
+
+## Recuperação REST — S2-10
+
+Com os mesmos pré-requisitos, na raiz:
+
+```powershell
+py -B deploy/platform/verify_recovery.py
+```
+
+O verificador cria projetos e volumes exclusivos, prepara as bases e identidades C1, usa a API REST da gestora, o worker real e o próprio custodiante com uma camada de injeção **após** a transação. O [overlay normal](custody.compose.yaml) usa as imagens `cafi-platform:s2-10` e `cafi-custodian:s2-10`; não ativa a camada de teste nem oferece rota de falha. O operador do teste controla o arquivo temporário no contêiner de teste, encerra o worker com `SIGKILL` e usa o CLI isolado de liquidação S2-08; não escreve o estado financeiro pelo banco. O runner aceita nomes de cenários individuais para investigação (`--help`); sem nomes, executa todos e limpa os recursos que criou. Use os asserts ativados.
+
+| Cenário | Observação esperada |
+|---|---|
+| `outbox` | Reiniciar PostgreSQL antes do primeiro envio; recuperar a intenção registrada pela gestora. |
+| `lost_reply`, `killed` | Perder o `202` após commit ou matar o worker antes da confirmação. Primeiro recuperar por consulta, sem novo envio. Timeout de consulta mantém `UNKNOWN`; histórico completo pode recuperar até `SETTLED` com um débito e um crédito. |
+| `expired` | Matar o worker após preparar `SENT` e antes de abrir socket. Prova de ausência vencida não autoriza envio; nova ausência fica persistida através de reinício do banco. Emitir novo ID, validade e assinatura com a mesma identidade de negócio; conservar bytes anteriores. |
+| `gap_closed`, `gap_open` | Resposta assinada omite um evento; sem mutação parcial. Após reinício, histórico contíguo que cubra a sequência pendente restaura a projeção; um prefixo menor não encerra a recuperação. Se a lacuna persiste, a quinta falha bloqueia sem alterar os fatos. |
+| `unavailable`, `disallowed` | Validar atraso, limite e persistência de `BLOCKED`; sem resend diante de `404` sem assinatura válida ou sem correlação, nem retry de esquema/autorização. |
+| `known_receipt` | `404` válido, mas contraditório após um recebimento confirmado, não habilita retransmissão. |
+| `migration` | Exporta a revisão `a22db16` via Git em diretório temporário e usa seu worker e suas migrações reais. Após a 004, `403/FORBIDDEN` permanece bloqueado e sem tráfego; timeout sem recibo e `503` correlacionado continuam recuperáveis por consulta. |
+| `write_expiry` | Pausa na entrada de `Channel.send`, após mTLS, até 75 ms após a validade do `404`. Confere zero chamadas a `SSL_write_ex` e zero inbox antes de obter nova prova; a consulta nova permite recuperar o envio. |
+
+O worker usa `--poll-interval 1`, `--connect-timeout 3` e `--exchange-timeout 10` por padrão; o teste de timeout usa 2 s para a troca. `--retry-base` define o primeiro atraso (padrão 1 s, duplicado a cada falha) e `--retry-jitter` aplica variação proporcional simétrica (padrão 0; valor em `[0, 1)`). Cada invocação `--once` abre um processo novo; falha observada na rodada retorna 1, ausência de trabalho retorna 0. `outbox.attempts` conta preparações de envio confirmadas no banco, mesmo se o socket nunca chegou a abrir; `custody_attempts` registra também consultas, desfecho, código e atraso. A quinta falha grava o atraso de referência de 16 s, mas bloqueia imediatamente. A retomada administrativa de `BLOCKED` não é implementada neste recorte.
+
+Veja a [evidência sanitizada](../../docs/sprint-2/evidence/s2-10.json). O recorte não inclui SOAP, conciliação, troca de políticas nem aceite integrado da Sprint 2.

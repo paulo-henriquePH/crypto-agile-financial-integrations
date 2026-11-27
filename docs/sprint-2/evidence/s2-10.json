@@ -1,0 +1,100 @@
+{
+  "date": "2026-11-27",
+  "base": "a22db16f227a86e98e383a9db32ee627eba4f765",
+  "tree": "Base mais alterações S2-10 sem commit; README.md e docs/SPRINT-2.md preexistentes preservados; contracts/ intacto.",
+  "preReview": {
+    "acceptanceScenarios": 9,
+    "acceptanceExit": 0,
+    "independentReview": "REQUER_CORRECAO",
+    "findings": [
+      "Upgrade 003→004 apagava a distinção entre FORBIDDEN conhecido e envio inconclusivo; tráfego observado 403, 404, 403.",
+      "Pausa antes da escrita deixou o POST começar depois da expiração da prova; tráfego observado 404, 202 e uma inbox."
+    ]
+  },
+  "environment": {
+    "host": "Windows, Python 3.15.2",
+    "docker": "Docker Desktop Linux amd64, Engine 29.9.3, Compose v5.7.1",
+    "dockerPath": "resources/bin do Docker Desktop acrescentado apenas ao PATH do processo PowerShell",
+    "postgresql": "17.7 Bookworm, bases e logins independentes",
+    "runtime": "cafi-transport:s2-03, CPython 3.13.11 / OpenSSL 3.5.9 / h11 0.16.0 / psycopg 3.2.13",
+    "financialExchange": "mTLS TLSv1.3 / X25519 / TLS_AES_256_GCM_SHA384, ECDSA P-256/SHA-256 v1",
+    "parameters": {
+      "pollSeconds": 1,
+      "connectSeconds": 3,
+      "defaultExchangeSeconds": 10,
+      "faultScenarioExchangeSeconds": 2,
+      "retryBaseSeconds": 1,
+      "retryJitterFraction": 0,
+      "maximumConsecutiveFailures": 5,
+      "financialDays": ["2026-11-20", "2026-11-23"]
+    }
+  },
+  "inputBytesSha256": {
+    "services/platform/custody.py": "8239137f33128343beeda7ec3309a703a6e3285c4387e865fa858f25c4385a81",
+    "services/platform/custody_store.py": "169f521b0493ca7b5cc23e4c36b96f3e6384b8da281ef012d9fc0a18e7cd6c44",
+    "services/platform/custody_worker.py": "e94f27e5dac1ccbabb7636bc755c4756b6a5398d7c4f2bd59ed9537c9e3ad276",
+    "deploy/persistence/migrations/platform/004_custody_recovery.sql": "2f8e36b75321ea74a5fdf970e7e2a8c8acc99c7b590f9e6c0ba3147383b73a43",
+    "deploy/platform/verify_recovery.py": "899cef2dc8cf175ac9be61763dd7d631f6bf5946d4db748070ca97dd235c7081",
+    "deploy/platform/verify_custody.py": "60026284d0c91ca9ad30dad52e37083fb6e23be02afd1cfb4803a0b11a6d4325",
+    "tests/platform/custody_recovery.compose.yaml": "cc5331c9d3956aa0d6a4a84c7a0842805aeb13b2e179ae43aa269f609c461589",
+    "tests/platform/custody_recovery_peer.py": "83e5af321d52b2aee063e8caa8607e84dd4d5ecb4ad80eccb4975438c673d683",
+    "tests/platform/custody_pause_writer.py": "2bc4e242ba928509c2c778d838922627c8811553840f923246895de11c2318ca",
+    "spikes/s2-03/transport.py": "6e110459a449cae9a63aaebfc3d913169d6e1d6617b4612ff6622b91a9cbff96",
+    "spikes/tls/proof.py": "3bcc701db70b171a09376078e44c5de9d4cc001025c378178a365aa98009a08c"
+  },
+  "runs": [
+    {"command": "py -B deploy/platform/verify_recovery.py", "exit": 0, "scenarios": 11, "skips": 0},
+    {"command": "py -B deploy/platform/verify_custody.py", "exit": 0, "scenarios": 5, "skips": 0},
+    {"command": "py -B deploy/persistence/lab.py verify", "exit": 0, "skips": 0},
+    {"command": "powershell -NoProfile -File scripts/verify-c1/verify.ps1", "exit": 0, "tests": 11, "skips": 0},
+    {"command": "py -B -m unittest discover -s tests/contracts -p test_events.py -v", "exit": 0, "tests": 3, "skips": 0},
+    {"command": "powershell -NoProfile -File spikes/s2-03/verify.ps1", "exit": 0, "positiveExchanges": 6, "expectedRejections": 54, "skips": 0},
+    {"command": "powershell -NoProfile -File spikes/s2-03/verify.ps1 -BodyProof", "exit": 0, "canonical": 23, "staticSigned": 27, "freshSigned": 6, "expectedRejections": 30, "skips": 0},
+    {"command": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 65534:65534 --tmpfs /tmp:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=65534,gid=65534 --mount \"type=bind,source=$((Get-Location).Path)\\spikes\\tls,target=/proof,readonly\" cafi-spikes:s1 python /proof/proof.py", "exit": 0, "cases": 7, "skips": 0},
+    {"command": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 65534:65534 --tmpfs /tmp:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=65534,gid=65534 --mount \"type=bind,source=$((Get-Location).Path)\\spikes\\tls,target=/proof,readonly\" cafi-spikes:s1 python /proof/proof.py --hybrid", "exit": 0, "cases": 8, "skips": 0}
+  ],
+  "scenarios": {
+    "outbox": {"operationId": "bc3f90a2-c2b1-4eec-bf17-df5df2a75d16", "wire": ["SUBMIT"], "observed": "Intenção da gestora recuperada após reinício do PostgreSQL; um único envio e RECEIVED, sem lançamentos."},
+    "lost-reply": {"operationId": "94fed322-a222-4edc-b857-cd7e6d3c62f4", "wire": ["SUBMIT", "QUERY", "QUERY"], "observed": "Timeout após commit e timeout de consulta mantiveram SENT/UNKNOWN. Reinício e consulta íntegra produziram SETTLED/CONFIRMED sem retransmissão: uma inbox, um débito, um crédito, caixa 51950.00 BRL e posição 107."},
+    "killed": {"operationId": "7a747f46-65c8-4948-8976-16ec2e9ae08e", "wire": ["SUBMIT", "QUERY"], "observed": "SIGKILL após commit remoto, antes da confirmação; nova instância encontrou tentativa aberta, registrou INTERRUPTED/UNKNOWN e recuperou RECEIVED pelo primeiro QUERY, sem novo envio."},
+    "expired": {
+      "operationId": "68ffe86f-b8df-4eb2-963d-35edaf6a363a",
+      "wire": ["QUERY", "QUERY", "SUBMIT", "QUERY"],
+      "expiredSubmitId": "f8d4c101-7b2f-405e-808b-e40b0a926182",
+      "expiredProofId": "4dfc5cbb-e6dd-43b2-8d47-76e14d520ea2",
+      "usedProofId": "da16202a-a11d-49b5-8a35-38de4fcf4eb8",
+      "resubmissionId": "11f66e29-78a8-455e-a3d4-5f404bf13936",
+      "observed": "SIGKILL antes do socket preservou os bytes originais. Prova vencida exigiu nova consulta. Novo 404 assinado, correlacionado e persistido autorizou exatamente um envio após reinício; ID, validade e assinatura novos conservaram identidade e negócio. Novo timeout consumiu a prova e voltou a exigir consulta. SETTLED, uma inbox e dois lançamentos."
+    },
+    "gap-closed": {"operationId": "989d0e7b-7808-4891-8bd4-f9f9f8033916", "wire": ["SUBMIT", "QUERY", "QUERY", "QUERY"], "observed": "Zero fatos locais após lacuna; horizonte 4 persistiu após reinício e prefixo contíguo insuficiente. Só o histórico íntegro aplicou os quatro fatos e limpou a lacuna. SETTLED, um débito e um crédito."},
+    "gap-open": {"operationId": "c47641fb-fa31-4370-a125-27cfea4b7ab0", "wire": ["SUBMIT", "QUERY", "QUERY", "QUERY", "QUERY", "QUERY"], "observed": "Cinco consultas sem cobrir a lacuna de horizonte 4; RECEIVED/BLOCKED e zero fatos aplicados localmente. SETTLED remoto e os dois lançamentos permaneceram intactos."},
+    "unavailable": {
+      "operationId": "2936ba67-2541-4736-af28-c2c54b1bd5b5",
+      "wire": ["QUERY", "QUERY", "QUERY", "QUERY"],
+      "failureCodes": ["NETWORK_UNAVAILABLE", "UNAVAILABLE", "RATE_LIMITED", "UNAVAILABLE", "TIMEOUT"],
+      "backoffSeconds": [1, 2, 4, 8, 16],
+      "observed": "Tentativa de envio preparada ficou inconclusiva sem chegar ao custodiante. Só houve consultas durante a recuperação; 429/503 assinados retentáveis foram registrados. A quinta falha bloqueou em SENT/BLOCKED; após reinício, com serviço disponível e vencido o quinto atraso, não houve nova tentativa. Zero inbox e lançamentos."
+    },
+    "disallowed": {"observed": "Cinco operações, cada uma com uma consulta após o envio inconclusivo; sem prova aceita, nova tentativa ou lançamento. 404 sem assinatura, 404 descorrelacionado, assinatura inválida, INVALID_SCHEMA e FORBIDDEN bloquearam sem retentativa de validação e sem rejeição financeira."},
+    "known-receipt": {"operationId": "03edaf21-4d33-47ab-8775-739a85041857", "wire": ["SUBMIT", "QUERY"], "observed": "404 assinado e correlacionado após RECEIVED foi registrado, mas não habilitou retransmissão. Histórico financeiro intacto, uma inbox e zero lançamentos."},
+    "migration": {
+      "blocked": {"operationId": "8bbfc0a1-86eb-4736-a8d2-9531d6637e35", "legacySubmitId": "e726567f-2b9b-43c1-83d2-b5f6027514ca", "retainedReceiptId": "219ffc15-3d3d-432d-a833-2cb489900d8d", "wireStatuses": [403]},
+      "inconclusive": {"operationId": "fed229da-c3a0-4f64-91a3-5d1504ff3d2e", "wireStatuses": [202, 200, 200]},
+      "transient": {"operationId": "33de6dd7-cb62-456c-bbb8-aabe7d318f21", "wireStatuses": [503, 404, 202]},
+      "observed": "A base exportada executou o worker S2-09 sobre a 003. A 004 preservou os três envelopes e os dois recibos correlacionados. O FORBIDDEN permaneceu em SENT/BLOCKED mesmo após recompor a concessão, sem nova rede. O 202 perdido e o 503 ficaram UNKNOWN; só o 503, após ausência real, foi retransmitido. Duas inbox no total, zero lançamentos."
+    },
+    "write-expiry": {
+      "operationId": "21d3eec4-4f8d-42b9-a326-1b5cc87cd097",
+      "wireStatuses": [404, 404, 202],
+      "expiredProofId": "7e9a5845-f294-457a-b094-1afffefd6b5e",
+      "freshProofId": "2037f17f-5f29-4f6a-aaec-0ca081e13102",
+      "enteredChannelSend": "2026-11-27T12:17:24.465562+00:00",
+      "signedExpiry": "2026-11-27T12:17:28.570796+00:00",
+      "resumedChannelSend": "2026-11-27T12:17:28.646223+00:00",
+      "sslWriteCallsAfterPause": 0,
+      "observed": "Após mTLS e pausa até 75 ms após a validade, nenhuma chamada SSL_write_ex e nenhuma inbox; PREPARATION_EXPIRED manteve SENT/UNKNOWN e consumiu a prova. Só nova consulta assinada e correlacionada permitiu 202 e uma inbox, sem lançamentos."
+    }
+  },
+  "runnerDiagnostics": "Rodadas preliminares com saída 1 tiveram timeout em docker compose run --rm ou erro em consultas SQL de verificação; não foram contadas como aceite. A execução de --once usa contêiner destacado, docker wait, logs e remoção explícita.",
+  "limits": "Recorte REST C1 de T03, T12 e T13. Os testes de SOAP e grupo híbrido do gate são apenas provas isoladas de transporte, não implementam S2-11 nem ampliam o recorte financeiro. Não verifica conciliação, retomada administrativa de BLOCKED, migração criptográfica, carga ou aceite integral da Sprint 2."
+}

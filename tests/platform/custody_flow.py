@@ -19,6 +19,9 @@ if __name__ == '__main__':
         status, _, body, _ = exchange(op=arg, override=dict(messageId=states[0]))
         assert status == 409 and body['code'] == 'IDEMPOTENCY_CONFLICT'
     elif mode == 'history':
+        expected_delivery = None
+        if states[0].startswith('delivery='):
+            expected_delivery = states.pop(0).split('=', 1)[1]
         status, op, body, _ = exchange(op=arg)
         assert status == 200 and op == arg
         history = body['events']
@@ -29,7 +32,7 @@ if __name__ == '__main__':
             'CUSTODIAN'] * max(0, len(states)-3)
         assert all(e['operationId'] == op and e['instructionVersion'] == 1 for e in history)
         assert (body['sequence'], body['state']) == (len(states), states[-1])
-        assert body['deliveryStatus'] == ('CONFIRMED' if len(states) >= 4 else 'PENDING')
+        assert body['deliveryStatus'] == (expected_delivery or ('CONFIRMED' if len(states) >= 4 else 'PENDING'))
         assert body['reconciliationStatus'] == 'NOT_READY'
         assert body['managerId'] == 'GESTORA-ALFA' and body['boleta']['settlementDate'] == '2026-11-23'
         if body['state'] == 'REJECTED':

@@ -1,6 +1,8 @@
 # Last overlay after persistence, platform, custodian and settlement.
+x-platform-image: &platform-image ${CAFI_CUSTODY_PLATFORM_IMAGE:-cafi-platform:s2-10}
+x-custodian-image: &custodian-image ${CAFI_CUSTODY_REMOTE_IMAGE:-cafi-custodian:s2-10}
 x-runtime: &runtime
-  image: cafi-platform:s2-09
+  image: *platform-image
   platform: linux/amd64
   working_dir: /repo
   read_only: true
@@ -10,22 +12,22 @@ x-runtime: &runtime
   cap_drop: [ALL]
 services:
   platform:
-    image: cafi-platform:s2-09
+    image: *platform-image
   manager:
-    image: cafi-platform:s2-09
+    image: *platform-image
   identity:
-    image: cafi-custodian:s2-09
+    image: *custodian-image
     volumes: !override
       - custody_identity:/identities/platform
       - custodian_identity:/identities/custodian
   client:
-    image: cafi-custodian:s2-09
+    image: *custodian-image
     volumes: !override
       - custody_identity:/identity:ro
   custodian:
-    image: cafi-custodian:s2-09
+    image: *custodian-image
   runner:
-    image: cafi-custodian:s2-09
+    image: *custodian-image
   manager-identity-init:
     <<: *runtime
     profiles: [tools]
