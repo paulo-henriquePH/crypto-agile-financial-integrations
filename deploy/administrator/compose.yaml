@@ -1,0 +1,37 @@
+x-runtime: &runtime
+  image: cafi-administrator:s2-11
+  platform: linux/amd64
+  working_dir: /repo
+  read_only: true
+  user: "999:999"
+  security_opt: [no-new-privileges:true]
+  environment: {PYTHONPATH: /repo, PYTHONDONTWRITEBYTECODE: "1"}
+  cap_drop: [ALL]
+services:
+  administrator:
+    <<: *runtime
+    command: [python, -m, services.administrator.serve]
+    volumes:
+      - administrator_identity:/identity:ro
+      - administrator_key:/credentials/administrator:ro
+    networks:
+      default:
+        aliases: [administrator.cafi.test]
+  client:
+    <<: *runtime
+    profiles: [tools]
+    volumes: [platform_soap_identity:/identity:ro]
+  identity:
+    <<: *runtime
+    profiles: [tools]
+    user: "0:0"
+    cap_add: [CHOWN, DAC_OVERRIDE]
+    network_mode: none
+    tmpfs: [/tmp]
+    command: [python, -c, "from deploy.platform.identity import provision_link; provision_link('platform','administrator')"]
+    volumes:
+      - platform_soap_identity:/identities/platform
+      - administrator_identity:/identities/administrator
+volumes:
+  platform_soap_identity:
+  administrator_identity:

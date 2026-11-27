@@ -304,6 +304,22 @@ class Controls(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, reason):
                     b.receive(wire, r, service)
 
+    def test_soap_sequence_projection_preserves_unbounded_integer(self):
+        wire = vector('administrator', 'request')
+        original = body.parse_xml(wire, body.soap_schema(ROOT / 'contracts')).content
+        old = body.text(original.find(body.C + 'Payload/' + body.C + 'Sequence')).encode()
+        tag = b'<c:Sequence>' + old + b'</c:Sequence>'
+        self.assertIn(tag, wire)
+        digits = '1234567890' * 450
+        changed = wire.replace(tag, b'<c:Sequence>' + digits.encode() + b'</c:Sequence>', 1)
+        _, p, payload = parse(changed, xml=True)
+        self.assertEqual(payload['sequence'], digits)
+        self.assertEqual((p['instructionVersion'], p['policyVersion']), (1, 1))
+        with self.assertRaisesRegex(ValueError, 'C1 version'):
+            parse(changed.replace(b'<c:PolicyVersion>1<', b'<c:PolicyVersion>2<', 1), xml=True)
+        with self.assertRaisesRegex(ValueError, 'soap schema'):
+            parse(changed.replace(b'<c:Sequence>', b'<c:Sequence>0', 1), xml=True)
+
     def test_http_limit_before_body(self):
         with self.pair('platform') as (client, service):
             # Only a header is sent. Receiver cannot rely on a complete body to apply the limit.

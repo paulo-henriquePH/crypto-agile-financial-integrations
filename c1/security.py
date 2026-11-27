@@ -2,6 +2,7 @@
 import base64
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
+from decimal import Decimal
 from functools import cache
 from hashlib import sha256
 import json
@@ -10,6 +11,7 @@ from threading import Lock, local
 from uuid import UUID
 
 from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema.validators import extend
 from lxml import etree
 from referencing import Registry, Resource
 import rfc8785
@@ -143,11 +145,22 @@ def utc(value):
     return datetime.fromisoformat(value)
 
 
-def json_validator():
+def _soap_integer(checker, value):
+    if isinstance(value, Decimal):
+        return value.is_finite() and value == value.to_integral_value()
+    return Draft202012Validator.TYPE_CHECKER.is_type(value, 'integer')
+
+
+_SOAPValidator = extend(Draft202012Validator,
+                        type_checker=Draft202012Validator.TYPE_CHECKER.redefine('integer', _soap_integer))
+
+
+def json_validator(*, xml=False):
     files = ['messages/envelope.schema.json', 'schemas/boleta.schema.json', 'schemas/event.schema.json']
     docs = [json.loads((ROOT / 'contracts' / f).read_bytes()) for f in files]
     registry = Registry().with_resources((d['$id'], Resource.from_contents(d)) for d in docs)
-    return Draft202012Validator(docs[0], registry=registry, format_checker=FormatChecker())
+    validator = _SOAPValidator if xml else Draft202012Validator
+    return validator(docs[0], registry=registry, format_checker=FormatChecker())
 
 
 _validators = local()
@@ -161,6 +174,7 @@ def _soap_schema():
 
 
 def fields(node):
+    """Project an XSD-checked tree; SOAP sequence is exact canonical decimal text."""
     result = {}
     for child in node:
         if not isinstance(child.tag, str):  # comments do not contribute to C14N
@@ -172,8 +186,11 @@ def fields(node):
             value = [dict(n.attrib) for n in child if isinstance(n.tag, str)]
         else:
             value = body.text(child)
-            if name in ('PolicyVersion', 'InstructionVersion', 'Sequence'):
-                value = int(value)
+            if name in ('PolicyVersion', 'InstructionVersion'):
+                require(value == '1', 'C1 version')
+                value = 1
+            elif name == 'Sequence':
+                require(re.fullmatch(r'[1-9][0-9]*', value), 'XML sequence')
             elif name == 'Retryable':
                 value = value in ('true', '1')
         result[name[0].lower() + name[1:]] = value
@@ -197,11 +214,17 @@ def parse(wire, xml):
     else:
         p, payload = parsed.content['protected'], parsed.content['payload']
     alg, kid, raw = parsed.signatures[0]
-    logical = dict(protected=p, payload=payload, signatures=[
+    # Keep the exact digits for business and emission. The logical schema alone
+    # sees an exact Decimal integer; constructing it from digits doesn't round.
+    schema_payload = {**payload, 'sequence': Decimal(payload['sequence'])} if xml and 'sequence' in payload else payload
+    logical = dict(protected=p, payload=schema_payload, signatures=[
         dict(algorithm=alg, keyId=kid, value=base64.b64encode(raw).decode())])
-    if not hasattr(_validators, 'json'):
-        _validators.json = json_validator()
-    require(_validators.json.is_valid(logical), 'envelope schema')
+    key = 'soap' if xml else 'json'
+    validator = getattr(_validators, key, None)
+    if validator is None:
+        validator = json_validator(xml=xml)
+        setattr(_validators, key, validator)
+    require(validator.is_valid(logical), 'envelope schema')
     require(type(p['instructionVersion']) is int and p['instructionVersion'] == 1
             and type(p['policyVersion']) is int and p['policyVersion'] == 1, 'C1 version')
     for field in ('messageId', 'operationId', 'requestMessageId'):
