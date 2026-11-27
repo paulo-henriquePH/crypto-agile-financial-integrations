@@ -101,3 +101,31 @@ O verificador cria projetos e volumes exclusivos, prepara as bases e identidades
 O worker usa `--poll-interval 1`, `--connect-timeout 3` e `--exchange-timeout 10` por padrão; o teste de timeout usa 2 s para a troca. `--retry-base` define o primeiro atraso (padrão 1 s, duplicado a cada falha) e `--retry-jitter` aplica variação proporcional simétrica (padrão 0; valor em `[0, 1)`). Cada invocação `--once` abre um processo novo; falha observada na rodada retorna 1, ausência de trabalho retorna 0. `outbox.attempts` conta preparações de envio confirmadas no banco, mesmo se o socket nunca chegou a abrir; `custody_attempts` registra também consultas, desfecho, código e atraso. A quinta falha grava o atraso de referência de 16 s, mas bloqueia imediatamente. A retomada administrativa de `BLOCKED` não é implementada neste recorte.
 
 Veja a [evidência sanitizada](../../docs/sprint-2/evidence/s2-10.json). O recorte não inclui SOAP, conciliação, troca de políticas nem aceite integrado da Sprint 2.
+
+## Atualização e leitura SOAP — S2-12
+
+Com os pré-requisitos acima, na raiz:
+
+```powershell
+$env:PATH = "$env:LOCALAPPDATA\Programs\DockerDesktop\resources\bin;$env:PATH" # só se necessário
+py -B deploy/platform/verify_administrator.py
+```
+
+No Linux, use `python3 -B`. O comando constrói as três imagens S2-12 e usa projetos, volumes, identidades efêmeras e bases isoladas. Execute com asserts habilitados e em série com outros verificadores Compose. Sem argumentos, executa toda a suíte; `--help` lista cenários para repetir individualmente. O runner limpa seus projetos em `finally`. As injeções de teste modificam somente a emissão após a transação do serviço real, ou atuam via Compose/SQL do operador; não estão habilitadas no overlay normal.
+
+| Cenário | Prova |
+|---|---|
+| `rollback_outage` | Uma restrição PostgreSQL rejeita só a nova intenção. Terminal local, fatos e recibo REST fazem rollback; o terminal remoto fica intacto. A intenção é persistida na rodada seguinte mesmo com o administrador parado. Recuperação por ausência assinada, uso único da prova e registro idempotente. |
+| `lost_reply` | Recuperação REST até o terminal enfileira a intenção. Perda da resposta SOAP depois do commit, `SIGKILL` do worker e timeout na consulta não duplicam o registro. Uma consulta posterior confirma; duas leituras independentes usam IDs novos. |
+| `rejection`, `insufficient` | Rejeição local não cria intenção; snapshots terminais do custodiante conservam motivo/origem quando aplicáveis, sem lançamento parcial. |
+| `defensive` | Assinatura, correlação, versão, negócio e Faults são rejeitados quando incompatíveis. `Reason=NOT_FOUND` externo não autoriza reenvio diante de `FORBIDDEN` assinado. |
+| `exhausted` | Falhas do banco no administrador geram Fault `UNAVAILABLE` assinado. A quinta falha bloqueia sem sexta tentativa, sem perder a intenção nem desfazer a liquidação. |
+| `legacy` | Worker e migrações da base S2-11 reais (via `git archive`). A 005 não retropreenche o terminal e `GetOperation` devolve o registro independente já existente, inclusive com taxa diferente. |
+
+O overlay normal segue a ordem `deploy/persistence/compose.yaml`, `deploy/platform/compose.yaml`, `deploy/custodian/compose.yaml`, `deploy/custodian/settlement.compose.yaml`, `deploy/platform/custody.compose.yaml`, `deploy/administrator/compose.yaml`, `deploy/platform/administrator.compose.yaml`. Depois de aplicar as migrações, provisionar as identidades com `manager-identity-init`, `identity` (custódia) e `administrator-identity-init` (SOAP). O verificador mostra os comandos de inicialização, incluindo a fixture/runner financeiro S2-08. Iniciar `platform`, `custodian`, `administrator`, `worker` (REST) e `administrator-worker` (SOAP); `run --rm -T administrator-worker --once` processa uma rodada, com saída 1 se observar alguma falha. Cada worker monta somente a identidade de seu enlace; as chaves TLS e ECDSA de mensagem continuam distintas.
+
+Para investigar, consulte `outbox` por `message_type='REGISTER_OPERATION'` e `administrator_attempts`. O estado `administrator_status` é separado de `operations.delivery_status`. `outbox.attempts` conta envelopes preparados e gravados, mesmo que ainda não escritos; o diário registra também indisponibilidade pré-envio e consultas. Parâmetros padrão: conexão 3 s, troca 10 s, backoff 1/2/4/8/16 s e jitter 0. Não há retomada administrativa de `BLOCKED` neste recorte. A primeira instalação usa a migração 005; ao atualizar, aplique-a antes de subir o worker REST novo. Uma operação já terminal na S2-11 fica fora da publicação automática, sem alterar estado/histórico.
+
+`services.platform.administrator.get_operation(db, client, operation)` é uma leitura interna para uso futuro: passa pelo mTLS e ECDSA do administrador, usa a carteira vinculada à operação e retorna o resultado ou Fault verificado da consulta nova. Não devolve o ACK anterior como consulta. Registra metadados do recibo, não snapshots de conciliação. O teste `administrator_read.py` chama essa função com a identidade SOAP do worker; não existe rota extra na API da gestora.
+
+Veja a [evidência sanitizada e os comandos de regressão](../../docs/sprint-2/evidence/s2-12.json). O recorte não compara snapshots, não produz `MATCHED`/`DIVERGENT`, não demonstra C2–C6 e não encerra o fluxo de aceite da Sprint 2.

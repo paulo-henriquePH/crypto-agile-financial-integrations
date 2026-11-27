@@ -18,7 +18,7 @@ import h11
 from c1.runtime import ECDSA, ROOT, body, connect, http, private_sign, tls
 from c1.security import Route, fields
 from c1.transport import receive_response_wire, request_headers
-from services.administrator.messages import C, S, envelope
+from c1.soap import C, S, envelope
 from services.platform.messages import CREDENTIAL, SECRET, boundary
 
 REGISTER, QUERY = 'REGISTER_OPERATION', 'QUERY_ADMIN_RECORD'

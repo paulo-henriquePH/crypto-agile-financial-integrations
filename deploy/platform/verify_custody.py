@@ -84,7 +84,7 @@ class Scenario:
         return logs
 
     def poll(self, error=None):
-        self.wait(lambda: self.sql('SELECT poll_after<=now() FROM outbox') == 't')
+        self.wait(lambda: self.sql("SELECT poll_after<=now() FROM outbox WHERE message_type='SUBMIT_INSTRUCTION'") == 't')
         return self.worker(error=error)
 
     def wait(self, ready, *, timeout=15):
@@ -132,7 +132,8 @@ def observed_submission(s, attempt):
           (convert_from(prepared_envelope,'UTF8')::jsonb#>>'{protected,messageId}'),
           (convert_from(prepared_envelope,'UTF8')::jsonb#>>'{protected,senderId}'),
           (convert_from(prepared_envelope,'UTF8')::jsonb#>>'{payload,managerId}')
-          FROM outbox q JOIN operations o ON o.id=q.operation_id""") == f'1|CONFIRMED|{msg}|PLATFORM|GESTORA-ALFA'
+          FROM outbox q JOIN operations o ON o.id=q.operation_id
+          WHERE q.message_type='SUBMIT_INSTRUCTION'""") == f'1|CONFIRMED|{msg}|PLATFORM|GESTORA-ALFA'
     assert s.sql(f"""SELECT operation_id,sender,payload->>'managerId',
           (SELECT count(*) FROM message_receipts WHERE message_id='{msg}')
           FROM inbox""", 'custodian') == f'{s.operation}|PLATFORM|GESTORA-ALFA|1'
@@ -178,7 +179,7 @@ def acceptance(s):
     states.append('SETTLED')
     results.append(s.poll())
     history = s.history(*states)
-    assert not s.worker() and s.sql('SELECT poll_after IS NULL FROM outbox') == 't'
+    assert not s.worker() and s.sql("SELECT poll_after IS NULL FROM outbox WHERE message_type='SUBMIT_INSTRUCTION'") == 't'
     assert [r[-1]['added'] for r in results] == [0, 1, 0, 1, 1]
     ids = [r[0]['correlationId'] for r in results]
     assert len(set(ids)) == len(ids) and msg not in ids
@@ -211,7 +212,7 @@ def rejection(s):
     s.wait(lambda: s.sql("SELECT event->>'state' FROM operation_events ORDER BY sequence DESC LIMIT 1")
            == 'REJECTED')
     s.history(*LOCAL, 'REJECTED')
-    assert s.sql('SELECT attempts,poll_after IS NULL FROM outbox') == '1|t'
+    assert s.sql("SELECT attempts,poll_after IS NULL FROM outbox WHERE message_type='SUBMIT_INSTRUCTION'") == '1|t'
     assert any(r['result']['status'] == 200 for r in s.response_receipts())
     assert s.sql('SELECT (SELECT balance FROM settlement_cash),'
                  '(SELECT quantity FROM settlement_positions),(SELECT count(*) FROM settlement_entries)',

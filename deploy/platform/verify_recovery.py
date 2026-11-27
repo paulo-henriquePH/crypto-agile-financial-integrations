@@ -38,7 +38,7 @@ class Recovery(Scenario):
 
     def wait_due(self, *, timeout=15):
         self.wait(lambda: self.sql("SELECT next_attempt_at<=now() FROM outbox "
-                                   f"WHERE operation_id='{self.operation}'") == 't', timeout=timeout)
+                                   f"WHERE operation_id='{self.operation}' AND message_type='{SUBMIT}'") == 't', timeout=timeout)
 
     def retry(self, error=None):
         self.wait_due()
@@ -69,7 +69,8 @@ class Recovery(Scenario):
 
     def state(self):
         return self.sql(f"""SELECT q.attempts,o.delivery_status,q.recovery_failures
-            FROM outbox q JOIN operations o ON o.id=q.operation_id WHERE o.id='{self.operation}'""")
+            FROM outbox q JOIN operations o ON o.id=q.operation_id
+            WHERE o.id='{self.operation}' AND q.message_type='{SUBMIT}'""")
 
     def advance_to_settled(self):
         self.runner('step', transitions=1)
@@ -212,7 +213,7 @@ def gap(s, resolve):
         s.history(*TERMINAL)
         assert s.sql('SELECT count(*) FROM custody_facts') == '4'
         assert s.state() == '1|CONFIRMED|0'
-        assert s.sql('SELECT gap_through IS NULL FROM outbox') == 't'
+        assert s.sql(f"SELECT gap_through IS NULL FROM outbox WHERE message_type='{SUBMIT}'") == 't'
         assert len(s.response_receipts()) == 2
     else:
         s.mode('gap')

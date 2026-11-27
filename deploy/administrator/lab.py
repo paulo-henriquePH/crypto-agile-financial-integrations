@@ -24,7 +24,7 @@ def verify():
                               check=True, text=True, encoding='utf-8', capture_output=capture).stdout
 
     def client(phase, target, *args):
-        name = compose('run', '-d', '-T', 'client', 'python', 'tests/administrator/exchanges.py',
+        name = compose('run', '-d', '-T', 'administrator-client', 'python', 'tests/administrator/exchanges.py',
                        phase, target, *args, capture=True).strip()
         try:
             done = subprocess.check_output(['docker', 'wait', name], text=True, timeout=90).strip()
@@ -47,7 +47,7 @@ def verify():
 
     try:
         db.up(scenario)
-        compose('run', '--rm', '-T', 'identity')
+        compose('run', '--rm', '-T', 'administrator-identity-init')
         compose('up', '-d', '--wait', '--wait-timeout', '30', 'administrator')
         op = str(uuid4())
         counts(0, 0, 0)

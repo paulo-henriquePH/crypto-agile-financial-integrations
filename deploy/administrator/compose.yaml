@@ -17,11 +17,11 @@ services:
     networks:
       default:
         aliases: [administrator.cafi.test]
-  client:
+  administrator-client:
     <<: *runtime
     profiles: [tools]
     volumes: [platform_soap_identity:/identity:ro]
-  identity:
+  administrator-identity-init:
     <<: *runtime
     profiles: [tools]
     user: "0:0"

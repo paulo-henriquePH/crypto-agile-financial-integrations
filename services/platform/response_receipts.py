@@ -8,10 +8,10 @@ class ResponseMessageConflict(ValueError):
     """A verified response reused a messageId with different bytes or role."""
 
 
-def register(db, response):
+def register(db, response, *, kind='CUSTODY_RESPONSE'):
     """Reserve the verified/correlated ID before applying it, in the caller's transaction."""
     p = response.content['protected']
-    result = dict(kind='CUSTODY_RESPONSE', status=response.status, messageType=p['messageType'],
+    result = dict(kind=kind, status=response.status, messageType=p['messageType'],
                   operationId=p['operationId'], requestMessageId=p['requestMessageId'])
     if p['messageType'] == 'ERROR':
         result['code'] = response.content['payload']['code']

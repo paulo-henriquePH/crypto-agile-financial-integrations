@@ -1,0 +1,253 @@
+{
+  "task": "S2-12",
+  "date": "2026-11-27",
+  "branch": "sprint-2-c1",
+  "baseRevision": "0729176f4b79f7cde9d432733015153b0f04d932",
+  "checkout": "Alterações S2-12 não commitadas sobre a base aprovada. README.md e docs/SPRINT-2.md preexistentes preservados.",
+  "environment": {
+    "host": "Windows amd64 / Docker Desktop 4.100.1",
+    "containerPlatform": "linux/amd64",
+    "dockerEngine": "29.9.3",
+    "compose": "5.7.1",
+    "postgres": "17.7 Bookworm; três bases e logins na mesma instância",
+    "python": "3.13.11",
+    "openssl": "3.5.9",
+    "h11": "0.16.0",
+    "lxml": "6.1.3",
+    "rfc8785": "0.1.4",
+    "psycopg": "3.2.13",
+    "transportImage": "sha256:a58721fe3b2a71285b8cdcaea6855d0c64b60ee9d0856aa9ebd9a66bdcea8a92",
+    "serviceImages": {
+      "cafi-platform:s2-12": "sha256:6fc18414e4f418b75bf00dd1236b17243fb15b80fc1842d9d70fbb3b90aee327",
+      "cafi-custodian:s2-12": "sha256:5770461e151c586aaa123e906887189af8154eee5ac016db4531848766063b96",
+      "cafi-administrator:s2-12": "sha256:0002c43499f692a97a815d4810bcee92473457ae0e44b92df4146b3dd8802c55"
+    }
+  },
+  "selectedInputsSHA256": {
+    "c1/soap.py": "558a398ac73a7158039fc1603085ea52fc647e4c0da5875bbb959272b61fb82a",
+    "deploy/persistence/migrations/platform/005_administrator_outbox.sql": "147c998d2a283f3ba9157ec948262964aeb27ef6d79bb296d4d01e0e665112b4",
+    "deploy/platform/administrator.compose.yaml": "228277097f5629dbbfb6756aedf471c33263ad33066ba2d5a56b46899994b31f",
+    "deploy/platform/verify_administrator.py": "8b6519ca0ba4580d1196b647cc9cac67e9957b1a469a1dbad30722aaf5845350",
+    "services/platform/administrator.py": "e48fd109a98219d7bd25e2798904ac6a2d3ad34b9478f6b49670028943b65d8b",
+    "services/platform/administrator_store.py": "c9e238503fbf63a86272999ce387e7c27f18377da67724e03e2acbc1a733544c",
+    "services/platform/administrator_worker.py": "0bd9babf294ad0bf293f48bcdcc735420e7e21a21a4d5f37300c0229636c5568",
+    "services/platform/custody_store.py": "5669f00a31b8856a2206e4d2d509b5affd81fbcc7ec23197c08a46404e8a81b8",
+    "tests/platform/administrator_flow.compose.yaml": "04054de3199d4873a9262e93f3b20f3a761b35c3636140d63703674979bbaceb",
+    "tests/platform/administrator_peer.py": "90e08ff69be0933fdaa431c6958b86e3bf7af4a5472da5896039be509ca1167a",
+    "tests/platform/administrator_read.py": "70ac0fad29a667f4977e0f74c9d60f7e3be08e7cd5cf26cbf6cb7c197f171c58"
+  },
+  "soapC1Observed": {
+    "protocol": "TLSv1.3",
+    "group": "X25519",
+    "ciphersuite": "TLS_AES_256_GCM_SHA384",
+    "peerSANs": ["platform.cafi.test", "administrator.cafi.test"],
+    "verifyCode": 0,
+    "messageSignature": "ECDSA-P256-SHA256",
+    "requestKeyId": "PLATFORM-0",
+    "responseKeyId": "ADMINISTRADOR-DELTA-0",
+    "policyVersion": 1,
+    "instructionVersion": 1
+  },
+  "integratedVerification": {
+    "command": "py -B deploy/platform/verify_administrator.py",
+    "exit": 0,
+    "scenarios": 7,
+    "skips": 0
+  },
+  "rollbackOutage": {
+    "operationId": "f30d664f-2de4-4e4a-be9f-dac4967ccf22",
+    "rollbackSQLSTATE": "23514",
+    "financialState": "SETTLED",
+    "reconciliationStatus": "NOT_READY",
+    "localHistoryAndTimestampUnchangedAfterTerminalCommit": true,
+    "custodyCash": "51950.00",
+    "custodyPosition": "107",
+    "custodyEntries": ["ASSET_CREDIT", "CASH_DEBIT"],
+    "remoteSOAP": [
+      ["QUERY_ADMIN_RECORD", 400],
+      ["REGISTER_OPERATION", 500],
+      ["QUERY_ADMIN_RECORD", 400],
+      ["REGISTER_OPERATION", 200],
+      ["QUERY_ADMIN_RECORD", 200]
+    ],
+    "preparedRequestIds": ["02055b8c-9df0-4204-a394-f8ad45935661", "0c5216ee-d7de-42d0-b99c-2c9fda7c5431"],
+    "signedAbsenceReceiptIds": ["feeff631-2514-4a5a-9b7d-2decfaa6e10a", "201e1175-4361-45a9-b773-573ac16979a1"],
+    "confirmationMessageId": "79ff3b43-ca47-46d5-8125-59c3bb380883",
+    "identicalReissuedBusiness": true,
+    "postgresRestartBeforeReissue": true,
+    "administratorSnapshots": 1,
+    "administratorInbox": 1,
+    "administratorReceipts": 4,
+    "platformReceiptsMatchingExactSOAPWire": 5
+  },
+  "lostReply": {
+    "operationId": "6fc46e4e-fbad-4f81-87f8-8d54809727c6",
+    "custodyHistoryRecovered": true,
+    "registerRequestId": "da9bfda2-b404-41d0-93a2-e77353aec8c4",
+    "workerSignalAfterRemoteCommit": "SIGKILL",
+    "followingQueryOutcome": "TIMEOUT",
+    "confirmationQueryId": "fe4d9787-b0e1-4994-b2bc-cef935e9c12e",
+    "confirmationMessageId": "f610daa0-ae60-4a0d-8962-299342b188dd",
+    "registerRequestsReceived": 1,
+    "getRequestsReceived": 4,
+    "independentReads": 2,
+    "administratorSnapshots": 1,
+    "administratorInbox": 1,
+    "administratorReceipts": 5,
+    "financialState": "SETTLED",
+    "custodyEntries": ["ASSET_CREDIT", "CASH_DEBIT"],
+    "reconciliationStatus": "NOT_READY"
+  },
+  "terminalCases": [
+    {
+      "scenario": "rejection",
+      "operationId": "d68c4e69-49e8-4e93-989e-b7dd7761985a",
+      "state": "REJECTED",
+      "reason": "OPERATIONAL_REJECTION",
+      "rejectionOrigin": "CUSTODIAN",
+      "localRejectedWithoutIntent": true,
+      "administratorSnapshots": 1,
+      "custodyEntries": 0
+    },
+    {
+      "scenario": "insufficient",
+      "operationId": "f842e436-7aa8-4e7c-85eb-eade6fa030ea",
+      "state": "SETTLEMENT_FAILED",
+      "reason": "INSUFFICIENT_CASH",
+      "administratorSnapshots": 1,
+      "custodyEntries": 0
+    }
+  ],
+  "defensive": {
+    "operationIdForSignedDenial": "f191e3b4-cc71-40d7-bc7a-8d3e5216a952",
+    "deniedQueryId": "04c330a7-f75d-4a3d-8128-3426aad9faa4",
+    "signedDenialMessageId": "7841bb4b-9342-409f-8469-f28062970f86",
+    "signedDenialCode": "FORBIDDEN",
+    "outerReason": "NOT_FOUND",
+    "rejectedWithoutConfirmationOrResend": [
+      "different authenticated registration snapshot",
+      "inconsistent signed gross amount",
+      "wrong signed correlation",
+      "invalid signature",
+      "unsupported instruction version",
+      "different authenticated recovery snapshot",
+      "signed denial with misleading outer Fault"
+    ]
+  },
+  "exhausted": {
+    "operationId": "37d856af-b5a3-49f7-a9c4-f628b65ed8f7",
+    "code": "UNAVAILABLE",
+    "retryDelaysSecondsWithBasePointOne": [0.1, 0.2, 0.4, 0.8, 1.6],
+    "finalDeliveryStatus": "BLOCKED",
+    "automaticSixthAttempt": false,
+    "administratorSnapshots": 0,
+    "financialState": "SETTLED",
+    "custodyEntries": 2
+  },
+  "legacy": {
+    "operationId": "e4dff147-afaf-423b-9d1b-3a848b074dfd",
+    "initialPlatformMigration": 4,
+    "appliedMigration": 5,
+    "outboxBackfilled": false,
+    "independentQueryId": "b56aa4d7-0c6a-44b2-a6ea-6143c2ce5add",
+    "validDifferentNegotiatedRatePreserved": true,
+    "administratorSnapshots": 1
+  },
+  "composeRegressions": [
+    {
+      "command": "py -B deploy/administrator/lab.py",
+      "exit": 0,
+      "phases": 8,
+      "signedSOAPResponses": 50,
+      "statusCounts": {"200": 28, "400": 21, "500": 1},
+      "skips": 0
+    },
+    {
+      "command": "py -B deploy/platform/verify_recovery.py",
+      "exit": 143,
+      "interruptedBy": "Limite global de 1100 s da rodada serial do harness, durante a preparação do oitavo cenário.",
+      "scenariosCompletedBeforeInterruption": ["outbox", "lost_reply", "killed", "expired", "gap_closed", "gap_open", "unavailable"],
+      "interruptedProjectRemovedBeforeRerun": true
+    },
+    {
+      "command": "py -B deploy/platform/verify_recovery.py disallowed known_receipt migration write_expiry",
+      "exit": 0,
+      "scenarios": 4,
+      "skips": 0
+    },
+    {
+      "command": "py -B deploy/platform/verify_custody.py",
+      "exit": 0,
+      "scenarios": 5,
+      "skips": 0
+    },
+    {
+      "command": "py -B deploy/platform/lab.py verify",
+      "exit": 0,
+      "localRejectionCases": 7,
+      "skips": 0
+    },
+    {
+      "command": "py -B deploy/persistence/lab.py verify",
+      "exit": 0,
+      "projects": 2,
+      "isolatedRolesAndDatabasesPerProject": 3,
+      "skips": 0
+    }
+  ],
+  "isolatedRegressions": [
+    {
+      "command": "powershell -NoProfile -File scripts/verify-c1/verify.ps1",
+      "exit": 0,
+      "tests": 12,
+      "skips": 0
+    },
+    {
+      "command": "docker @iso cafi-soap:s1 python -m unittest discover -s tests/contracts -p test_administrator_soap.py -v",
+      "exit": 0,
+      "tests": 8,
+      "contractExamples": 5,
+      "skips": 0
+    },
+    {
+      "command": "docker @iso cafi-soap:s1 python tests/contracts/verify_signed_vectors.py",
+      "exit": 0,
+      "signedVectors": 27,
+      "skips": 0
+    },
+    {
+      "command": "docker @iso cafi-openapi:s1 python -m unittest discover -s tests/contracts -p 'test_*openapi.py' -v",
+      "exit": 0,
+      "tests": 15,
+      "custodianExamples": 8,
+      "platformExamples": 13,
+      "skips": 0
+    },
+    {
+      "command": "powershell -NoProfile -File spikes/s2-03/verify.ps1 -BodyProof",
+      "exit": 0,
+      "staticVectors": 27,
+      "freshEnvelopes": 6,
+      "negativeCases": 30,
+      "skips": 0
+    },
+    {
+      "command": "powershell -NoProfile -File spikes/s2-03/verify.ps1",
+      "exit": 0,
+      "exchangeScenarios": 6,
+      "expectedRejections": 54,
+      "skips": 0
+    }
+  ],
+  "reproduction": {
+    "integrated": "deploy/platform/README.md#atualização-e-leitura-soap--s2-12",
+    "isolatedDockerOptions": "deploy/administrator/README.md#reprodução",
+    "composeCommand": "py -B deploy/platform/verify_administrator.py"
+  },
+  "limits": [
+    "Integração usa dados e identidades sintéticos. As injeções de teste ficam fora do overlay normal.",
+    "Recebimento, terminal financeiro e confirmação SOAP são distintos. Não há comparador, MATCHED, DIVERGENT ou alteração da API da gestora.",
+    "A migração 005 não inclui retroentrega para terminais já aplicados na S2-11. Não há retomada administrativa de BLOCKED neste recorte.",
+    "Os testes isolados de grupo híbrido e assinatura não demonstram C2–C6 no fluxo operacional, migração, desempenho ou aceite do MVP."
+  ]
+}

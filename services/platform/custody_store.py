@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 from psycopg.types.json import Jsonb
 
 from c1.runtime import ROOT, require
+from . import administrator_store
 from .store import stamp
 
 
@@ -204,6 +205,8 @@ def project(db, op, recipient, job, payload, interval):
                     'invalid custody transition')
             prior = append(db, op, prior, fact['state'], fact=fact)
         db.execute('INSERT INTO custody_facts(operation_id,event) VALUES (%s,%s)', (op, Jsonb(fact)))
+        if fact['state'] in TERMINAL:
+            administrator_store.enqueue(db, op, job.manager, job.boleta, fact)
     if initial != prior['sequence']:
         db.execute('UPDATE operations SET updated_at=clock_timestamp() WHERE id=%s', (op,))
     set_delivery(db, op, 'CONFIRMED')

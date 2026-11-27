@@ -33,6 +33,11 @@ def rejection(db, b):
         return 'ASSET_MISMATCH'
     if not db.execute("SELECT 1 FROM counterparty WHERE id=%s", (b['counterpartyId'],)).fetchone():
         return 'UNKNOWN_COUNTERPARTY'
+    return intrinsic_rejection(b)
+
+
+def intrinsic_rejection(b):
+    """Check business invariants that do not depend on a participant's catalog."""
     trade, settle = (date.fromisoformat(b[k]) for k in ('tradeDate', 'settlementDate'))
     if settle < trade or max(trade.weekday(), settle.weekday()) >= 5:
         return 'INVALID_DATES'
