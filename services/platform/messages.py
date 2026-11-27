@@ -11,9 +11,9 @@ CREDENTIAL = Path('/identity')
 SECRET = CREDENTIAL / 'message/message-private.pem'
 
 
-def boundary(response, integration='platform'):
+def boundary(response, integration='platform', *, directory=CREDENTIAL):
     kid = PARTICIPANTS[integration if response else LINKS[integration][0]] + '-0'
-    keys = registry(json.loads((CREDENTIAL / 'public.json').read_bytes()))
+    keys = registry(json.loads((directory / 'public.json').read_bytes()))
     return Boundary(direction(integration, response=response, signing_key_id=kid, trusted_key_ids=[kid]), keys)
 
 

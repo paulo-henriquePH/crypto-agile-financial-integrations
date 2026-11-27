@@ -316,17 +316,25 @@ class Boundary:
 
     def sign(self, template, route, secret, session, *, request=None, lookup=None):
         """Trusted local envelope with placeholder signature ('AA=='); sign approved bytes."""
+        require(session.observation['peerDnsSan'] == self.policy.recipient_dns, 'signing destination')
+        return self._sign(template, route, secret, session.local_spki, request=request, lookup=lookup)
+
+    def prepare_rest(self, template, route, secret, local_spki):
+        """Prepare a REST submit against local policy, without asserting peer authentication."""
+        require(route == Route.expected('SUBMIT_INSTRUCTION', None), 'offline route')
+        return self._sign(template, route, secret, local_spki)
+
+    def _sign(self, template, route, secret, local_spki, *, request=None, lookup=None):
         xml = route.path == '/soap'
         parsed, p, payload = parse(template, xml)
         now = self.clock()
-        require(session.observation['peerDnsSan'] == self.policy.recipient_dns, 'signing destination')
         self._direction_time(p, now)
         try:
             ctx = self._context(p, payload, route, request, lookup, incoming=False)
         except Absent as absent:
             # Outbound query without local ownership metadata: accept only ERROR.
             ctx = absent.request
-        key = self.key(parsed.signatures[0][1], session.local_spki, now, True)
+        key = self.key(parsed.signatures[0][1], local_spki, now, True)
         sig = base64.b64encode(private_sign(self.crypto, secret, key.spki, parsed.canonical)).decode()
         if xml:
             node = parsed.content

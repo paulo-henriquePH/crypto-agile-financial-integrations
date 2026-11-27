@@ -103,6 +103,10 @@ Aplicar deduplicação, efeito de negócio e registro do resultado na mesma tran
 
 No [simulador C1 do custodiante](deploy/custodian/README.md#decisão-e-liquidação--s2-08), caixa por carteira/moeda, posição por carteira/ativo, lançamentos e eventos remotos vivem na base `custodian`. O débito, o crédito e o evento terminal são confirmados em uma só transação; `SETTLEMENT_FAILED` por saldo insuficiente não grava lançamentos. Uma instrução repetida conserva o recibo `202 RECEIVED` original; novas consultas assinam o estado e histórico atuais, inclusive motivo/origem quando aplicáveis.
 
+No [worker C1 da plataforma](deploy/platform/README.md#envio-e-acompanhamento-rest--s2-09), a base `platform` persiste o envelope e a primeira tentativa na mesma transação que avança para `SENT`, antes de abrir a conexão ao custodiante. `202 RECEIVED` confirmado produz somente a transição de recebimento e confirma a entrega. Como esse recibo não contém ID nem hora do evento remoto, a projeção dá ao recibo ID e hora locais com origem `CUSTODIAN` e conserva o primeiro fato remoto separadamente quando uma consulta o trouxer. Novos fatos são aplicados em ordem, com sequência local própria e em uma única transação por resposta verificada; lacuna, regressão ou conflito no prefixo mantém a projeção anterior.
+
+As respostas REST verificadas e correlacionadas do custodiante usam a mesma unicidade de `messageId` em `message_receipts` que os pedidos recebidos da gestora. O recibo de resposta guarda SHA-256 dos bytes recebidos, horário e apenas metadados de resultado (tipo, status, operação, correlação e código se houver erro), sem copiar envelope ou payload. Registrar o recibo e aplicar o resultado é atômico; repetição byte a byte de resposta já aplicada não reaplica efeito, e reutilização conflitante do ID é recusada antes da projeção.
+
 ## 4. Contratos de integração
 
 Na [plataforma C1 da S2-06](deploy/platform/README.md), o login `platform` grava recibo, boleta,
@@ -172,6 +176,8 @@ Validade padrão de mensagem: 120 s; tolerância máxima de relógio: 5 s. Exigi
 Para `CREATE_OPERATION_RESULT`, a correlação da tentativa inclui o digest SHA-256 da boleta em JCS; a boleta integral no snapshot deve corresponder à enviada. Em REST, conferir o código assinado contra o status também na recepção: `FORBIDDEN` corresponde exclusivamente a `403`, e `NOT_FOUND` a `404`.
 
 Na implementação C1 v1, a [fronteira de segurança](docs/sprint-2/c1.md) usa a identidade observada na própria conexão e uma política local por direção. Antes de liberar o pedido, o adaptador verifica o escopo `(managerId, portfolioId)` declarado ou persistido. Uma consulta por UUID lê somente metadados de titularidade nessa etapa; ausência e carteira proibida têm saídas distintas, restritas a erro assinado. A mesma verificação precede cada replay. O endpoint continua responsável pela transação, digest e resultado idempotente. Ver [ADR 0001](docs/adr/0001-stack.md).
+
+No enlace REST de saída, a plataforma prepara a assinatura usando sua credencial local desse enlace; isso não autentica o destinatário. Somente transmite após o mTLS C1 autenticar `custodian.cafi.test` e confirmar a chave TLS local vinculada no preparo. As credenciais dos dois enlaces ficam em volumes distintos. O `managerId` continua no negócio assinado; além da correlação e do escopo, a projeção compara integralmente a boleta assinada da consulta à boleta imutável local.
 
 TLS deve aceitar apenas versão 1.3, com grupo X25519 ou X25519MLKEM768 conforme política, sem fallback. Fixar a mesma suíte simétrica nas comparações; usar `TLS_AES_256_GCM_SHA384` como referência se suportada em todos os componentes. Registrar grupo, suíte, versão TLS e algoritmo do certificado efetivamente usados. Desabilitar 0-RTT; retomada de sessão permanece desabilitada nos experimentos.
 

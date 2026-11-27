@@ -5,7 +5,7 @@ from uuid import uuid4
 import rfc8785
 from psycopg.types.json import Jsonb
 
-from services.platform.store import error, lock_message, stamp, state_fields
+from services.platform.store import error, message_receipt, stamp, state_fields
 
 
 def lock_operation(db, operation):
@@ -56,9 +56,8 @@ def submit(db, ctx, payload):
 
 
 def apply(db, ctx, payload, wire):
-    lock_message(db, ctx)
     digest = sha256(wire).digest()
-    row = db.execute('SELECT digest,result FROM message_receipts WHERE message_id=%s', (ctx.message,)).fetchone()
+    row = message_receipt(db, ctx.message)
     if row:
         if row[0] != digest:
             return conflict(ctx, 'MESSAGE_ID_REUSED')

@@ -6,7 +6,7 @@ import sys
 
 from c1.security import Route
 from c1.transport import request_headers, receive_response
-from services.custodian.client import connection
+from services.platform.custody import connection
 from exchanges import attempt, client, denial
 
 FIXTURES = Path(__file__).resolve().parents[2] / 'fixtures'

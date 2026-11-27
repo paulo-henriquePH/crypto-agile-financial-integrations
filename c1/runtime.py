@@ -24,18 +24,32 @@ class Session:
 
 
 @contextmanager
-def connect(directory, certificate, socket, *, server, peer_dns):
+def connect(directory, certificate, socket, *, server, peer_dns, timeout=10):
     """Wrap an accepted/connected socket; certificate and peer_dns are local config."""
     api = tls.OpenSSL()
     with api.context(directory, certificate, server=server, group=tls.X25519) as (ctx, _):
         with http.channel(api, ctx, socket, server=server, group=tls.X25519,
-                          peer=peer_dns, limit=body.MAX_BYTES) as (link, observation):
+                          peer=peer_dns, limit=body.MAX_BYTES, timeout=timeout) as (link, observation):
             cert = api.SSL_get0_peer_certificate(link.ssl)
             crypto = OpenSSL()
             local_cert = api.SSL_get_certificate(link.ssl)
             require(local_cert, 'local certificate')
             yield Session(link, observation, crypto.export_public(api.X509_get0_pubkey(cert)),
-                          crypto.export_public(api.X509_get0_pubkey(local_cert)))
+                           crypto.export_public(api.X509_get0_pubkey(local_cert)))
+
+
+def configured_client_spki(directory, certificate):
+    """Inspect the configured TLS leaf before opening a connection."""
+    api = tls.OpenSSL()
+    with api.context(directory, certificate, server=False, group=tls.X25519) as (ctx, _):
+        ssl = api.SSL_new(ctx)
+        tls.require(ssl, 'local SSL context')
+        try:
+            cert = api.SSL_get_certificate(ssl)
+            tls.require(cert, 'local certificate')
+            return OpenSSL().export_public(api.X509_get0_pubkey(cert))
+        finally:
+            api.SSL_free(ssl)
 
 
 def private_sign(crypto, secret, expected_spki, canonical):

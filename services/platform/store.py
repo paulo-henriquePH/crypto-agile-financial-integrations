@@ -91,17 +91,19 @@ def snapshot(db, ctx):
                                     reconciliationStatus=reconciliation, events=events, **state_fields(events[-1]))
 
 
-def lock_message(db, ctx):
-    db.execute("SELECT pg_advisory_xact_lock(2,hashtext(%s))", (ctx.message,))
+def message_receipt(db, message_id):
+    """Serialize receipt lookup/insertion even before the ID exists."""
+    db.execute("SELECT pg_advisory_xact_lock(2,hashtext(%s))", (message_id,))
+    return db.execute("SELECT digest,result FROM message_receipts WHERE message_id=%s",
+                      (message_id,)).fetchone()
 
 
 def absence(db, ctx, wire):
     """Reserve authenticated IDs without ever reading a cached snapshot for an absent resource."""
-    lock_message(db, ctx)
     digest = sha256(wire).digest()
     outcome = error(ctx, 404, 'NOT_FOUND')
-    row = db.execute("SELECT digest FROM message_receipts WHERE message_id=%s", (ctx.message,)).fetchone()
-    if row and row[0] != digest:
+    row = message_receipt(db, ctx.message)
+    if row and (row[0] != digest or not isinstance(row[1], list)):
         return error(ctx, 409, 'IDEMPOTENCY_CONFLICT')
     if not row:
         db.execute("INSERT INTO message_receipts(message_id,digest,result) VALUES (%s,%s,%s)",
@@ -111,11 +113,9 @@ def absence(db, ctx, wire):
 
 def apply(db, ctx, payload, wire):
     digest = sha256(wire).digest()
-    lock_message(db, ctx)
-    receipt = db.execute("SELECT digest,result FROM message_receipts WHERE message_id=%s",
-                         (ctx.message,)).fetchone()
+    receipt = message_receipt(db, ctx.message)
     if receipt:
-        if receipt[0] != digest:
+        if receipt[0] != digest or not isinstance(receipt[1], list):
             return error(ctx, 409, 'IDEMPOTENCY_CONFLICT')
         status, op, result = receipt[1]
         return (200 if status == 201 else status), op, result

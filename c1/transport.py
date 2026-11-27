@@ -24,6 +24,12 @@ def send_request(session, boundary, route, template, secret, *, lookup=None):
 
 
 def receive_response(session, boundary, route, request):
+    status, content, _ = receive_response_wire(session, boundary, route, request)
+    return status, content
+
+
+def receive_response_wire(session, boundary, route, request):
+    """Return original bytes only after all response checks have passed."""
     head, wire = session.link.receive(h11.Response)
     media = SOAP if route.path == '/soap' else JSON
     require([v for k, v in head.headers if k == b'content-type'] == [media.encode()], 'response media')
@@ -33,7 +39,7 @@ def receive_response(session, boundary, route, request):
     location = response_metadata(request, p, payload, media, head.status_code)
     if location:
         require([v for k, v in head.headers if k == b'location'] == [location.encode()], 'result Location')
-    return head.status_code, content
+    return head.status_code, content, wire
 
 
 def response_metadata(request, p, payload, media, status):
@@ -64,3 +70,4 @@ def send_response(session, boundary, route, request, template, secret, status):
     if location:
         headers.append(('Location', location))
     session.link.send(h11.Response(status_code=status, headers=headers), wire)
+    return wire

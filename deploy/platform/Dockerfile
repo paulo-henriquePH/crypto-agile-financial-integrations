@@ -13,4 +13,4 @@ COPY spikes/s2-02/envelopes.py spikes/s2-02/
 COPY spikes/s2-03/transport.py spikes/s2-03/
 COPY tests/contracts/signed_crypto.py tests/contracts/
 COPY deploy/platform/identity.py deploy/platform/
-COPY tests/platform/exchanges.py tests/platform/
+COPY tests/platform/*.py tests/platform/

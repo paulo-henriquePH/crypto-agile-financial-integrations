@@ -11,7 +11,7 @@ import h11
 from c1.runtime import ROOT
 from c1.security import Route
 from c1.transport import request_headers, receive_response
-from services.custodian.client import Client, connection
+from services.platform.custody import Client, connection
 
 client = Client()
 business = dict(managerId='GESTORA-ALFA', boleta=json.loads((ROOT / 'fixtures/boletas/valid.json').read_bytes()))
