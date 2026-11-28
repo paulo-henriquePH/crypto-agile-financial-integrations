@@ -14,7 +14,7 @@ import psycopg
 from c1.runtime import http, require
 from c1.security import utc
 from . import custody_store as store
-from . import response_receipts
+from . import reconciliation_store, response_receipts
 from .custody import Client, PreparationExpired
 from .store import stamp
 
@@ -91,6 +91,8 @@ class Worker:
                 result, fields = 'RECEIVED', {}
             elif action == store.QUERY and status == 200:
                 added = store.project(db, operation, self.recipient, job, payload, self.interval)
+                reconciliation_store.capture(db, operation, p['instructionVersion'], payload, response_id,
+                                             terminal=payload['state'] in store.TERMINAL)
                 result, fields = 'PROJECTED', dict(added=added, state=payload['state'])
             elif action == store.QUERY and status == 404:
                 require(payload['code'] == 'NOT_FOUND' and payload['retryable'] is False, 'custodian error status')

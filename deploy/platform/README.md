@@ -129,3 +129,44 @@ Para investigar, consulte `outbox` por `message_type='REGISTER_OPERATION'` e `ad
 `services.platform.administrator.get_operation(db, client, operation)` é uma leitura interna para uso futuro: passa pelo mTLS e ECDSA do administrador, usa a carteira vinculada à operação e retorna o resultado ou Fault verificado da consulta nova. Não devolve o ACK anterior como consulta. Registra metadados do recibo, não snapshots de conciliação. O teste `administrator_read.py` chama essa função com a identidade SOAP do worker; não existe rota extra na API da gestora.
 
 Veja a [evidência sanitizada e os comandos de regressão](../../docs/sprint-2/evidence/s2-12.json). O recorte não compara snapshots, não produz `MATCHED`/`DIVERGENT`, não demonstra C2–C6 e não encerra o fluxo de aceite da Sprint 2.
+
+## Conciliação — S2-13
+
+Na raiz do repositório, com as mesmas imagens-base da S2-12, Docker Linux `amd64`
+e Compose no PATH:
+
+```powershell
+py -B -m unittest discover -s tests/platform -p test_reconciliation.py -v
+py -B deploy/platform/verify_reconciliation.py
+```
+
+No Linux, troque `py -B` por `python3 -B`. Use asserts habilitados e rode em série com os
+outros verificadores. O segundo comando constrói as três imagens `:s2-13`, aplica as
+migrações, provisiona as três identidades C1 e remove somente seus projetos e volumes
+efêmeros. Para repetir um cenário, use seu nome (consulte `--help`).
+
+| Cenário | Verificação |
+|---|---|
+| `incomplete_then_equal` | Sem snapshot terminal e sem registro no administrador: `NOT_READY`. Indisponibilidade não vira ausência; `NOT_FOUND` assinado persiste sem inventar snapshot. ACK não é suficiente. Dois workers concorrem pela consulta independente; um `MATCHED`, com data efetiva diferente da prevista. |
+| `divergent` | Depois de um ACK legítimo, o [controle de laboratório](../../tests/reconciliation/lab_control.py) muda apenas a taxa no registro remoto. O `GetOperation` real e assinado traz o novo valor. Falha no commit não deixa recibo, resultado ou novo status; a tentativa nova encontra a diferença. `SETTLED`, histórico, boleta, lançamentos e saldos não mudam. O resultado sobrevive ao reinício; consulta REST sem permissão não revela dados. |
+| `forbidden` | Um `FORBIDDEN` assinado do administrador bloqueia a leitura sem criar resultado de negócio nem alterar a projeção financeira. |
+
+No ambiente operacional C1, aplique a migração 006 antes de trocar o worker de custódia.
+Acrescente `deploy/platform/reconciliation.compose.yaml` após os overlays da S2-12 e
+inicie `reconciliation-worker` além dos serviços da S2-12. Para uma rodada, use
+`run --rm -T reconciliation-worker --once` (1 quando a rodada observa falha). O
+worker usa timeout de conexão 3 s, troca 10 s e falhas transitórias com atrasos
+iniciais de 1/2/4/8/16 s e jitter configurável (0 por padrão); a quinta falha
+bloqueia. `NOT_FOUND` é uma observação autenticada, não falha técnica: nova
+consulta é agendada após 16 s por padrão (`--absence-interval`).
+
+`custody_snapshots` guarda o payload da resposta REST verificada; a revisão
+remota permite identificar cada snapshot e seu recibo. Em `reconciliation_results`,
+o digest e a boleta imutável identificam a fonte da gestora, a revisão referencia
+o snapshot de custódia e o recibo SOAP referencia a resposta independente. A
+consulta REST autenticada devolve apenas `reconciliationStatus` além dos dados
+já previstos no contrato congelado. Terminais anteriores à migração sem captura
+autenticada permanecem `NOT_READY`; não há backfill nem reabertura de conclusões
+neste recorte.
+
+[Evidência sanitizada e regressões](../../docs/sprint-2/evidence/s2-13.json).
