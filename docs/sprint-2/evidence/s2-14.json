@@ -1,0 +1,145 @@
+{
+  "task": "S2-14",
+  "dateUTC": "2026-11-28",
+  "result": "PASSED",
+  "scope": "C1 de laboratório, dados sintéticos; não equivale a T01-T14 integral, C2-C6, migração/rotação nem MVP.",
+  "provenance": {
+    "branch": "sprint-2-c1",
+    "baseRevision": "633959d7ad688f00c5b8633d3b1e23c72d854889",
+    "treeDirtyAtRun": true,
+    "gitStatusSHA256AtRun": "01986987e1c9581d7dd9d5dda4482c3ea72e976c34dbf438975b987cf5c3e120",
+    "note": "Execução antes de versionar este resumo; scripts S2-14 não commitados, README.md e docs/SPRINT-2.md preexistentes fora do stage. Não é repetição em checkout limpo de S2-14.",
+    "sourceSHA256": {
+      "scripts/verify-sprint2/verify.py": "cee7023cc76f9738b06e4a63976aea2fd9824d438bbfccb82f4f4e3a639d7cff",
+      "scripts/verify-sprint2/links.py": "2f36ebbacc12afe86edf49fdae4e0a7e31e149b2f1a1d7d4fb3f928b43f195fa",
+      "scripts/verify-sprint2/test_verify.py": "ca3d05d0e2c9eaddb73babb5e216cbe6339cd50a9e6706b56a3641bc88858e53"
+    },
+    "localDetailedReportSHA256": "eccd83028b041d0329716deba24bbcb053e375558623eb2cf1919f56786cea08"
+  },
+  "environment": {
+    "host": "Windows amd64; host Python 3.15.2",
+    "dockerEngine": "29.9.3",
+    "dockerCompose": "5.7.1",
+    "servicePlatform": "linux/amd64",
+    "servicePython": "3.13.11",
+    "serviceOpenSSL": "3.5.9",
+    "h11": "0.16.0",
+    "lxml": "6.1.3",
+    "rfc8785": "0.1.4",
+    "transportImage": "sha256:a58721fe3b2a71285b8cdcaea6855d0c64b60ee9d0856aa9ebd9a66bdcea8a92",
+    "postgresConfigured": "postgres:17.7-bookworm@sha256:86e0b703649d7a792bd9243ee28afc9d8f7c6b2b5638077c9d6882d4d472bbfd"
+  },
+  "parameters": {
+    "policyVersion": 1,
+    "signature": "ECDSA-P256-SHA256",
+    "tls": "TLSv1.3 / X25519 / TLS_AES_256_GCM_SHA384",
+    "calendar": "segunda a sexta, sem feriados; data planejada 2026-11-23; efetiva 2026-11-24",
+    "suiteTimeoutSeconds": 1800,
+    "parserTimeoutSeconds": 300,
+    "networkConnectTimeoutSeconds": 3,
+    "networkExchangeTimeoutSeconds": 10,
+    "isolation": "Projetos e volumes Compose exclusivos por cenário; limpeza em finally; nenhuma operação financeira real."
+  },
+  "commands": [
+    {
+      "command": "py -B scripts/verify-sprint2/verify.py --demo-only",
+      "exit": 0,
+      "result": "DEMO_ONLY",
+      "scope": "Sucesso SETTLED/MATCHED, divergência e negativo de autorização; não substitui a suíte completa.",
+      "skips": 0
+    },
+    {
+      "command": "py -B scripts/verify-sprint2/verify.py",
+      "exit": 0,
+      "result": "PASSED",
+      "suites": [
+        {"name": "platform", "exit": 0},
+        {"name": "settlement", "exit": 0, "scenarios": 3},
+        {"name": "custody", "exit": 0, "scenarios": 5},
+        {"name": "recovery", "exit": 0, "scenarios": 11, "witnesses": 17},
+        {"name": "administrator", "exit": 0, "scenarios": 7},
+        {"name": "reconciliation", "exit": 0, "scenarios": 3},
+        {"name": "parser-and-identity", "exit": 0}
+      ],
+      "skips": 0
+    },
+    {
+      "command": "py -B scripts/verify-sprint2/verify.py --inject-failure",
+      "exit": 1,
+      "result": "FAILED",
+      "diagnosis": "Falha obrigatória injetada antes de Docker; o processo e seu relatório não retornam sucesso."
+    },
+    {
+      "command": "py -B -m unittest discover -s scripts/verify-sprint2 -p test_verify.py -v",
+      "exit": 0,
+      "tests": 7,
+      "skips": 0,
+      "scope": "Guardas offline; não contabilizados como cenários integrados."
+    }
+  ],
+  "acceptanceMatrix": {
+    "success": "UUID sintético f3a889c9-2f94-4453-a9b7-d664d10b183e: API REST da gestora, worker REST, relógio financeiro, SOAP RegisterOperation/GetOperation e API REST final SETTLED/MATCHED; débito e crédito únicos conferidos no custodiante.",
+    "rejections": "Sete rejeições locais persistidas com motivo/sem outbox (platform); rejeição operacional sem lançamentos (custody/administrator); saldo insuficiente SETTLEMENT_FAILED sem débito parcial (settlement/administrator).",
+    "replayConcurrencyConflict": "Criação simultânea, replay/reemissão e conflito de negócio ou de messageId na plataforma; recebimento/recibo concorrentes e deduplicação remota REST/SOAP.",
+    "recovery": "Outbox/reinício, resposta perdida após commit, SIGKILL, prova de ausência expirada, consulta antes de reenvio, lacuna resolvida/não resolvida, indisponibilidade/atrasos 1-2-4-8-16 s e BLOCKED, SOAP após perda/indisponibilidade sem desfazer liquidação.",
+    "negativeControls": "Cinco negativos não retentáveis de recuperação (unsigned, wrong-correlation, bad-signature, schema, forbidden); defensivos REST/SOAP e suíte da fronteira C1 com parser JSON/XML, identidade/certificados e rejeição sem efeito.",
+    "divergence": "UUID sintético bbe34fb1-b279-4569-9719-35664e4fa928: negotiatedRate gestora/custodiante 6.500000 versus administrador 6.875001; DIVERGENT persistido, estado SETTLED e lançamentos inalterados."
+  },
+  "observedTLSOnSameOperation": {
+    "operationId": "f3a889c9-2f94-4453-a9b7-d664d10b183e",
+    "links": {
+      "managerToPlatform": {"serverDnsSan": "platform.cafi.test", "responseKeyId": "PLATFORM-0"},
+      "platformToCustodian": {"serverDnsSan": "custodian.cafi.test", "responseKeyId": "CUSTODIANTE-GAMA-0"},
+      "platformToAdministrator": {"serverDnsSan": "administrator.cafi.test", "responseKeyId": "ADMINISTRADOR-DELTA-0"}
+    },
+    "allThree": {
+      "tls": "TLSv1.3",
+      "group": "x25519",
+      "ciphersuite": "TLS_AES_256_GCM_SHA384",
+      "verifyCode": 0,
+      "verifiedChainLength": 2,
+      "peerCertificate": "EC prime256v1 / ecdsa-with-SHA256",
+      "sessionReused": false,
+      "sessionHasTicket": false,
+      "sessionResumable": false,
+      "earlyData": "SSL_EARLY_DATA_NOT_SENT",
+      "messageSignatureProfile": "ECDSA",
+      "policyVersion": 1,
+      "correlatedServerLogCounts": {"platform": 7, "custodian": 5, "administrator": 4}
+    }
+  },
+  "traceExample": {
+    "scenario": "lost-reply",
+    "operationId": "a9aa93d6-3d7e-42d7-a244-0e30b46d1d2d",
+    "attempts": [
+      {"sequence": 1, "action": "SUBMIT_INSTRUCTION", "requestMessageId": "694f8bbe-006e-4011-aee8-d240c0037164", "result": "TIMEOUT"},
+      {"sequence": 2, "action": "QUERY_INSTRUCTION", "requestMessageId": "4d35e9c5-4184-4a26-b894-d8e87cc56168", "result": "TIMEOUT"},
+      {"sequence": 3, "action": "QUERY_INSTRUCTION", "requestMessageId": "65252a53-7a78-4086-b12c-08a254af4c41", "responseMessageId": "cd77b1a8-7e15-4aa5-a9b1-811ca3897f87", "result": "PROJECTED"}
+    ],
+    "remoteSubmissions": 1,
+    "financialEntries": 2
+  },
+  "failedAttemptsBeforeFinalRun": [
+    {
+      "command": "py -B scripts/verify-sprint2/verify.py",
+      "exit": 1,
+      "diagnosis": "Agregador exigia uma testemunha por cenário; recuperação real saiu 0, mas disallowed emite cinco negativos e migration três operações. Corrigida a multiplicidade e exigida a cobertura de cada subcaso."
+    },
+    {
+      "command": "py -B scripts/verify-sprint2/verify.py --demo-only",
+      "exit": 1,
+      "diagnosis": "A instrumentação inicial de três enlaces tentou ler peerKeyType de log do worker SOAP, que não o emite. Corrigido com novo GetOperation SOAP real para observar o próprio transporte e manter o log do worker como prova adicional."
+    },
+    {
+      "command": "py -B scripts/verify-sprint2/links.py",
+      "exit": 1,
+      "diagnosis": "Ambiente de diagnóstico sem Docker no PATH; não é execução do ponto de entrada, que resolve esse pré-requisito. Execução direta com PATH configurado reproduziu o defeito SOAP acima."
+    }
+  ],
+  "limits": [
+    "A árvore era suja na execução; revisão independente em checkout limpo, sem skips, permanece pendente em S2-15.",
+    "CI não configurada nesta árvore; a reprodução local Linux/amd64 via Docker Desktop passou, mas não foi executada em runner de CI fixado.",
+    "A demonstração C1 não valida os outros perfis nem benchmark, plano de controle, migração ou todos T01-T14.",
+    "Relatórios detalhados e logs locais não foram versionados; apenas este resumo de dados sintéticos e metadados públicos."
+  ]
+}

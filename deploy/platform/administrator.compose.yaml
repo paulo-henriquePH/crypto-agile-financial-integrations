@@ -1,0 +1,33 @@
+# After the custody and administrator overlays. Only the SOAP dispatcher
+# receives the platform identity for this link.
+x-admin-image: &admin-image cafi-administrator:s2-12
+x-platform-image: &platform-image ${CAFI_CUSTODY_PLATFORM_IMAGE:-cafi-platform:s2-12}
+x-custodian-image: &custodian-image ${CAFI_CUSTODY_REMOTE_IMAGE:-cafi-custodian:s2-12}
+services:
+  platform: {image: *platform-image}
+  manager: {image: *platform-image}
+  manager-identity-init: {image: *platform-image}
+  worker: {image: *platform-image}
+  custodian: {image: *custodian-image}
+  identity: {image: *custodian-image}
+  client: {image: *custodian-image}
+  runner: {image: *custodian-image}
+  administrator:
+    image: ${CAFI_ADMINISTRATOR_IMAGE:-cafi-administrator:s2-12}
+  administrator-client:
+    image: *admin-image
+  administrator-identity-init:
+    image: *admin-image
+  administrator-worker:
+    image: *platform-image
+    platform: linux/amd64
+    working_dir: /repo
+    read_only: true
+    user: "999:999"
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    environment: {PYTHONPATH: /repo, PYTHONDONTWRITEBYTECODE: "1"}
+    entrypoint: [python, -m, services.platform.administrator_worker]
+    volumes:
+      - platform_soap_identity:/administrator-identity:ro
+      - platform_key:/credentials/platform:ro

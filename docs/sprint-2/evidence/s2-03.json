@@ -1,0 +1,822 @@
+{
+  "result": "passed",
+  "system": "Linux",
+  "machine": "x86_64",
+  "checkoutRevision": "2259e122f581b6b772e9789b710d6ee99e551257",
+  "imageId": "sha256:d41f622b0de34388c82599bf26aad3cc2926c39fe53c4ee2769926becc018fd0",
+  "runtime": "CPython 3.13.11",
+  "openssl": "OpenSSL 3.5.9 29 Sep 2026",
+  "packages": {
+    "h11": "0.16.0",
+    "rfc8785": "0.1.4",
+    "lxml": "6.1.3"
+  },
+  "sourcesSHA256": {
+    "spikes/s2-03/gate.py": "60a0bbf6cb09bf0723225d491f3358ffea154f5748e0d556b9c50c46bd9c78ba",
+    "spikes/s2-03/transport.py": "8276543de3a8b2b395fc519f35a6f08a1291c040a0ce245bcc85766f7f5fdad2",
+    "spikes/tls/proof.py": "9545b32500b6dfdf4413e801f2446fed126454f06106ce3c748ae2bda852cdf7",
+    "spikes/tls/certificates.py": "2cc44287a3c6a907de00f83f4ded6fb39bf29f22d81a32ede42f3492b166bda5",
+    "spikes/s2-02/envelopes.py": "9ee642292c1c35e8d98b0acea9162fd8ceba676c7c0ec4fc72c75e0e8463f37b",
+    "tests/contracts/signed_crypto.py": "631831ef779de3c88dc055621b47a2b5a2463b62925c6f2d81f8105e49f2856e"
+  },
+  "exchanges": [
+    {
+      "clientParticipant": "manager",
+      "serverParticipant": "platform",
+      "requiredGroup": "X25519",
+      "client": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "x25519",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "platform.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "server": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "x25519",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "manager.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "rejections": {
+        "wrong_server_name": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "untrusted_server": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "untrusted_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "missing_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "peer did not return a certificate",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_participant": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "incompatible_groups": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no suitable key share",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "tls12_only": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "unsupported protocol",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_suite": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no shared cipher",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "wrong_sender": {
+          "at": "server",
+          "reason": "senderId"
+        }
+      }
+    },
+    {
+      "clientParticipant": "manager",
+      "serverParticipant": "platform",
+      "requiredGroup": "X25519MLKEM768",
+      "client": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "X25519MLKEM768",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "platform.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "server": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "X25519MLKEM768",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "manager.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "rejections": {
+        "wrong_server_name": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "untrusted_server": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "untrusted_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "missing_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "peer did not return a certificate",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_participant": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "incompatible_groups": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no suitable key share",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "tls12_only": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "unsupported protocol",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_suite": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no shared cipher",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "wrong_sender": {
+          "at": "server",
+          "reason": "senderId"
+        }
+      }
+    },
+    {
+      "clientParticipant": "platform",
+      "serverParticipant": "custodian",
+      "requiredGroup": "X25519",
+      "client": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "x25519",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "custodian.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "server": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "x25519",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "platform.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "rejections": {
+        "wrong_server_name": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "untrusted_server": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "untrusted_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "missing_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "peer did not return a certificate",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_participant": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "incompatible_groups": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no suitable key share",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "tls12_only": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "unsupported protocol",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_suite": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no shared cipher",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "wrong_sender": {
+          "at": "server",
+          "reason": "senderId"
+        }
+      }
+    },
+    {
+      "clientParticipant": "platform",
+      "serverParticipant": "custodian",
+      "requiredGroup": "X25519MLKEM768",
+      "client": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "X25519MLKEM768",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "custodian.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "server": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "X25519MLKEM768",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "platform.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "rejections": {
+        "wrong_server_name": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "untrusted_server": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "untrusted_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "missing_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "peer did not return a certificate",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_participant": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "incompatible_groups": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no suitable key share",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "tls12_only": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "unsupported protocol",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_suite": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no shared cipher",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "wrong_sender": {
+          "at": "server",
+          "reason": "senderId"
+        }
+      }
+    },
+    {
+      "clientParticipant": "platform",
+      "serverParticipant": "administrator",
+      "requiredGroup": "X25519",
+      "client": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "x25519",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "administrator.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "server": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "x25519",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "platform.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "rejections": {
+        "wrong_server_name": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "untrusted_server": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "untrusted_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "missing_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "peer did not return a certificate",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_participant": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "incompatible_groups": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no suitable key share",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "tls12_only": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "unsupported protocol",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_suite": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no shared cipher",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "wrong_sender": {
+          "at": "server",
+          "reason": "senderId"
+        }
+      }
+    },
+    {
+      "clientParticipant": "platform",
+      "serverParticipant": "administrator",
+      "requiredGroup": "X25519MLKEM768",
+      "client": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "X25519MLKEM768",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "administrator.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "server": {
+        "consumed": true,
+        "tls": {
+          "protocol": "TLSv1.3",
+          "group": "X25519MLKEM768",
+          "ciphersuite": "TLS_AES_256_GCM_SHA384",
+          "peerDnsSan": "platform.cafi.test",
+          "verifyCode": 0,
+          "verifiedChainLength": 2,
+          "peerKeyType": "EC",
+          "peerKeyCurve": "prime256v1",
+          "peerCertificateSignature": "ecdsa-with-SHA256",
+          "sessionReused": false,
+          "sessionHasTicket": false,
+          "sessionResumable": false,
+          "earlyDataStatus": "SSL_EARLY_DATA_NOT_SENT"
+        },
+        "context": {
+          "cacheMode": 0,
+          "noTicketOption": true,
+          "numTickets": 0,
+          "maxEarlyData": 0,
+          "recvMaxEarlyData": 0
+        }
+      },
+      "rejections": {
+        "wrong_server_name": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "untrusted_server": {
+          "at": "client",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "untrusted_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 20,
+          "verifyReason": "unable to get local issuer certificate"
+        },
+        "missing_client": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "peer did not return a certificate",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_participant": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "certificate verify failed",
+          "verifyCode": 62,
+          "verifyReason": "hostname mismatch"
+        },
+        "incompatible_groups": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no suitable key share",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "tls12_only": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "unsupported protocol",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "other_suite": {
+          "at": "server",
+          "stage": "handshake",
+          "return": -1,
+          "sslError": 1,
+          "reason": "no shared cipher",
+          "verifyCode": 0,
+          "verifyReason": "ok"
+        },
+        "wrong_sender": {
+          "at": "server",
+          "reason": "senderId"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+# Overlay on ../persistence/compose.yaml. Relative paths start there.
+x-runtime: &runtime
+  image: cafi-platform:s2-06
+  platform: linux/amd64
+  working_dir: /repo
+  read_only: true
+  user: "999:999"
+  security_opt: [no-new-privileges:true]
+  environment: {PYTHONPATH: /repo, PYTHONDONTWRITEBYTECODE: "1"}
+  cap_drop: [ALL]
+services:
+  platform:
+    <<: *runtime
+    command: [python, -m, services.platform.serve]
+    volumes:
+      - platform_identity:/identity:ro
+      - platform_key:/credentials/platform:ro
+    networks:
+      default:
+        aliases: [platform.cafi.test]
+  manager:
+    <<: *runtime
+    profiles: [tools]
+    volumes:
+      - manager_identity:/identity:ro
+  identity:
+    <<: *runtime
+    profiles: [tools]
+    user: "0:0"
+    cap_add: [CHOWN, DAC_OVERRIDE]
+    network_mode: none
+    tmpfs: [/tmp]
+    command: [python, -m, deploy.platform.identity]
+    volumes:
+      - manager_identity:/identities/manager
+      - platform_identity:/identities/platform
+volumes:
+  manager_identity:
+  platform_identity:

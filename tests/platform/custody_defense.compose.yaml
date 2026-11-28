@@ -1,0 +1,32 @@
+# Verifier only; never run alongside the real custodian in the same scenario.
+services:
+  custodian:
+    command: [python, tests/platform/custody_wire_witness.py]
+    environment:
+      S2_09_COLLISION_ID: ${S2_09_COLLISION_ID:-}
+  defensive-peer:
+    image: cafi-platform:s2-09
+    platform: linux/amd64
+    working_dir: /repo
+    read_only: true
+    user: "999:999"
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    profiles: [tools]
+    command: [python, tests/platform/custody_defensive_peer.py]
+    environment:
+      PYTHONPATH: /repo
+      PYTHONDONTWRITEBYTECODE: "1"
+      S2_09_FACTS: ${S2_09_FACTS:-}
+      S2_09_REUSE_ID: ${S2_09_REUSE_ID:-}
+    volumes:
+      - custodian_identity:/identity:ro
+    tmpfs: [/tmp]
+    networks:
+      default:
+        aliases: [custodian.cafi.test]
+    healthcheck:
+      test: [CMD, test, -f, /tmp/ready]
+      interval: 1s
+      timeout: 1s
+      retries: 10

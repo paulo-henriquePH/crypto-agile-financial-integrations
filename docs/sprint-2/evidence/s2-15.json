@@ -1,0 +1,136 @@
+{
+  "task": "S2-15",
+  "dateUTC": "2026-11-28",
+  "result": "PASSED",
+  "scope": "Repetição independente C1 em checkout limpo do commit aprovado S2-14; dados sintéticos e serviços de laboratório reais. Não constitui aceite integral de T01-T14 ou do MVP.",
+  "provenance": {
+    "branchAtSource": "sprint-2-c1",
+    "checkout": "worktree temporário separado, detached; nenhum arquivo da árvore de trabalho principal transportado",
+    "revisionBefore": "db10dec4a395de2b9d82cc1b3c1ae8db8dcd5730",
+    "revisionInReport": "db10dec4a395de2b9d82cc1b3c1ae8db8dcd5730",
+    "revisionAfter": "db10dec4a395de2b9d82cc1b3c1ae8db8dcd5730",
+    "symbolicRefBeforeAndAfter": "none (detached HEAD; git symbolic-ref --quiet --short HEAD returned no branch)",
+    "gitStatusPorcelainBefore": "",
+    "gitStatusPorcelainAfter": "",
+    "reportGitStatusSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "localReportSHA256": "190adb6a5d8de91a70050aa46609aee043f23796adbc81134f77b36d792db683",
+    "reportStorage": "Arquivo JSON local fora do checkout; somente o SHA-256 e este resumo são versionados."
+  },
+  "commands": [
+    {
+      "command": "git worktree add --detach 'C:\\Users\\Inteli\\AppData\\Local\\Temp\\opencode\\cafi-s2-15-s2-14' db10dec4a395de2b9d82cc1b3c1ae8db8dcd5730",
+      "exit": 0
+    },
+    {
+      "command": "git status --porcelain=v1 --untracked-files=all",
+      "when": "before and after verifier, in detached worktree",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "when": "before and after verifier, in detached worktree",
+      "exit": 0,
+      "output": "db10dec4a395de2b9d82cc1b3c1ae8db8dcd5730"
+    },
+    {
+      "command": "py -B scripts/verify-sprint2/verify.py",
+      "exit": 0,
+      "result": "PASSED",
+      "suites": [
+        {"name": "platform", "exit": 0, "skips": 0},
+        {"name": "settlement", "exit": 0, "scenarios": 3, "skips": 0},
+        {"name": "custody", "exit": 0, "scenarios": 5, "skips": 0},
+        {"name": "recovery", "exit": 0, "scenarios": 11, "witnesses": 17, "skips": 0},
+        {"name": "administrator", "exit": 0, "scenarios": 7, "skips": 0},
+        {"name": "reconciliation", "exit": 0, "scenarios": 3, "skips": 0},
+        {"name": "parser-and-identity", "exit": 0, "skips": 0}
+      ],
+      "skips": 0
+    }
+  ],
+  "environment": {
+    "host": "Windows amd64; Python 3.15.2",
+    "dockerEngine": "29.9.3",
+    "dockerCompose": "5.7.1",
+    "servicePlatform": "linux/amd64",
+    "servicePython": "3.13.11",
+    "serviceOpenSSL": "3.5.9",
+    "h11": "0.16.0",
+    "lxml": "6.1.3",
+    "rfc8785": "0.1.4",
+    "transportImage": "sha256:a58721fe3b2a71285b8cdcaea6855d0c64b60ee9d0856aa9ebd9a66bdcea8a92",
+    "postgresConfigured": "postgres:17.7-bookworm@sha256:86e0b703649d7a792bd9243ee28afc9d8f7c6b2b5638077c9d6882d4d472bbfd"
+  },
+  "parameters": {
+    "policyVersion": 1,
+    "messageSignature": "ECDSA-P256-SHA256",
+    "tls": "TLSv1.3 / X25519 / TLS_AES_256_GCM_SHA384",
+    "financialCalendar": "segunda a sexta sem feriados",
+    "suiteTimeoutSeconds": 1800,
+    "parserTimeoutSeconds": 300
+  },
+  "acceptanceMatrix": {
+    "stackAndThreeLinks": "Suite reconciliation; a mesma operação sintética foi observada na API REST da gestora, no envio REST ao custodiante e na integração SOAP ao administrador. Suíte parser-and-identity e provas S2-02/S2-03/S2-05 complementam os controles, sem substituir os enlaces operacionais.",
+    "T01": "Suites platform, settlement, custody, administrator, reconciliation: SETTLED/MATCHED; débito e crédito únicos no caso de custódia; rejeições locais/operacionais e saldo insuficiente em cenários separados, sem débito parcial.",
+    "T02_T09": "Suites platform, custody, administrator: criação concorrente, replay, reemissão e conflitos de negócio/messageId com unicidade persistida.",
+    "T03_T04_T13": "Suites recovery, administrator, reconciliation: perda de resposta, reinício, consulta antes de retransmitir, indisponibilidade, bloqueio e NOT_READY sem desfazer a liquidação.",
+    "T05_T07_T08_C1": "Suite parser-and-identity e cenários defensivos REST/SOAP: negativos de assinatura, parser, escopo e transporte; somente C1.",
+    "T12": "Suites custody, recovery, reconciliation: regressão e lacunas sem avanço indevido, divergência persistida por campo sem alterar SETTLED."
+  },
+  "observedTLSOnSameOperation": {
+    "operationId": "1b03e439-f9e7-4c95-a468-37c8553b5d10",
+    "links": {
+      "managerToPlatform": {"serverDnsSan": "platform.cafi.test", "responseKeyId": "PLATFORM-0"},
+      "platformToCustodian": {"serverDnsSan": "custodian.cafi.test", "responseKeyId": "CUSTODIANTE-GAMA-0"},
+      "platformToAdministrator": {"serverDnsSan": "administrator.cafi.test", "responseKeyId": "ADMINISTRADOR-DELTA-0"}
+    },
+    "allThree": {
+      "tls": "TLSv1.3",
+      "group": "x25519",
+      "ciphersuite": "TLS_AES_256_GCM_SHA384",
+      "verifyCode": 0,
+      "verifiedChainLength": 2,
+      "peerCertificate": "EC prime256v1 / ecdsa-with-SHA256",
+      "sessionReused": false,
+      "sessionHasTicket": false,
+      "sessionResumable": false,
+      "earlyData": "SSL_EARLY_DATA_NOT_SENT",
+      "messageSignatureProfile": "ECDSA",
+      "policyVersion": 1,
+      "correlatedServerLogCounts": {"platform": 7, "custodian": 5, "administrator": 4}
+    }
+  },
+  "traceExamples": {
+    "success": {
+      "operationId": "1b03e439-f9e7-4c95-a468-37c8553b5d10",
+      "history": ["REGISTERED", "VALIDATED", "SENT", "RECEIVED", "ACCEPTED", "PENDING_SETTLEMENT", "SETTLED"],
+      "apiReconciliation": ["NOT_READY", "NOT_READY", "NOT_READY", "MATCHED"],
+      "plannedDate": "2026-11-23",
+      "effectiveDate": "2026-11-24"
+    },
+    "divergence": {
+      "operationId": "e5ff8b46-0fd4-440f-8a4e-d5e8df6a82ed",
+      "financialState": "SETTLED",
+      "field": "negotiatedRate",
+      "values": {"manager": "6.500000", "custodian": "6.500000", "administrator": "6.875001"},
+      "financialUnchanged": true
+    },
+    "lostReply": {
+      "operationId": "665bbba4-0ee0-47c5-8fee-9d004f63ec12",
+      "orderedActions": ["SUBMIT_INSTRUCTION", "QUERY_INSTRUCTION", "QUERY_INSTRUCTION"],
+      "firstSubmitRequestId": "a4b6c5b5-446f-4eee-9736-8fe852b0d1bd",
+      "finalQueryRequestId": "d4c85245-6174-41f4-aadd-4b12ba172d7b",
+      "finalQueryResponseId": "64234fbd-b35a-4440-9037-8b16332f5e8c",
+      "remoteSubmissions": 1,
+      "financialEntries": 2
+    }
+  },
+  "limits": [
+    "CI não configurada nem executada em runner fixado; resultado é reprodução local com Docker Linux/amd64.",
+    "A repetição S2-15 executou apenas o comando integral: --demo-only, --inject-failure, unitários offline, prova isolada híbrida e benchmarks não foram reexecutados nesta rodada; a contraprova histórica --inject-failure consta em s2-14.json.",
+    "C2-C6, ML-DSA e perfil duplo no negócio, TLS híbrido no fluxo, ativação/rotação de política e migração sob carga, piloto e experimentos permanecem pendentes.",
+    "Somente o recorte C1 da matriz foi exercitado; T06/T10/T11 e T05/T14 integrais e o aceite completo T01-T14 do MVP não foram executados.",
+    "Sem instituições, dinheiro ou dados reais; relatórios detalhados, chaves privadas, credenciais e logs brutos não são versionados."
+  ]
+}

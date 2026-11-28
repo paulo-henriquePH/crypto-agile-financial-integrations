@@ -1,0 +1,22 @@
+# Fault injection only in this verifier's Compose project, after real transactions.
+services:
+  custodian:
+    command: [python, tests/platform/custody_recovery_peer.py]
+    tmpfs: [/tmp]
+  administrator:
+    command: [python, -m, "${CAFI_ADMINISTRATOR_MODULE:-tests.platform.administrator_peer}"]
+    tmpfs: [/tmp]
+  legacy-worker:
+    image: cafi-platform:s2-12-baseline
+    platform: linux/amd64
+    working_dir: /repo
+    read_only: true
+    user: "999:999"
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    environment: {PYTHONPATH: /repo, PYTHONDONTWRITEBYTECODE: "1"}
+    profiles: [tools]
+    entrypoint: [python, -m, services.platform.custody_worker]
+    volumes:
+      - custody_identity:/custody-identity:ro
+      - platform_key:/credentials/platform:ro

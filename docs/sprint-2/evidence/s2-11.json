@@ -1,0 +1,101 @@
+{
+  "date": "2026-11-27",
+  "base": "9726badb911574828c8c09c607ff97df1384a454",
+  "tree": "sprint-2-c1: base mais S2-11 corrigida sem commit; README.md, docs/SPRINT-2.md, contratos e evidências anteriores preservados. A projeção SOAP na fronteira C1 compartilhada mudou; os parsers de stack e a terminação não mudaram.",
+  "preReview": {
+    "independentReview": "REQUER_CORRECAO",
+    "finding": "No revisor, SOAP C1 real aceitou e consultou Sequence de 4300 dígitos, mas o envelope válido de 6283 bytes com 4301 dígitos retornou 400 vazio. A projeção via int(texto) impunha o limite padrão do CPython apesar de o XSD não limitar os dígitos.",
+    "correction": "Preservar os dígitos como texto decimal canônico na projeção SOAP, no preimage JCS e no armazenamento JSONB, com Decimal exato apenas na validação lógica. Isso evita também o teto de 131072 dígitos inteiros de numeric do PostgreSQL. REST, formatos financeiros, XSD, autenticação e limites de envelope foram mantidos.",
+    "secondReview": "REQUER_CORRECAO: a correção de 4301 dígitos foi aprovada, mas um RegisterOperation assinado com 262144 bytes e 260162 dígitos produziu 1 snapshot, 1 inbox e 3 recibos sem resposta de registro, replay ou consulta: o corpo de saída excedia o limite. Controle com 259900 dígitos respondeu.",
+    "secondCorrection": "Medir o maior tamanho de ambas as respostas de sucesso no serializador de produção, reservando 72 bytes DER / 96 Base64 para ECDSA P-256. Se não couber, produzir só o recibo do Fault assinado INVALID_BUSINESS / SNAPSHOT_RESPONSE_TOO_LARGE antes de inserir snapshot/inbox. Fixar largura dos timestamps; medir escapes, opcionais, identificadores e correlação do envelope de saída. Sem mudar a fronteira C1 compartilhada nesta segunda correção."
+  },
+  "environment": {
+    "host": "Windows, Python 3.15.2",
+    "docker": "Docker Desktop Linux amd64, Engine 29.9.3, Compose v5.7.1",
+    "dockerPath": "resources/bin do Docker Desktop acrescentado apenas ao PATH do processo PowerShell",
+    "postgresql": "17.7 Bookworm, três bases e logins SCRAM",
+    "runtime": "cafi-transport:s2-03, CPython 3.13.11 / OpenSSL 3.5.9 / h11 0.16.0 / lxml 6.1.3 / libxml2 2.14.6 / psycopg 3.2.13",
+    "serviceImage": "cafi-administrator:s2-11",
+    "serviceConfigId": "sha256:4a5ecb3677c06887fa1a7254644fd848be7dcb142f249faa36e8e41700afc8d4",
+    "exchange": "SOAP 1.2 por POST /soap; TLSv1.3 / X25519 / TLS_AES_256_GCM_SHA384, C1 ECDSA P-256/SHA-256, política v1",
+    "parameters": {"connectSeconds": 3, "exchangeSeconds": 10, "maxEnvelopeBytes": 262144, "maxXmlDepth": 32, "maxValiditySeconds": 120, "clockSkewSeconds": 5}
+  },
+  "inputBytesSha256": {
+    "c1/security.py": "7be47c8905264c206209106e21e1e3cc1b7338d7a89b85f51eb949910e09d27e",
+    "tests/c1/test_boundary.py": "9a6461bddfecfcb69ebafd7a046f6a53bed37fb994dc002e3dc031d657e7223b",
+    "services/administrator/messages.py": "7435e52535d155396d96a68b393df04e68f0f2e6882a8f55597663dcfe4b190d",
+    "services/administrator/serve.py": "d1abd4ecf6680573b143d45424c8340336b7c16f5eee6d129a3bb7c614d851d8",
+    "services/administrator/store.py": "f7877b0effc9a5113fe755209ab3ec4fbc89e593bd402c62a1ed6579639ddcb6",
+    "deploy/administrator/compose.yaml": "470a2e66d4d5c7d0c6d51d6ef5b3b335c4131e4137c9a48ddf2cdc990a31aed4",
+    "deploy/administrator/Dockerfile": "4c80f633b840efad14f13c891ffd3af513fdb4ca7424242c15708b4a67f88186",
+    "deploy/administrator/lab.py": "11281a0b2ddd2753a20588fc28a72884eccf4c23c9bd161feaf5eb3fbb06bcd3",
+    "deploy/persistence/migrations/administrator/002_snapshots.sql": "dcdf5cbcdd29113a352eaae1398fe5f55b421926c2c7eb29217a680ed645488f",
+    "tests/administrator/exchanges.py": "f1b94b4f0d27a1bed9f36687a5553bb464ed3bff458135f418d23224f86b7333"
+  },
+  "runs": [
+    {"command": "py -B deploy/administrator/lab.py", "exit": 0, "phases": 8, "skips": 0},
+    {"command": "powershell -NoProfile -File scripts/verify-c1/verify.ps1", "exit": 0, "tests": 12, "skips": 0},
+    {"command": "docker run @iso cafi-soap:s1 python -m unittest discover -s tests/contracts -p test_administrator_soap.py -v", "exit": 0, "tests": 8, "structuralExamples": 5, "skips": 0},
+    {"command": "docker run @iso cafi-soap:s1 python tests/contracts/verify_signed_vectors.py", "exit": 0, "signedVectors": 27, "soapVectors": 9, "skips": 0},
+    {"command": "powershell -NoProfile -File spikes/s2-03/verify.ps1 -BodyProof", "exit": 0, "canonicalCases": 23, "canonicalExact": 9, "canonicalExpectedRejections": 14, "staticSigned": 27, "freshSigned": 6, "otherExpectedRejections": 30, "skips": 0},
+    {"command": "powershell -NoProfile -File spikes/s2-03/verify.ps1", "exit": 0, "positiveExchanges": 6, "expectedRejections": 54, "skips": 0},
+    {"command": "py -B deploy/persistence/lab.py verify", "exit": 0, "composeProjects": 2, "databasesPerProject": 3, "skips": 0}
+  ],
+  "scenarios": {
+    "wire": {
+      "signedResponses": 50,
+      "httpStatuses": {"200": 28, "400": 21, "500": 1},
+      "observed": "mTLS real em cliente e listener distintos: SAN do par, código de verificação 0, TLS 1.3, X25519 e suíte observados. Bytes efetivamente enviados de requisição, resposta e Fault validados pelo XSD; retorno aceito só com ECDSA, contexto e correlação esperados. Resposta genuína foi recusada pelo cliente ao fornecer contexto de outra tentativa."
+    },
+    "registration": {
+      "operationId": "4b3b927a-dc56-4f71-8a32-51fd29a278e0",
+      "exactReplayMessageId": "95119f4c-95b0-4ab9-afe8-e4c5b841a6eb",
+      "observed": "Duas cópias exatas e uma reemissão com novo ID/prefixo XML concorrendo produziram um snapshot, com três IDs de resposta. SHA-256 do recibo coincidiu com os bytes recebidos. Conflito lógico com sequência diferente e conflito de bytes com o mesmo messageId deram Faults distintos. Duas consultas a UUIDs diferentes concorrendo pelo mesmo messageId tiveram uma ausência e um conflito."
+    },
+    "lookup": {
+      "observed": "Ausência autenticada em Fault/Detail/Message foi NOT_FOUND, assinada, correlacionada e não retentável. Após registro, replay exato da consulta ainda válida devolveu a ausência original; consulta com novo ID leu o snapshot. O mesmo snapshot foi devolvido após reinício do listener."
+    },
+    "terminalSnapshots": {
+      "states": ["REJECTED/CUSTODIAN", "REJECTED/LOCAL", "SETTLED", "SETTLEMENT_FAILED"],
+      "numericSqlWitness": {"sequence": "9007199254740993", "sequenceStorageJsonType": "string", "quantity": "999999999", "unitPrice": "900000000.010000", "grossAmount": "899999999109999999.99", "grossAmountJsonType": "string"},
+      "observed": "Motivo e origem aplicáveis preservados. Boleta de rejeição local manteve seu financeiro errado; o mesmo tipo de inconsistência num snapshot SETTLED novo devolveu INVALID_BUSINESS sem registro."
+    },
+    "negativesWithoutEffect": {
+      "xml": 14,
+      "messageAuthentication": 6,
+      "scope": 2,
+      "action": 2,
+      "tls": 3,
+      "bodyLimit": 1,
+      "observed": "Contagens 4 snapshots, 4 inbox, 13 recibos antes/depois desta fase. Rejeições incluíram DTD, referências externas, XInclude, schema hints, duplicação/substituição de conteúdo, whitespace adulterado dentro do nó, direção/ambiente/chave incompatíveis, SAN incorreto, certificado de cliente ausente, grupo sem interseção e Content-Length acima do limite sem enviar corpo. Outra fase rejeitou replay byte a byte após expiração com tolerância; só a tentativa ainda válida adicionou recibo."
+    },
+    "sequenceBoundary": {
+      "pythonIntMaxStrDigits": 4300,
+      "witnesses": [
+        {"operationId": "4cebcabc-933b-46da-90fe-742760df35f4", "digits": 4300, "requestBytes": 6282, "sequenceSha256": "bae00616b6e08a8420d9bfb73c99741d781f01f45b398171d4a22b0154ef33a6"},
+        {"operationId": "b2f6dd94-145b-4052-85e4-a8d2df70b41e", "digits": 4301, "requestBytes": 6283, "sequenceSha256": "d05f88287ebb20298dde34c1052adf1ab332d01ce895f54ce45c13cf3b0c3114"},
+        {"operationId": "f90f38be-c7c7-4efc-a59d-42e43b62d4a5", "digits": 150001, "requestBytes": 151983, "sequenceSha256": "0c2d61584f0106d2cafdd14870df05681ee6de065145424b2be5c956cceeeae9"}
+      ],
+      "bareRejections": 12,
+      "signedConflicts": 2,
+      "observed": "Registro e consulta assinados devolveram todos os dígitos exatos, conferidos também por comprimento e SHA-256 do texto lido do PostgreSQL. O maior valor foi consultado após reinício. O replay exato e a reemissão com referência de caractere equivalente não duplicaram snapshot; mesmos dígitos com outros bytes e mesmo ID causaram MESSAGE_ID_REUSED; mudar um dígito e assinar de novo em outra mensagem causou BUSINESS_DIGEST_MISMATCH. Adulteração sem assinar novamente foi rejeitada, assim como sete léxicos inválidos, versões inválidas e violações de largura de quantidade e escala de PU. Só os três registros válidos criaram novos snapshots nesta fase."
+    },
+    "responseBudget": {
+      "registrationRequestBytes": 262144,
+      "cases": [
+        {"case": "reported", "operationId": "ec2d61be-63f9-472b-9bb1-f47fb31b0310", "digits": 260162, "maxSuccessBytes": 262250, "responseBytes": [1567, 1567, 1567, 1542], "snapshots": 0, "inbox": 0, "receipts": 3},
+        {"case": "control", "operationId": "a3723972-e015-4bec-a38a-2c84c4ef9a57", "digits": 259900, "maxSuccessBytes": 261988, "responseBytes": [261988, 261988, 261988], "snapshots": 1, "inbox": 1, "receipts": 2},
+        {"case": "response-limit", "operationId": "14df803f-638d-4464-981d-72746292bd13", "digits": 259948, "maxSuccessBytes": 262144, "responseBytes": [262144, 262144, 262144], "snapshots": 1, "inbox": 1, "receipts": 2},
+        {"case": "response-limit-plus-one", "operationId": "412b559c-cbb1-4ea6-b0a1-dfc7e5a1996f", "digits": 259949, "maxSuccessBytes": 262145, "responseBytes": [1567, 1542], "snapshots": 0, "inbox": 0, "receipts": 2}
+      ],
+      "observed": "Todos os POSTs de registro nesta fase vieram em envelopes válidos de exatamente 262144 bytes. No caso reportado, registro, replay exato e reemissão devolveram o Fault INVALID_BUSINESS / SNAPSHOT_RESPONSE_TOO_LARGE não retentável e GET devolveu NOT_FOUND. O controle de 259900 dígitos e o do limite exato retornaram 200 no registro, replay exato e GET, com uma inbox e um snapshot cada. O limite exato e o limite mais um usaram snapshot com motivo, origem, escapes XML e texto UTF-8. Um byte acima retornou Fault e GET deu ausência. Os recibos dos quatro casos foram conferidos individualmente no PostgreSQL, sem novo recibo no replay byte a byte."
+    },
+    "persistence": {
+      "rollbackOperationId": "c7e5267f-7c0d-4509-b9ca-c9cf6800b513",
+      "finalCounts": {"snapshots": 9, "inbox": 9, "receipts": 33},
+      "observed": "Retirar INSERT em message_receipts fez a primeira tentativa retornar UNAVAILABLE assinado e reverteu snapshot e inbox. Revogar acesso à carteira negou registro, leitura existente e consulta ausente, sem novos recibos. Quatro conexões cruzadas de logins foram recusadas, além de três mutações de registros pelo login do serviço. Projeto descartável removido ao final."
+    }
+  },
+  "runnerDiagnostics": "Na implementação anterior às revisões, uma rodada saiu com 1 porque o teste de limite capturou o encerramento TLS dentro do contexto. Nesta segunda correção, a primeira rodada completou os clientes mas saiu com 1: a testemunha final de correlação usou por engano o último ID do laço de recibos. O runner corrigido executou novamente todas as fases; só a rodada com saída 0 é contada como aceite.",
+  "limits": "Recorte do simulador C1, com cliente de laboratório autenticado como PLATFORM, sem mocks de SOAP, TLS ou banco. Limite de 256 KiB aplicado separadamente a requisição e resposta. O tamanho máximo representável depende dos bytes do snapshot e dos metadados; os comprimentos de sequência do teste não são limites universais. A admissão garante representabilidade sob a emissão C1 atual, não disponibilidade de rede, banco ou chaves. Provas isoladas de stack, vetores e contrato não representam fluxo financeiro integrado. Não inclui worker SOAP, conciliação, carga, produção, migração, demais perfis operacionais nem aceite completo de T01–T14."
+}

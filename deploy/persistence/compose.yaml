@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:17.7-bookworm@sha256:86e0b703649d7a792bd9243ee28afc9d8f7c6b2b5638077c9d6882d4d472bbfd
+    platform: linux/amd64
+    entrypoint: ["sh", "/lab/start.sh"]
+    environment:
+      POSTGRES_PASSWORD_FILE: /credentials/postgres/password
+      POSTGRES_INITDB_ARGS: "--auth-local=scram-sha-256 --auth-host=scram-sha-256"
+    volumes:
+      - data:/var/lib/postgresql/data
+      - postgres_key:/credentials/postgres
+      - platform_key:/credentials/platform
+      - custodian_key:/credentials/custodian
+      - administrator_key:/credentials/administrator
+      - ./:/lab:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 45
+networks:
+  default:
+    internal: true
+volumes:
+  data:
+  postgres_key:
+  platform_key:
+  custodian_key:
+  administrator_key:

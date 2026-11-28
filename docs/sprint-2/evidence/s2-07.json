@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-26",
+  "base": "103e17f0e0ab7edd8625639d7ec7c3a0e8b1a22a",
+  "tree": "base mais alterações S2-07 sem commit",
+  "environment": "Windows, Docker Desktop Linux amd64, PostgreSQL 17.7 Bookworm, runtime cafi-transport:s2-03",
+  "runs": [
+    {
+      "command": "py -B deploy/custodian/lab.py",
+      "exit": 0,
+      "skips": 0,
+      "observed": [
+        "404 assinado antes da entrega, 404 histórico no replay exato da consulta, 200 para consulta nova",
+        "3 conexões simultâneas, 2 envelopes idênticos e 1 reemissão: 3 respostas 202 RECEIVED correlacionadas",
+        "409 por digest lógico e 409 por reutilização de messageId, motivos distintos",
+        "Corrida entre 2 consultas distintas com mesmo ID: 404 e 409",
+        "401 para conteúdo adulterado e para os mesmos bytes de um comando antes aceito, após expiração",
+        "400 assinado para UUID divergente, 403 após retirar concessão e 503 ao revogar INSERT no recibo",
+        "inbox/eventos/recibos: 1/1/7 antes do restart, 1/1/8 após nova consulta; rollback e negações preservaram 1/1/8",
+        "Conexões entre bases negadas nos dois sentidos, DELETE na inbox negado ao custodiante"
+      ]
+    },
+    {"command": "powershell -NoProfile -File scripts/verify-c1/verify.ps1", "exit": 0, "tests": 11, "skips": 0},
+    {"command": "py -B deploy/platform/lab.py verify", "exit": 0, "skips": 0}
+  ],
+  "developmentNote": "A primeira execução do roteiro esperava SQLSTATE em uma recusa pré-conexão pelo psql. Corrigida a asserção para o diagnóstico de conexão do verificador S2-04 e repetido o cenário completo."
+}

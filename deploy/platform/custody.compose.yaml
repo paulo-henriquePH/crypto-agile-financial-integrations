@@ -1,0 +1,49 @@
+# Last overlay after persistence, platform, custodian and settlement.
+x-platform-image: &platform-image ${CAFI_CUSTODY_PLATFORM_IMAGE:-cafi-platform:s2-10}
+x-custodian-image: &custodian-image ${CAFI_CUSTODY_REMOTE_IMAGE:-cafi-custodian:s2-10}
+x-runtime: &runtime
+  image: *platform-image
+  platform: linux/amd64
+  working_dir: /repo
+  read_only: true
+  user: "999:999"
+  security_opt: [no-new-privileges:true]
+  environment: {PYTHONPATH: /repo, PYTHONDONTWRITEBYTECODE: "1"}
+  cap_drop: [ALL]
+services:
+  platform:
+    image: *platform-image
+  manager:
+    image: *platform-image
+  identity:
+    image: *custodian-image
+    volumes: !override
+      - custody_identity:/identities/platform
+      - custodian_identity:/identities/custodian
+  client:
+    image: *custodian-image
+    volumes: !override
+      - custody_identity:/identity:ro
+  custodian:
+    image: *custodian-image
+  runner:
+    image: *custodian-image
+  manager-identity-init:
+    <<: *runtime
+    profiles: [tools]
+    user: "0:0"
+    cap_add: [CHOWN, DAC_OVERRIDE]
+    network_mode: none
+    tmpfs: [/tmp]
+    command: [python, -m, deploy.platform.identity]
+    volumes:
+      - manager_identity:/identities/manager
+      - platform_identity:/identities/platform
+  worker:
+    <<: *runtime
+    entrypoint: [python, -m, services.platform.custody_worker]
+    volumes:
+      - custody_identity:/custody-identity:ro
+      - platform_key:/credentials/platform:ro
+volumes:
+  custody_identity:
