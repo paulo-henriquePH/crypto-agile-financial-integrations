@@ -1,0 +1,32 @@
+# Overlay on persistence/compose.yaml and custodian/compose.yaml, in that order.
+x-image: &image cafi-custodian:s2-08
+services:
+  db:
+    volumes:
+      - custodian_runner_key:/credentials/custodian_runner
+      - ../custodian/provision-runner.sh:/opt/provision-runner.sh:ro
+    networks: [default, settlement]
+  identity:
+    image: *image
+  custodian:
+    image: *image
+  client:
+    image: *image
+  runner:
+    image: *image
+    platform: linux/amd64
+    working_dir: /repo
+    read_only: true
+    user: "999:999"
+    security_opt: [no-new-privileges:true]
+    environment: {PYTHONPATH: /repo, PYTHONDONTWRITEBYTECODE: "1"}
+    cap_drop: [ALL]
+    profiles: [tools]
+    entrypoint: [python, -m, services.custodian.runner]
+    volumes: [custodian_runner_key:/credentials/custodian_runner:ro]
+    networks: [settlement]
+networks:
+  settlement:
+    internal: true
+volumes:
+  custodian_runner_key:

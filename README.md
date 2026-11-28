@@ -14,6 +14,18 @@ powershell -NoProfile -File scripts/verify-sprint1/verify.ps1
 
 A verificação não executa serviços nem demonstra interoperabilidade dos conectores. Serviços, conectores operacionais, migração, rotação de chaves e experimentos integrados são entregas previstas para o MVP.
 
+## Entrega da Sprint 2 — C1 de laboratório
+
+A [Sprint 2](docs/sprint-2/README.md) integra uma boleta sintética por REST (gestora → plataforma → custodiante), liquidação simulada persistida e registro/consulta SOAP no administrador; o resultado é consultado na plataforma como `SETTLED`/`MATCHED`. O recorte C1 utiliza mTLS 1.3/X25519 nos três enlaces e assinaturas de mensagem ECDSA P-256/SHA-256. O [índice de evidências](docs/sprint-2/README.md#índice-de-evidências-sanitizadas) distingue as provas históricas, a execução S2-14 em árvore suja e a repetição S2-15 no commit limpo `db10dec4a395de2b9d82cc1b3c1ae8db8dcd5730`; consulte [o resultado da repetição](docs/sprint-2/evidence/s2-15.json) antes de considerar a sprint aceita.
+
+Para reproduzir C1 em checkout confiável e limpo, com Docker Linux `amd64`, Compose, Python e imagem-base preparada conforme o [manual](scripts/verify-sprint2/README.md), sem outro verificador Compose em paralelo:
+
+```powershell
+py -B scripts/verify-sprint2/verify.py
+```
+
+A CI não foi executada em runner fixado. C2–C6, migração e rotação de políticas/chaves, piloto, benchmarks e aceite integral T01–T14 do MVP permanecem pendentes. A afirmação acima sobre a **Sprint 1** descreve somente a verificação da Sprint 1; não se deve confundi-la com a execução C1 posterior.
+
 ## Visão geral
 
 As integrações entre instituições financeiras sustentam o envio de operações, a consulta de posições e movimentações e o acompanhamento da liquidação de ativos. A substituição de mecanismos de autenticação, certificados, chaves e algoritmos em uma migração pós-quântica pode comprometer a interoperabilidade e a continuidade desses processos.
@@ -175,8 +187,8 @@ O plano mantém cinco semanas como referência, com uma entrega executável por 
 
 | Semana | Trabalho e entrega | Critério de conclusão |
 |---|---|---|
-| 1 — Contratos e viabilidade | Definir modelo da boleta, transições de estado, contratos REST/SOAP, conteúdo assinado e ameaças consideradas. Executar uma prova mínima de assinatura/verificação ECDSA e ML-DSA e de negociação TLS com os dois grupos previstos. | Contratos e vetores de mensagem disponíveis; algoritmos executados e grupo TLS negociado confirmado no ambiente escolhido. Limitações de suporte registradas antes de implementar os conectores. |
-| 2 — Fluxo tradicional completo | Implementar API da gestora, persistência, custodiante REST, administrador SOAP e consulta de status. Integrar ECDSA e TLS tradicional, autorização, idempotência e conciliação. | Um script registra, envia, acompanha e concilia a operação em C1; testes cobrem rejeição, reenvio, conflito e divergência. |
+| [1 — Contratos e viabilidade](docs/SPRINT-1.md) | Definir modelo da boleta, transições de estado, contratos REST/SOAP, conteúdo assinado e ameaças consideradas. Executar uma prova mínima de assinatura/verificação ECDSA e ML-DSA e de negociação TLS com os dois grupos previstos. | Contratos e vetores de mensagem disponíveis; algoritmos executados e grupo TLS negociado confirmado no ambiente escolhido. Limitações de suporte registradas antes de implementar os conectores. |
+| [2 — Fluxo tradicional completo](docs/SPRINT-2.md) | Implementar API da gestora, persistência, custodiante REST, administrador SOAP e consulta de status. Integrar ECDSA e TLS tradicional, autorização, idempotência e conciliação. | Um script registra, envia, acompanha e concilia a operação em C1; testes cobrem rejeição, reenvio, conflito e divergência. |
 | 3 — Perfis substituíveis | Integrar ML-DSA, perfil duplo, TLS híbrido e políticas por integração. Instrumentar tempos, tamanhos, recursos e mecanismos efetivamente utilizados. | As seis configurações executam os contratos REST/SOAP; mensagens inválidas são rejeitadas, inclusive quando falta uma assinatura no perfil duplo. |
 | 4 — Migração e piloto | Implementar rotação de chaves, ativação de políticas e transição de conexões e mensagens. Testar incompatibilidade e tentativa de downgrade. Executar o piloto e fixar os parâmetros da coleta. | Migração e rotação ocorrem sob carga com rastreabilidade, sem perda ou duplicidade; falhas são explícitas; protocolo final e scripts estão prontos para repetição. |
 | 5 — Experimentos e entrega | Executar a coleta definitiva de primitivas, TLS, fluxo integrado e migração. Gerar análise comparativa, limitações, instruções de execução e roteiro de demonstração. | Dados brutos, configurações e relatório permitem reproduzir e interpretar os resultados; demonstração atende aos critérios do MVP. |

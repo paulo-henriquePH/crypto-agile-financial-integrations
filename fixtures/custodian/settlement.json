@@ -1,0 +1,12 @@
+{
+  "initialDate": "2026-11-20",
+  "calendar": "MONDAY_TO_FRIDAY_NO_HOLIDAYS",
+  "boletaTemplate": "boletas/valid.json",
+  "managerId": "GESTORA-ALFA",
+  "initialQuantity": "7",
+  "scenarios": {
+    "acceptance": {"initialCash": "150000.00"},
+    "rejection": {"initialCash": "150000.00", "rejectionReason": "OPERATIONAL_REJECTION"},
+    "insufficient": {"initialCash": "50000.00"}
+  }
+}

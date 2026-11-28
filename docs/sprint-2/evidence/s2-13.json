@@ -1,0 +1,197 @@
+{
+  "task": "S2-13",
+  "date": "2026-11-27",
+  "branch": "sprint-2-c1",
+  "baseRevision": "86ccde48287b88320dcd1e0922b7d5703d3955b9",
+  "checkout": "Alterações S2-13 não commitadas sobre a base aprovada. README.md e docs/SPRINT-2.md preexistentes preservados byte a byte e fora do stage.",
+  "environment": {
+    "host": "Windows amd64 / Docker Desktop 4.100.1",
+    "hostPython": "3.15.2",
+    "containerPlatform": "linux/amd64",
+    "dockerEngine": "29.9.3",
+    "compose": "5.7.1",
+    "postgresPin": "17.7 Bookworm",
+    "serviceStackPins": "CPython 3.13.11; OpenSSL 3.5.9; h11 0.16.0; lxml 6.1.3; rfc8785 0.1.4; psycopg 3.2.13",
+    "images": {
+      "cafi-platform:s2-13": "sha256:750dd4f9c6a48c0c4e6d64dbbbf9f21aff7283f47dd310cbc3880c42de364aed",
+      "cafi-custodian:s2-13": "sha256:f717749fb9a0c065b50507f83e4071bf9e60a28680878ec376fe22968c46faca",
+      "cafi-administrator:s2-13": "sha256:5985fff2c47baa22002e5299ad979dd15a00f7f5b41086cd622eeed5d9dbec25",
+      "cafi-transport:s2-03": "sha256:a58721fe3b2a71285b8cdcaea6855d0c64b60ee9d0856aa9ebd9a66bdcea8a92"
+    }
+  },
+  "selectedInputsSHA256": {
+    "services/platform/custody_worker.py": "e1bd623f5faaf5d2b54b5259a013aa01d90d92c681032549ea68ed2bf91967cc",
+    "services/platform/reconciliation.py": "79954b0cfcb453fb2b0887b5c98b478575973d31009424a5eb63672cc1cbebad",
+    "services/platform/reconciliation_store.py": "8a40118a81c14d1d269534b3456d34e73a1e53cb342473f2d05f4c1a7c10219f",
+    "services/platform/reconciliation_worker.py": "fc3c0c9da8e1e436225933955f13958d6d48f47cf2d78b4d34e07e2b24e32857",
+    "deploy/persistence/migrations/platform/006_reconciliation.sql": "b2ba0fae1722b27be2b7e4f56a936885ef82d14992bab7b11e69fe48b2fd32f4",
+    "deploy/platform/reconciliation.compose.yaml": "637d0ffa8cc5b160abde76834a86ea68403671e03a35eced85a73825b0c3f412",
+    "deploy/platform/verify_reconciliation.py": "e1cce10accefdab2760d72c0300f62a4f77d7602070645233435db6f2ae584c9",
+    "tests/platform/reconciliation_manager.py": "18033d378f6f3013d3c8e0580d8a25eff44680cd21ea14e3b4f357bad85730c7",
+    "tests/platform/test_reconciliation.py": "4917fd8508ce614276d15ae6d92cfd932ae33a38b7d00a5d31540a8b5c9ea6f1",
+    "tests/reconciliation/lab_control.py": "b7432bd87ad998de0e8ec1ab87f4797c0c09b3a610330fa0dcfecf029b4d985d"
+  },
+  "commands": [
+    {
+      "command": "py -B deploy/platform/verify_reconciliation.py",
+      "exit": 0,
+      "scenarios": 3,
+      "skips": 0,
+      "scope": "PostgreSQL, serviços REST/SOAP reais em processos separados, C1 autenticado, sem mocks."
+    },
+    {
+      "command": "py -B -m unittest discover -s tests/platform -p test_reconciliation.py -v",
+      "exit": 0,
+      "tests": 5,
+      "skips": 0,
+      "scope": "Somente domínio, com subcasos para os oito campos da boleta e precisão de centavos."
+    },
+    {
+      "command": "docker compose -p cafi-s2-s213-config -f deploy/persistence/compose.yaml -f deploy/platform/compose.yaml -f deploy/custodian/compose.yaml -f deploy/custodian/settlement.compose.yaml -f deploy/platform/custody.compose.yaml -f deploy/administrator/compose.yaml -f deploy/platform/administrator.compose.yaml -f deploy/platform/reconciliation.compose.yaml config --quiet",
+      "exit": 0,
+      "checks": 1,
+      "skips": 0,
+      "scope": "Configuração Compose, sem abrir conexões."
+    },
+    {
+      "command": "py -B deploy/platform/verify_recovery.py",
+      "exit": 0,
+      "scenarios": 11,
+      "skips": 0,
+      "scope": "Regressão completa S2-10, em uma única rodada; inclui recuperação, concorrência e migração."
+    },
+    {
+      "command": "py -B -m unittest discover -s tests/contracts -p test_events.py -v",
+      "exit": 0,
+      "tests": 3,
+      "skips": 0,
+      "scope": "Regressão isolada do histórico."
+    },
+    {
+      "command": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges -e PYTHONDONTWRITEBYTECODE=1 cafi-platform:s2-13 python -m unittest discover -s tests/platform -p test_reconciliation.py -v",
+      "exit": 0,
+      "tests": 5,
+      "skips": 0,
+      "scope": "Comparação isolada no CPython fixado da imagem."
+    },
+    {
+      "command": "py -B deploy/platform/verify_administrator.py",
+      "exit": 0,
+      "scenarios": 7,
+      "skips": 0,
+      "scope": "Regressão da publicação, recuperação e consulta SOAP S2-12."
+    },
+    {
+      "command": "py -B deploy/platform/verify_custody.py",
+      "exit": 0,
+      "scenarios": 5,
+      "skips": 0,
+      "scope": "Regressão da projeção de custódia S2-09."
+    },
+    {
+      "command": "py -B deploy/persistence/lab.py verify",
+      "exit": 0,
+      "projects": 2,
+      "isolatedRolesAndDatabasesPerProject": 3,
+      "skips": 0,
+      "scope": "Regressão S2-04: aplicação idempotente de migrações, isolamento, atomicidade e recriação."
+    },
+    {
+      "command": "docker @iso cafi-soap:s1 python -m unittest discover -s tests/contracts -p test_boleta.py -v",
+      "exit": 0,
+      "tests": 9,
+      "skips": 0
+    },
+    {
+      "command": "docker @iso cafi-openapi:s1 python -m unittest discover -s tests/contracts -p 'test_*openapi.py' -v",
+      "exit": 0,
+      "tests": 15,
+      "platformExamples": 13,
+      "custodianExamples": 8,
+      "skips": 0
+    },
+    {
+      "command": "docker @iso cafi-soap:s1 python -m unittest discover -s tests/contracts -p test_administrator_soap.py -v",
+      "exit": 0,
+      "tests": 8,
+      "soapExamples": 5,
+      "skips": 0
+    }
+  ],
+  "isolatedDockerOptions": "$iso=@('run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--mount',\"type=bind,source=$((Get-Location).Path),target=/work,readonly\",'-w','/work','-e','PYTHONDONTWRITEBYTECODE=1')",
+  "observed": {
+    "transport": {
+      "protocol": "TLSv1.3",
+      "group": "X25519",
+      "suite": "TLS_AES_256_GCM_SHA384",
+      "messageSignature": "ECDSA-P256-SHA256",
+      "policyVersion": 1,
+      "instructionVersion": 1,
+      "observations": "Consulta de custódia e consulta independente SOAP instrumentadas pelo transporte C1; o verificador cruza os IDs e grupos nos servidores e verifica a API da gestora pela mesma fronteira C1."
+    },
+    "missingThenEqual": {
+      "syntheticOperationId": "ce62c426-399f-40de-b786-5427bde38fe6",
+      "history": ["REGISTERED", "VALIDATED", "SENT", "RECEIVED", "ACCEPTED", "PENDING_SETTLEMENT", "SETTLED"],
+      "statuses": ["NOT_READY", "NOT_READY", "NOT_READY", "MATCHED"],
+      "custodyRevisions": [1, 4],
+      "administratorRevision": "4",
+      "absenceReads": 1,
+      "successfulIndependentReads": 1,
+      "concurrentWorkers": 2,
+      "persistedObservations": 2,
+      "technicalFailure": "NETWORK_UNAVAILABLE",
+      "plannedDate": "2026-11-23",
+      "effectiveDate": "2026-11-24",
+      "financialUnchanged": true
+    },
+    "divergent": {
+      "syntheticOperationId": "f189349d-555a-42d7-be8a-711a761e5869",
+      "apiStatus": "DIVERGENT",
+      "financialState": "SETTLED",
+      "differences": [
+        {
+          "field": "negotiatedRate",
+          "values": {"manager": "6.500000", "custodian": "6.500000", "administrator": "6.875001"}
+        }
+      ],
+      "administratorSnapshots": 1,
+      "persistedResults": 1,
+      "independentGetResults": 2,
+      "rollback": "23514; sem recibo ou resultado persistido na tentativa",
+      "durableAfterPostgresRestart": true,
+      "restAuthorization": "403/FORBIDDEN; sem payload de negócio",
+      "financialUnchanged": true,
+      "custodyCash": "51950.00",
+      "custodyPosition": "107",
+      "custodyEntries": ["ASSET_CREDIT", "CASH_DEBIT"]
+    },
+    "forbidden": {
+      "syntheticOperationId": "e76b5ee4-c073-48b2-a940-fa99ad058ddc",
+      "signedFault": "FORBIDDEN",
+      "apiStatus": "NOT_READY",
+      "financialState": "SETTLED",
+      "administratorReadBlocked": true,
+      "persistedBusinessResults": 0,
+      "financialUnchanged": true
+    }
+  },
+  "developmentAttempts": [
+    {
+      "command": "py -B deploy/platform/verify_recovery.py",
+      "exit": 1,
+      "completedScenarios": 0,
+      "diagnosis": "Primeira versão da migração 006 falhou antes dos cenários: a FK de três colunas referenciava implicitamente a PK de duas colunas. Corrigido para referenciar a restrição UNIQUE de três colunas."
+    },
+    {
+      "command": "py -B -m unittest discover -s tests/contracts -p test_boleta.py -v",
+      "exit": 1,
+      "completedTests": 0,
+      "diagnosis": "O Python do host não tinha jsonschema; a importação da suíte falhou. A regressão da mesma suíte passou na imagem fixada."
+    }
+  ],
+  "scopeLimits": [
+    "C1 de laboratório com dados sintéticos; não encerra S2-14, a Sprint 2 ou T01–T14.",
+    "Contratos congelados inalterados; o REST v1 expõe o status, não as diferenças armazenadas.",
+    "Não há backfill de terminais históricos sem snapshot de custódia capturado, reabertura automática de conclusão, perfis adicionais, migração de política ou medição de desempenho."
+  ]
+}

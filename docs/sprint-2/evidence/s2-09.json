@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-26",
+  "base": "eaf858451fca9751447b0b9e356336a5f863747b",
+  "tree": "base mais alterações S2-09 sem commit; README.md e docs/SPRINT-2.md preexistentes preservados; baseline contracts/ intacta",
+  "reviewCorrection": "Execução após incluir a guarda transacional de respostas do custodiante em message_receipts, sem recuperação S2-10.",
+  "environment": {
+    "host": "Windows, Python 3.15.2",
+    "docker": "Docker Desktop Linux amd64, Engine 29.9.3, Compose v5.7.1",
+    "postgresql": "17.7 Bookworm",
+    "runtime": "cafi-transport:s2-03, CPython 3.13.11 / OpenSSL 3.5.9",
+    "financialExchange": "mTLS TLSv1.3 / X25519 / TLS_AES_256_GCM_SHA384, ECDSA P-256/SHA-256 v1"
+  },
+  "runs": [
+    {
+      "command": "py -B deploy/platform/verify_custody.py",
+      "exit": 0,
+      "scenarios": 5,
+      "skips": 0,
+      "trace": {
+        "settledOperationId": "9f71d264-54c1-483c-8ef9-331a5163eb3d",
+        "submitMessageId": "08c3e742-671e-47b5-9b69-0724711819f4",
+        "ackMessageId": "7666220c-45f2-4a0c-b6d7-42b3ae7a4dc1",
+        "queryMessageIds": [
+          "20f59197-f734-4cc2-aae3-ac5d8921bdbb",
+          "7d4f6206-c35a-49d2-91b5-eb56096d5918",
+          "8f62ee02-de2f-43b9-a1c1-bff552023c2a",
+          "c678cd05-cfa7-4177-9b42-ba0418683e77",
+          "146625a5-0ecb-4ab3-8fe1-77cd0d29dcd2"
+        ],
+        "rejectedOperationId": "614bdab0-c53a-4f8e-8e66-ff4150be900b",
+        "defensiveOperationId": "75da0b58-172e-4fd8-bd63-ed684705aa6d",
+        "rollbackOperationId": "01a23d8b-b391-43d0-849e-efd85efb6cf6",
+        "rolledBackAckMessageId": "733602ef-7d63-4064-8001-1d5792729231",
+        "collisionMessageId": "559f66d9-5858-4aba-8060-7b237280f976",
+        "collisionWinnerOperationId": "fdb72a77-f9f4-4b12-942f-60caaa994050",
+        "collisionLoserOperationId": "aa34bd3b-dcb1-48bb-9ad5-90799c686369"
+      },
+      "observed": [
+        "Falha SQLSTATE 23514 na inserção de SENT manteve VALIDATED, envelope nulo, zero tentativas e inbox vazia. Dois workers concorrentes produziram uma tentativa e um recibo. O envelope persistido e a inbox apontaram para a mesma operação, com senderId PLATFORM e managerId GESTORA-ALFA no payload assinado.",
+        "Liquidação: cinco novos POSTs de consulta assinados, com IDs distintos, permitiram à gestora observar REGISTERED, VALIDATED, SENT, RECEIVED, ACCEPTED, PENDING_SETTLEMENT e SETTLED. O primeiro recibo 202 não avançou além de RECEIVED. A consulta de fatos idênticos adicionou zero eventos e conservou a projeção, a tabela de fatos e updated_at. O replay do contrato da Sprint 1 validou os históricos lidos pela API da gestora.",
+        "A plataforma gravou seis recibos de resposta em message_receipts: um 202 e cinco 200, inclusive a consulta de fatos idênticos feita com novo ID. Todos os seis SHA-256 e metadados mínimos coincidiram com os bytes e IDs observados no emissor. A gestora recebeu 409 IDEMPOTENCY_CONFLICT quando tentou usar o ID de uma resposta já registrada.",
+        "O custodiante liquidou em 2026-11-23 no calendário sintético (segunda a sexta sem feriados): caixa 51950.00 BRL, posição 107 e dois lançamentos. O histórico local manteve sequência própria e preservou a sequência remota em custody_facts; a entrega ficou CONFIRMED e a conciliação NOT_READY.",
+        "Rejeição: worker contínuo e boleta submetida pela gestora produziram REJECTED com OPERATIONAL_REJECTION de origem CUSTODIAN. Caixa 150000.00, posição 7 e zero lançamentos.",
+        "Defesa: respostas assinadas com correlação incorreta, regressão, prefixo modificado, lacuna, salto e boleta divergente foram recusadas. Um 200 válido que reutilizou o ID do 202 também foi recusado antes de projetar. Uma restrição SQLSTATE 23514 na gravação de SETTLED reverteu PENDING_SETTLEMENT e o novo recibo 200. Histórico local, fatos, updated_at e os dois recibos originais permaneceram intactos; estado ACCEPTED.",
+        "Rollback do 202: uma restrição SQLSTATE 23514 na inserção local de RECEIVED reverteu o novo recibo de resposta, sem confirmar a entrega ou agendar consulta. O custodiante permaneceu em RECEIVED e a plataforma em SENT, com a tentativa anterior persistida.",
+        "Colisão concorrente: dois workers receberam dois 202 verificados, com o mesmo ID e digests diferentes, em conexões mTLS separadas. O PostgreSQL manteve um recibo, com o digest do vencedor. Só a operação vencedora avançou para RECEIVED; a outra permaneceu em SENT."
+      ]
+    },
+    {"command": "py -B deploy/custodian/verify_settlement.py", "exit": 0, "scenarios": 3, "skips": 0},
+    {"command": "py -B deploy/custodian/lab.py", "exit": 0, "skips": 0},
+    {"command": "py -B deploy/platform/lab.py verify", "exit": 0, "skips": 0},
+    {"command": "py -B deploy/persistence/lab.py verify", "exit": 0, "skips": 0},
+    {"command": "powershell -NoProfile -File scripts/verify-c1/verify.ps1", "exit": 0, "tests": 11, "skips": 0},
+    {"command": "py -B -m unittest discover -s tests/contracts -p test_events.py -v", "exit": 0, "tests": 3, "skips": 0}
+  ],
+  "limits": "Recorte S2-09 de T01/T12. Não demonstra recuperação de envio ou lacunas, retentativas, SOAP, conciliação, carga ou aceite integrado da Sprint 2."
+}

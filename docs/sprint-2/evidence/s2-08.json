@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-26",
+  "base": "a8f65e0a4f6556f3c87057908a8ac8c9bf04f377",
+  "tree": "base mais alterações S2-08 sem commit; alterações preexistentes em README.md e docs/SPRINT-2.md preservadas",
+  "environment": {
+    "host": "Windows, Python 3.15.2",
+    "docker": "Docker Desktop Linux amd64, Engine 29.9.3, Compose v5.7.1",
+    "postgresql": "17.7 Bookworm",
+    "runtime": "cafi-transport:s2-03, CPython 3.13.11",
+    "financialExchange": "TLSv1.3 / TLS_AES_256_GCM_SHA384 / X25519, mTLS e ECDSA P-256/SHA-256"
+  },
+  "runs": [
+    {
+      "command": "py -B deploy/custodian/verify_settlement.py",
+      "exit": 0,
+      "scenarios": 3,
+      "skips": 0,
+      "observed": [
+        "Consultas REST novas, assinadas e correlacionadas reproduziram sequências 1–4 contíguas e motivos terminais quando aplicáveis.",
+        "Acceptance: 150000.00 BRL e 7 unidades antes; 51950.00 BRL e 107 unidades depois. Dois lançamentos únicos: CASH_DEBIT 98050.00 BRL e ASSET_CREDIT 100 unidades.",
+        "A fixture parte de sexta-feira 2026-11-20, com data prevista 2026-11-23. O passo antes da data e outro no domingo posterior (2026-11-29) não liquidaram; a data efetiva foi 2026-11-30 nos lançamentos e no evento SETTLED.",
+        "Uma restrição temporária bloqueou o lançamento de crédito com SQLSTATE 23514 depois das tentativas de débito e atualização de posição: caixa, posição, histórico PENDING_SETTLEMENT e zero lançamentos permaneceram intactos.",
+        "Dois passos concorrentes reportaram 0 e 1 transição; cópia de lançamento já existente rejeitada por SQLSTATE 23505. Reinícios do banco e custodiante, reemissão e replay conservaram saldos, sequência e IDs dos eventos e devolveram 202 RECEIVED nas novas tentativas de instrução.",
+        "Rejection: REJECTED na sequência 2 com OPERATIONAL_REJECTION e origem CUSTODIAN; 150000.00 BRL, 7 unidades e zero lançamentos antes e depois.",
+        "Insufficient: SETTLEMENT_FAILED na sequência 4 com INSUFFICIENT_CASH no D+1 simulado; 50000.00 BRL, 7 unidades e zero lançamentos antes e depois.",
+        "Rota de controle inexistente recusada com 400 assinado no enlace financeiro; segredo do runner ausente no cliente. Login REST impedido de avançar o relógio; runner impedido de alterar inbox ou conectar à base platform; platform impedida de conectar à base custodian."
+      ]
+    },
+    {"command": "py -B deploy/custodian/lab.py", "exit": 0, "skips": 0},
+    {"command": "py -B deploy/platform/lab.py verify", "exit": 0, "skips": 0},
+    {"command": "py -B deploy/persistence/lab.py verify", "exit": 0, "skips": 0},
+    {"command": "powershell -NoProfile -File scripts/verify-c1/verify.ps1", "exit": 0, "tests": 11, "skips": 0}
+  ],
+  "limits": "Cenários sintéticos e CLI de teste; não demonstra envio da plataforma, SOAP, conciliação, benchmarks nem o aceite integrado C1."
+}

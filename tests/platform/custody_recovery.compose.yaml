@@ -1,0 +1,32 @@
+# Test-only processes. No fault route or credential is added to either financial service.
+x-test-worker: &test-worker
+  image: cafi-platform:s2-10
+  platform: linux/amd64
+  working_dir: /repo
+  read_only: true
+  user: "999:999"
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  environment: {PYTHONPATH: /repo, PYTHONDONTWRITEBYTECODE: "1"}
+  profiles: [tools]
+  volumes:
+    - custody_identity:/custody-identity:ro
+    - platform_key:/credentials/platform:ro
+services:
+  stalled-worker:
+    <<: *test-worker
+    entrypoint: [python, tests/platform/custody_stall_worker.py]
+  legacy-worker:
+    <<: *test-worker
+    image: cafi-platform:s2-10-baseline
+    entrypoint: [python, -m, services.platform.custody_worker]
+  paused-writer:
+    <<: *test-worker
+    entrypoint: [python, tests/platform/custody_pause_writer.py]
+    environment:
+      PYTHONPATH: /repo
+      PYTHONDONTWRITEBYTECODE: "1"
+      S2_10_PROOF_EXPIRES: ${S2_10_PROOF_EXPIRES:-}
+  custodian:
+    command: [python, tests/platform/custody_recovery_peer.py]
+    tmpfs: [/tmp]
